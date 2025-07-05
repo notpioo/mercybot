@@ -1,0 +1,93 @@
+const config = require('../config/config');
+
+async function execute(context) {
+    const { sock, remoteJid, senderName } = context;
+    
+    try {
+        const menuText = createMenuText(senderName);
+        
+        await sock.sendMessage(remoteJid, {
+            text: menuText
+        });
+        
+        console.log('📋 Menu sent successfully');
+        
+    } catch (error) {
+        console.error('❌ Failed to send menu:', error);
+        await sock.sendMessage(remoteJid, {
+            text: config.messages.error
+        });
+    }
+}
+
+function createMenuText(userName) {
+    const prefixes = config.prefixes.join(' | ');
+    const owners = config.owners.join(', ');
+    
+    return `╭─「 ${config.botName} 」
+│ 👋 Hello ${userName}!
+│ 🤖 I'm your WhatsApp assistant
+│ 
+│ 📋 Available Commands:
+│ 
+│ 👤 Owner Commands:
+│ ${config.prefixes[0]}owner - Get owner contacts
+│ ${config.prefixes[0]}creator - Get owner contacts
+│ 
+│ 💰 Balance Management:
+│ ${config.prefixes[0]}addbalance @user amount
+│ ${config.prefixes[0]}delbalance @user amount
+│ ${config.prefixes[0]}addchip @user amount
+│ ${config.prefixes[0]}delchip @user amount
+│ 
+│ ⏰ Limit Management:
+│ ${config.prefixes[0]}addlimit @user amount
+│ ${config.prefixes[0]}dellimit @user amount
+│ ${config.prefixes[0]}resetlimit - Reset all limits
+│ 
+│ 👑 Premium Management:
+│ ${config.prefixes[0]}addprem @user duration
+│ ${config.prefixes[0]}delprem @user
+│ 
+│ 🔨 Moderation:
+│ ${config.prefixes[0]}ban @user duration
+│ ${config.prefixes[0]}unban @user
+│ ${config.prefixes[0]}warn @user (or reply)
+│ ${config.prefixes[0]}maxwarn number
+│ 
+│ 📋 List Commands:
+│ ${config.prefixes[0]}prem @user/number - Check premium
+│ ${config.prefixes[0]}listprem - List premium users
+│ ${config.prefixes[0]}listban - List banned users
+│ ${config.prefixes[0]}listwarn - List warned users
+│ 
+│ 👥 Group Management:
+│ ${config.prefixes[0]}add number - Add user to group
+│ ${config.prefixes[0]}kick @user/reply - Remove user
+│ 
+│ 👥 User Commands:
+│ ${config.prefixes[0]}profile - Show your profile
+│ ${config.prefixes[0]}profile @mention - Show someone's profile
+│ ${config.prefixes[0]}me - Show your profile
+│ 
+│ 📖 Information:
+│ ${config.prefixes[0]}menu - Show this menu
+│ ${config.prefixes[0]}help - Show this menu
+│ ${config.prefixes[0]}commands - Show this menu
+│ 
+│ 🔧 Prefixes: ${prefixes}
+│ 👤 Owners: ${owners}
+│ 
+│ 💡 Tips:
+│ • Use any prefix before commands
+│ • Bot works in both private and group chats
+│ • Contact any owner for support
+│ 
+╰───────────────────────
+
+🌟 Thank you for using ${config.botName}!`;
+}
+
+module.exports = {
+    execute
+};
