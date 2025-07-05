@@ -2,6 +2,9 @@ const { startWhatsApp } = require('./lib/whatsapp');
 const { connectDatabase } = require('./lib/database');
 const config = require('./config/config');
 
+// Start web server for QR code display
+require('./web-server');
+
 async function main() {
     try {
         console.log('🚀 Starting WhatsApp Bot...');

@@ -17,7 +17,8 @@ COPY . .
 RUN mkdir -p downloads
 
 # Expose port (Railway assigns PORT automatically)
-EXPOSE 3000
+EXPOSE $PORT
+ENV PORT=3000
 
 # Start the application
 CMD ["node", "index.js"]
