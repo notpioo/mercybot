@@ -32,7 +32,7 @@ async function execute(context) {
         // Check if user is owner
         if (!user.isOwner) {
             await sock.sendMessage(remoteJid, {
-                text: '❌ Only owners can use this command.'
+                text: '❌ Cuman owner yang bisa pake command ini😝..'
             });
             return;
         }
@@ -60,7 +60,7 @@ async function execute(context) {
 
         if (!targetJid) {
             await sock.sendMessage(remoteJid, {
-                text: `❌ Usage: ${config.prefixes[0]}${commandName} @mention/number duration(1d/5h/6s)`
+                text: `❌ Gunakan: ${config.prefixes[0]}${commandName} @mention/number durasi(1d/5h/6s)`
             });
             return;
         }
@@ -72,7 +72,7 @@ async function execute(context) {
         if (commandName === 'ban') {
             if (!duration) {
                 await sock.sendMessage(remoteJid, {
-                    text: `❌ Usage: ${config.prefixes[0]}${commandName} @mention/number duration(1d/5h/6s)`
+                    text: `❌ Gunakan: ${config.prefixes[0]}${commandName} @mention/number durasi(1d/5h/6s)`
                 });
                 return;
             }
@@ -80,7 +80,7 @@ async function execute(context) {
             const banUntil = parseDuration(duration);
             if (!banUntil) {
                 await sock.sendMessage(remoteJid, {
-                    text: '❌ Invalid duration format. Use: 1d (day), 5h (hour), 6s (second)'
+                    text: '❌ Format durasi tidak valid. Gunakan: 1d (day), 5h (hour), 6s (second)'
                 });
                 return;
             }
@@ -96,7 +96,7 @@ async function execute(context) {
             );
             
             await sock.sendMessage(remoteJid, {
-                text: `✅ Successfully banned user until ${banUntil.toLocaleString('id-ID')}`,
+                text: `✅ Berhasil banned pengguna hingga${banUntil.toLocaleString('id-ID')}`,
                 mentions: [targetJid]
             });
             
@@ -112,7 +112,7 @@ async function execute(context) {
             );
             
             await sock.sendMessage(remoteJid, {
-                text: `✅ Successfully unbanned user`,
+                text: `✅ Berhasil unbanned pengguna`,
                 mentions: [targetJid]
             });
         }

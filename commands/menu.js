@@ -53,6 +53,8 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}ban @user duration
 │ ${config.prefixes[0]}unban @user
 │ ${config.prefixes[0]}warn @user (or reply)
+│ ${config.prefixes[0]}delwarn @user amount
+│ ${config.prefixes[0]}resetwarn @user
 │ ${config.prefixes[0]}maxwarn number
 │ 
 │ 📋 List Commands:
@@ -60,10 +62,22 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}listprem - List premium users
 │ ${config.prefixes[0]}listban - List banned users
 │ ${config.prefixes[0]}listwarn - List warned users
+│ ${config.prefixes[0]}listbadword - List bad words
 │ 
 │ 👥 Group Management:
 │ ${config.prefixes[0]}add number - Add user to group
 │ ${config.prefixes[0]}kick @user/reply - Remove user
+│ ${config.prefixes[0]}promote @user/number - Make admin
+│ ${config.prefixes[0]}demote @user/number - Remove admin
+│ ${config.prefixes[0]}tagall - Mention all members
+│ ${config.prefixes[0]}grouplink - Get group invite link
+│ 
+│ 🚫 Anti-Badword System:
+│ ${config.prefixes[0]}antibadword on/off - Toggle filter
+│ ${config.prefixes[0]}addbadword word - Add bad word
+│ 
+│ 📸 Anti-ViewOnce System:
+│ ${config.prefixes[0]}antivc on/off - Toggle view once detection
 │ 
 │ 👥 User Commands:
 │ ${config.prefixes[0]}profile - Show your profile

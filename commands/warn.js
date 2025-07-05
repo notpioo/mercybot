@@ -6,10 +6,22 @@ async function execute(context) {
     const { sock, remoteJid, user, senderName, message, args, commandName, isGroup } = context;
     
     try {
-        // Check if user is owner
-        if (!user.isOwner) {
+        // Check if user is owner or group admin
+        let isGroupAdmin = false;
+        if (isGroup && !user.isOwner) {
+            try {
+                const groupMetadata = await sock.groupMetadata(remoteJid);
+                isGroupAdmin = groupMetadata.participants.find(p => 
+                    p.id === user.jid && (p.admin === 'admin' || p.admin === 'superadmin')
+                );
+            } catch (error) {
+                console.error('Error checking group admin status:', error);
+            }
+        }
+
+        if (!user.isOwner && !isGroupAdmin) {
             await sock.sendMessage(remoteJid, {
-                text: '❌ Only owners can use this command.'
+                text: '❌ Only bot owners and group admins can use this command.'
             });
             return;
         }
@@ -63,7 +75,8 @@ async function execute(context) {
             );
 
             // Check if warnings exceed max
-            if (newWarnings >= config.userSystem.maxWarn) {
+            const maxWarnings = config.userSystem.maxWarnings || 3;
+            if (newWarnings >= maxWarnings) {
                 try {
                     // Try to remove user from group
                     await sock.groupParticipantsUpdate(remoteJid, [targetJid], 'remove');
@@ -75,18 +88,19 @@ async function execute(context) {
                     );
                     
                     await sock.sendMessage(remoteJid, {
-                        text: `⚠️ User has been removed from the group due to reaching maximum warnings (${config.userSystem.maxWarn})`,
+                        text: `⚠️ User has been removed from the group due to reaching maximum warnings (${maxWarnings})`,
                         mentions: [targetJid]
                     });
                 } catch (kickError) {
                     await sock.sendMessage(remoteJid, {
-                        text: `⚠️ User reached maximum warnings (${config.userSystem.maxWarn}) but failed to remove from group. Please check bot permissions.`,
+                        text: `⚠️ User reached maximum warnings (${maxWarnings}) but failed to remove from group. Please check bot permissions.`,
                         mentions: [targetJid]
                     });
                 }
             } else {
+                const remainingWarnings = maxWarnings - newWarnings;
                 await sock.sendMessage(remoteJid, {
-                    text: `⚠️ Warning issued!\nWarnings: ${newWarnings}/${config.userSystem.maxWarn}\n\n⚠️ ${config.userSystem.maxWarn - newWarnings} more warnings until removal from group.`,
+                    text: `⚠️ Warning issued!\nWarnings: ${newWarnings}/${maxWarnings}\n\n⚠️ ${remainingWarnings} more warnings until removal from group.`,
                     mentions: [targetJid]
                 });
             }
@@ -95,13 +109,13 @@ async function execute(context) {
             const newMaxWarn = parseInt(args[0]);
             if (!newMaxWarn || newMaxWarn < 1) {
                 await sock.sendMessage(remoteJid, {
-                    text: `❌ Usage: ${config.prefixes[0]}maxwarn <number>\nCurrent max warnings: ${config.userSystem.maxWarn}`
+                    text: `❌ Usage: ${config.prefixes[0]}maxwarn <number>\nCurrent max warnings: ${config.userSystem.maxWarnings || 3}`
                 });
                 return;
             }
             
             // Update config (note: this is runtime only, not persistent)
-            config.userSystem.maxWarn = newMaxWarn;
+            config.userSystem.maxWarnings = newMaxWarn;
             
             await sock.sendMessage(remoteJid, {
                 text: `✅ Maximum warnings set to ${newMaxWarn}`

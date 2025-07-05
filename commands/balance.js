@@ -9,7 +9,7 @@ async function execute(context) {
         // Check if user is owner
         if (!user.isOwner) {
             await sock.sendMessage(remoteJid, {
-                text: '❌ Only owners can use this command.'
+                text: '❌ Cuman Owner yang bisa pake command ini😝..'
             });
             return;
         }
@@ -37,7 +37,7 @@ async function execute(context) {
 
         if (!targetJid || amount <= 0) {
             await sock.sendMessage(remoteJid, {
-                text: `❌ Usage: ${config.prefixes[0]}${commandName} @mention/number amount`
+                text: `❌ gunakan: ${config.prefixes[0]}${commandName} @mention/number jumlah`
             });
             return;
         }
@@ -56,7 +56,7 @@ async function execute(context) {
             );
             
             await sock.sendMessage(remoteJid, {
-                text: `✅ Successfully added ${amount} balance to user.\nNew balance: ${newBalance}`,
+                text: `✅ Berhasil menambahkan ${amount} balance ke user.\nBalance Terbaru: ${newBalance}`,
                 mentions: [targetJid]
             });
         } else if (commandName === 'delbalance' || commandName === 'delbal') {
@@ -67,7 +67,7 @@ async function execute(context) {
             );
             
             await sock.sendMessage(remoteJid, {
-                text: `✅ Successfully removed ${amount} balance from user.\nNew balance: ${newBalance}`,
+                text: `✅ Berhasil menghapus ${amount} balance dari user.\nBalance Terbaru: ${newBalance}`,
                 mentions: [targetJid]
             });
         }

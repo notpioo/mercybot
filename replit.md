@@ -126,6 +126,17 @@ Changelog:
 - July 05, 2025. Added ban/unban system with automatic expiration checking
 - July 05, 2025. Added warning system with configurable max warnings and auto-kick functionality
 - July 05, 2025. Enhanced user schema with warnings, banUntil, and premiumUntil fields
+- July 05, 2025. Successfully migrated project from Replit Agent to standard Replit environment
+- July 05, 2025. Added comprehensive group management system with owner/admin commands
+- July 05, 2025. Implemented anti-badword system with automatic detection and warning
+- July 05, 2025. Added new commands: add, kick, tagall, antibadword, addbadword
+- July 05, 2025. Integrated automatic user kicking when reaching maximum warnings (3)
+- July 05, 2025. Enhanced invitation system with multiple methods (add, directinvite, manualinvite, forceadd)
+- July 05, 2025. Added owner warning management commands (delwarn, resetwarn)
+- July 05, 2025. Added admin promotion/demotion commands (promote, demote)
+- July 05, 2025. Added badword list viewing command (listbadword)
+- July 05, 2025. Implemented auto-delete feature for messages containing badwords
+- July 05, 2025. Fixed invitation link clickability with separate message sending
 ```
 
 ## User Preferences
