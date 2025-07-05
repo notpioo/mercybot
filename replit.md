@@ -137,6 +137,20 @@ Changelog:
 - July 05, 2025. Added badword list viewing command (listbadword)
 - July 05, 2025. Implemented auto-delete feature for messages containing badwords
 - July 05, 2025. Fixed invitation link clickability with separate message sending
+- July 05, 2025. Successfully migrated project from Replit Agent to standard Replit environment
+- July 05, 2025. Verified all dependencies install correctly without vulnerabilities
+- July 05, 2025. Confirmed MongoDB connection and owner user setup working properly
+- July 05, 2025. Fixed anti view once feature that was not working due to message filtering issues
+- July 05, 2025. Enhanced view once detection to support ephemeral messages and direct formats
+- July 05, 2025. Added comprehensive error handling for badword detection function
+- July 05, 2025. Improved message processing to handle media messages without text content
+- July 05, 2025. Replaced automatic anti view once system with manual reply-based command
+- July 05, 2025. Command .antivc now works by replying to view once messages instead of automatic detection
+- July 05, 2025. Removed all automatic view once detection functions for better performance and reliability
+- July 05, 2025. Implemented both manual (.antivc reply) and automatic (.antivc on/off) anti-view-once systems
+- July 05, 2025. Added local file download system with downloads/ folder for security
+- July 05, 2025. Added Railway deployment compatibility with Node.js 20+ configuration
+- July 05, 2025. Fixed database schema for antiViewOnce settings in group.settings object
 ```
 
 ## User Preferences
