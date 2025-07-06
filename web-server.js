@@ -1,5 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
+const { setupAuthRoutes, initializeAuthSystem: initAuth } = require('./auth-system');
+const { setupDashboardRoutes } = require('./dashboard-system');
 
 const app = express();
 const server = createServer(app);
@@ -7,6 +9,24 @@ const server = createServer(app);
 // Global variables for QR code
 let currentQRCode = null;
 let qrCodeExpired = false;
+let botConnected = false;
+
+// Middleware for JSON parsing and sessions
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const session = require('express-session');
+app.use(session({
+    secret: 'whatsapp-bot-secret-key-2025',
+    resave: true,
+    saveUninitialized: false,
+    rolling: true, // Reset expiration on activity
+    cookie: { 
+        secure: false, 
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    }
+}));
 
 // QR Code endpoint
 app.get('/qr', (req, res) => {
@@ -16,14 +36,14 @@ app.get('/qr', (req, res) => {
             message: 'Waiting for QR code...' 
         });
     }
-    
+
     if (qrCodeExpired) {
         return res.json({ 
             status: 'expired',
             message: 'QR code has expired. Please restart the bot.' 
         });
     }
-    
+
     res.json({ 
         status: 'ready',
         qr: currentQRCode,
@@ -41,8 +61,8 @@ app.get('/status', (req, res) => {
     });
 });
 
-// QR Code web page
-app.get('/', (req, res) => {
+// Old QR Code web page (now moved to /qr-old for backwards compatibility)
+app.get('/qr-old', (req, res) => {
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -107,9 +127,9 @@ app.get('/', (req, res) => {
                     const status = document.getElementById('status');
                     const qrContainer = document.getElementById('qr-container');
                     const timestamp = document.getElementById('timestamp');
-                    
+
                     timestamp.textContent = new Date().toLocaleString();
-                    
+
                     if (data.status === 'ready') {
                         status.textContent = data.message;
                         status.className = 'status ready';
@@ -129,10 +149,10 @@ app.get('/', (req, res) => {
                     document.getElementById('status').textContent = 'Error loading QR code';
                 });
         }
-        
+
         // Check QR code every 3 seconds
         setInterval(checkQR, 3000);
-        
+
         // Initial check
         checkQR();
     </script>
@@ -145,6 +165,7 @@ app.get('/', (req, res) => {
 function updateQRCode(qr) {
     currentQRCode = qr;
     qrCodeExpired = false;
+    botConnected = false;
     console.log('📱 QR Code updated and available at web interface');
 }
 
@@ -158,18 +179,112 @@ function expireQRCode() {
 function clearQRCode() {
     currentQRCode = null;
     qrCodeExpired = false;
+    botConnected = true;
     console.log('✅ QR Code cleared (connected)');
 }
+
+// Function to get current QR status (for admin panel)
+function getCurrentQR() {
+    if (botConnected) {
+        return {
+            status: 'connected',
+            message: 'Bot is connected to WhatsApp'
+        };
+    }
+
+    if (!currentQRCode) {
+        return { 
+            status: 'waiting',
+            message: 'Waiting for QR code...' 
+        };
+    }
+
+    if (qrCodeExpired) {
+        return { 
+            status: 'expired',
+            message: 'QR code has expired. Please restart the bot.' 
+        };
+    }
+
+    return { 
+        status: 'ready',
+        qr: currentQRCode,
+        message: 'Scan this QR code with WhatsApp'
+    };
+}
+
+// Initialize socket reference for auth system
+let whatsappSocket = null;
+
+// Set up authentication routes (without socket initially)
+setupAuthRoutes(app, null);
+
+// Function to initialize auth system with socket
+function initializeAuthSystem(sock) {
+    whatsappSocket = sock;
+    // Initialize auth system with socket
+    initAuth(sock);
+    console.log('🔐 Auth system initialized with WhatsApp socket');
+}
+
+// Set up dashboard routes with QR functions
+setupDashboardRoutes(app, { getCurrentQR });
+
+// API endpoint untuk mendapatkan currency user
+app.get('/api/user-currency', async (req, res) => {
+    try {
+        // Check if user is authenticated
+        if (!req.session.user) {
+            return res.json({ success: false, error: 'User not authenticated' });
+        }
+
+        const { getUser, User } = require('./lib/database');
+        const userPhone = req.session.user.phone;
+        const userJid = userPhone + '@s.whatsapp.net';
+        
+        // Force refresh from database to get latest data
+        let user = await User.findOne({ jid: userJid });
+
+        if (!user) {
+            // Create new user if doesn't exist
+            user = new User({
+                jid: userJid,
+                name: userPhone,
+                balance: 0,
+                chips: 0,
+                limit: 30
+            });
+            await user.save();
+        }
+
+        console.log(`💰 Currency fetched for ${userPhone}: Balance=${user.balance}, Chips=${user.chips}, Limit=${user.limit}`);
+
+        res.json({
+            success: true,
+            balance: user.balance || 0,
+            chips: user.chips || 0,
+            limit: user.limit === 'unlimited' ? 'unlimited' : (user.limit || 30),
+            phoneNumber: userPhone,
+            whatsappJid: userJid,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error fetching user currency:', error);
+        res.json({ success: false, error: 'Failed to fetch user data' });
+    }
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log('🌐 Web server running on port ' + PORT);
     if (process.env.NODE_ENV === 'production') {
-        console.log('📱 QR Code available at your Railway app URL');
+        console.log('📱 Dashboard available at your Railway app URL');
     } else {
-        console.log('📱 QR Code available at: http://localhost:' + PORT);
+        console.log('📱 Dashboard available at: http://localhost:' + PORT);
     }
 });
 
-module.exports = { updateQRCode, expireQRCode, clearQRCode };
+
+
+module.exports = { updateQRCode, expireQRCode, clearQRCode, initializeAuthSystem };
