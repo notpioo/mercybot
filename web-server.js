@@ -2,6 +2,7 @@ const express = require('express');
 const { createServer } = require('http');
 const { setupAuthRoutes, initializeAuthSystem: initAuth } = require('./auth-system');
 const { setupDashboardRoutes } = require('./dashboard-system');
+const pinConfig = require('./config/pin');
 
 const app = express();
 const server = createServer(app);
@@ -28,12 +29,129 @@ app.use(session({
     }
 }));
 
-// Main QR Code page (owner-only access)
+// Main landing page (public)
 app.get('/', (req, res) => {
+    // Check if user is already logged in
+    if (req.session.user) {
+        return res.redirect('/home');
+    }
     const html = `<!DOCTYPE html>
 <html>
 <head>
-    <title>WhatsApp Bot - Owner Access</title>
+    <title>NoMercy - Advanced WhatsApp Bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+        .container {
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo { font-size: 3rem; margin-bottom: 20px; }
+        h1 { color: #ffffff; margin-bottom: 10px; font-size: 1.8rem; font-weight: 700; }
+        .subtitle { color: #cccccc; margin-bottom: 30px; }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+        .btn-secret {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            color: white;
+        }
+        .btn-secret:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(75, 85, 99, 0.3);
+        }
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            background: rgba(40, 40, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .feature { margin: 10px 0; color: #e5e5e5; }
+        .feature::before { content: "✓"; color: #10b981; margin-right: 10px; font-weight: bold; }
+        .info {
+            color: #cccccc;
+            font-size: 14px;
+            margin-top: 20px;
+            line-height: 1.5;
+            background: rgba(40, 40, 40, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⚡</div>
+        <h1>NoMercy</h1>
+        <p class="subtitle">Advanced WhatsApp Bot Management System</p>
+
+        <div class="features">
+            <div class="feature">Anti View Once Protection</div>
+            <div class="feature">Advanced Group Management</div>
+            <div class="feature">Premium User System</div>
+            <div class="feature">Real-time Analytics</div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="window.location.href='/login'">
+            Enter Dashboard
+        </button>
+        
+        <button class="btn btn-secret" onclick="window.location.href='/owner-access'">
+            Owner Access
+        </button>
+        
+        <div class="info">
+            <p><strong>Bot Status:</strong> Online</p>
+            <p>For owner access, use the "Owner Access" button</p>
+        </div>
+    </div>
+</body>
+</html>`;
+    res.send(html);
+});
+
+// Owner access page with PIN authentication
+app.get('/owner-access', (req, res) => {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Owner Access - WhatsApp Bot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { 
@@ -133,21 +251,33 @@ app.get('/', (req, res) => {
             font-size: 12px;
         }
         .logout-btn:hover { background: #c82333; }
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .back-btn:hover { background: #5a6268; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🤖 WhatsApp Bot</h1>
+        <h1>🔐 Owner Access</h1>
         
-        <div id="auth-section">
+        <div id="pin-section">
             <div class="auth-form">
-                <input type="text" id="phone" placeholder="Enter your phone number (+6285709557572)" />
-                <button onclick="authenticate()">Access QR Code</button>
+                <input type="password" id="pin" placeholder="Masukkan PIN Owner" maxlength="20" />
+                <button onclick="authenticatePin()">Masuk</button>
             </div>
-            <div id="auth-error" class="error" style="display: none;"></div>
+            <div id="pin-error" class="error" style="display: none;"></div>
+            <button class="back-btn" onclick="window.location.href='/'">← Kembali</button>
             <div class="info">
-                <p><strong>Owner Access Only</strong></p>
-                <p>Enter your registered phone number to access the QR code</p>
+                <p><strong>Akses Khusus Owner</strong></p>
+                <p>Masukkan PIN untuk mengakses QR code WhatsApp</p>
             </div>
         </div>
 
@@ -159,48 +289,80 @@ app.get('/', (req, res) => {
             <div id="status" class="status waiting">Waiting for QR code...</div>
             <div id="qr-container"></div>
             <button class="refresh-btn" onclick="checkQR()">Refresh QR Code</button>
+            <button class="btn btn-secondary" onclick="showChangePinForm()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 12px;">Ubah PIN</button>
             <p><small>Last updated: <span id="timestamp">-</span></small></p>
+            
+            <!-- Change PIN Form (hidden by default) -->
+            <div id="change-pin-form" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h4>Ubah PIN Owner</h4>
+                <input type="password" id="current-pin" placeholder="PIN saat ini" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" />
+                <input type="password" id="new-pin" placeholder="PIN baru" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" />
+                <div style="margin-top: 10px;">
+                    <button onclick="updatePin()" style="background: #25d366; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin: 2px;">Update</button>
+                    <button onclick="hideChangePinForm()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin: 2px;">Batal</button>
+                </div>
+                <div id="pin-update-message" style="margin-top: 10px; font-size: 12px;"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        const ownerNumbers = ['+6285709557572', '+6283895472636', '+628973062538'];
+        let qrInterval;
         
-        function authenticate() {
-            const phone = document.getElementById('phone').value.trim();
-            const errorDiv = document.getElementById('auth-error');
+        function authenticatePin() {
+            const pin = document.getElementById('pin').value.trim();
+            const errorDiv = document.getElementById('pin-error');
             
-            if (!phone) {
-                showError('Please enter your phone number');
+            if (!pin) {
+                showError('Silakan masukkan PIN');
                 return;
             }
             
-            if (ownerNumbers.includes(phone)) {
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('qr-section').style.display = 'block';
-                checkQR();
-                // Set refresh interval
-                setInterval(checkQR, 5000);
-            } else {
-                showError('Access denied. Only bot owners can access this page.');
-            }
+            // Verify PIN with backend
+            fetch('/verify-pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pin: pin })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('pin-section').style.display = 'none';
+                    document.getElementById('qr-section').style.display = 'block';
+                    checkQR();
+                    // Set refresh interval
+                    qrInterval = setInterval(checkQR, 5000);
+                } else {
+                    showError('PIN salah! Akses ditolak.');
+                    document.getElementById('pin').value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Terjadi kesalahan. Silakan coba lagi.');
+            });
         }
         
         function logout() {
-            document.getElementById('auth-section').style.display = 'block';
+            if (qrInterval) {
+                clearInterval(qrInterval);
+            }
+            document.getElementById('pin-section').style.display = 'block';
             document.getElementById('qr-section').style.display = 'none';
-            document.getElementById('phone').value = '';
+            document.getElementById('pin').value = '';
             hideError();
         }
         
         function showError(message) {
-            const errorDiv = document.getElementById('auth-error');
+            const errorDiv = document.getElementById('pin-error');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
         }
         
         function hideError() {
-            document.getElementById('auth-error').style.display = 'none';
+            document.getElementById('pin-error').style.display = 'none';
         }
         
         function checkQR() {
@@ -237,10 +399,57 @@ app.get('/', (req, res) => {
                 });
         }
         
+        function showChangePinForm() {
+            document.getElementById('change-pin-form').style.display = 'block';
+        }
+        
+        function hideChangePinForm() {
+            document.getElementById('change-pin-form').style.display = 'none';
+            document.getElementById('current-pin').value = '';
+            document.getElementById('new-pin').value = '';
+            document.getElementById('pin-update-message').textContent = '';
+        }
+        
+        function updatePin() {
+            const currentPin = document.getElementById('current-pin').value.trim();
+            const newPin = document.getElementById('new-pin').value.trim();
+            const messageDiv = document.getElementById('pin-update-message');
+            
+            if (!currentPin || !newPin) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Silakan isi semua field';
+                return;
+            }
+            
+            fetch('/update-pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ currentPin: currentPin, newPin: newPin })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'PIN berhasil diubah!';
+                    setTimeout(hideChangePinForm, 2000);
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.message || 'Gagal mengubah PIN';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            });
+        }
+        
         // Allow Enter key to authenticate
-        document.getElementById('phone').addEventListener('keypress', function(e) {
+        document.getElementById('pin').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                authenticate();
+                authenticatePin();
             }
         });
     </script>
@@ -277,6 +486,56 @@ app.get('/qr-data', (req, res) => {
         qr: currentQRCode,
         message: 'Scan this QR code with WhatsApp'
     });
+});
+
+// PIN verification endpoint
+app.post('/verify-pin', (req, res) => {
+    try {
+        const { pin } = req.body;
+        
+        if (!pin) {
+            return res.json({ success: false, message: 'PIN is required' });
+        }
+        
+        const isValid = pinConfig.verifyPin(pin);
+        
+        if (isValid) {
+            console.log('🔐 Successful PIN authentication');
+            res.json({ success: true, message: 'PIN valid' });
+        } else {
+            console.log('❌ Failed PIN authentication attempt');
+            res.json({ success: false, message: 'Invalid PIN' });
+        }
+    } catch (error) {
+        console.error('Error verifying PIN:', error);
+        res.json({ success: false, message: 'Server error' });
+    }
+});
+
+// PIN update endpoint (for owner to change PIN)
+app.post('/update-pin', (req, res) => {
+    try {
+        const { currentPin, newPin } = req.body;
+        
+        if (!currentPin || !newPin) {
+            return res.json({ success: false, message: 'Current PIN and new PIN are required' });
+        }
+        
+        if (!pinConfig.verifyPin(currentPin)) {
+            return res.json({ success: false, message: 'Current PIN is incorrect' });
+        }
+        
+        if (newPin.length < 3) {
+            return res.json({ success: false, message: 'New PIN must be at least 3 characters' });
+        }
+        
+        pinConfig.updatePin(newPin);
+        console.log('🔐 PIN updated by owner');
+        res.json({ success: true, message: 'PIN updated successfully' });
+    } catch (error) {
+        console.error('Error updating PIN:', error);
+        res.json({ success: false, message: 'Server error' });
+    }
 });
 
 // Status endpoint
@@ -444,6 +703,17 @@ function getCurrentQR() {
 // Initialize socket reference for auth system
 let whatsappSocket = null;
 
+// Initialize daily login system
+async function initializeDailyLogin() {
+    try {
+        const { initializeDefaultRewards } = require('./lib/dailyLoginModel');
+        await initializeDefaultRewards();
+        console.log('🗓️ Daily login system initialized');
+    } catch (error) {
+        console.error('❌ Failed to initialize daily login:', error);
+    }
+}
+
 // Set up authentication routes (without socket initially)
 setupAuthRoutes(app, null);
 
@@ -467,11 +737,42 @@ app.get('/api/user-currency', async (req, res) => {
         }
 
         const { getUser, User } = require('./lib/database');
-        const userPhone = req.session.user.phone;
-        const userJid = userPhone + '@s.whatsapp.net';
+        let userPhone = req.session.user.phone;
         
-        // Force refresh from database to get latest data
-        let user = await User.findOne({ jid: userJid });
+        // Format phone number properly
+        if (!userPhone.startsWith('+')) {
+            if (userPhone.startsWith('62')) {
+                userPhone = '+' + userPhone;
+            } else if (userPhone.startsWith('8')) {
+                userPhone = '+62' + userPhone;
+            } else {
+                userPhone = '+' + userPhone;
+            }
+        }
+        
+        // Create WhatsApp JID - remove + and add @s.whatsapp.net
+        const phoneForJid = userPhone.replace('+', '');
+        const userJid = phoneForJid + '@s.whatsapp.net';
+        
+        console.log(`🔍 Looking for user: Phone=${userPhone}, JID=${userJid}`);
+        
+        // Try multiple JID formats to find existing user
+        let user = null;
+        
+        const possibleJids = [
+            userJid, // Current format: 6285709557572@s.whatsapp.net
+            userPhone.replace('+62', '62') + '@s.whatsapp.net', // Alternative format
+            userPhone, // Raw phone format: +6285709557572
+            userPhone + '@s.whatsapp.net' // With + sign: +6285709557572@s.whatsapp.net
+        ];
+        
+        for (const jid of possibleJids) {
+            user = await User.findOne({ jid: jid });
+            if (user) {
+                console.log(`✅ Found user with JID: ${jid} - Balance: ${user.balance}, Status: ${user.status}`);
+                break;
+            }
+        }
 
         if (!user) {
             // Create new user if doesn't exist
@@ -480,20 +781,28 @@ app.get('/api/user-currency', async (req, res) => {
                 name: userPhone,
                 balance: 0,
                 chips: 0,
-                limit: 30
+                limit: 30,
+                status: 'basic',
+                warnings: 0,
+                lastLimit: new Date(),
+                memberSince: new Date()
             });
             await user.save();
+            console.log(`👤 Created new user: ${userJid}`);
         }
 
-        console.log(`💰 Currency fetched for ${userPhone}: Balance=${user.balance}, Chips=${user.chips}, Limit=${user.limit}`);
+        console.log(`💰 Currency fetched for ${userPhone}: Balance=${user.balance}, Chips=${user.chips}, Limit=${user.limit}, Status=${user.status}`);
 
         res.json({
             success: true,
             balance: user.balance || 0,
             chips: user.chips || 0,
             limit: user.limit === 'unlimited' ? 'unlimited' : (user.limit || 30),
+            status: user.status || 'basic',
+            warnings: user.warnings || 0,
             phoneNumber: userPhone,
             whatsappJid: userJid,
+            memberSince: user.memberSince || new Date(),
             timestamp: new Date().toISOString()
         });
     } catch (error) {
@@ -502,15 +811,23 @@ app.get('/api/user-currency', async (req, res) => {
     }
 });
 
+// Initialize daily login after server start
+async function initializeServer() {
+    await initializeDailyLogin();
+}
+
 // Start server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', async () => {
     console.log('🌐 Web server running on port ' + PORT);
     if (process.env.NODE_ENV === 'production') {
         console.log('📱 Dashboard available at your Railway app URL');
     } else {
         console.log('📱 Dashboard available at: http://localhost:' + PORT);
     }
+    
+    // Initialize additional systems
+    await initializeServer();
 });
 
 

@@ -84,69 +84,77 @@ function setupAuthRoutes(app, sock) {
     // Landing page
     app.get('/', (req, res) => {
         if (req.session.user) {
-            return res.redirect('/dashboard');
+            return res.redirect('/home');
         }
 
         res.send(`
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WhatsApp Bot - Welcome</title>
+    <title>NoMercy - Welcome</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #ffffff;
         }
         .container {
-            background: white;
+            background: rgba(30, 30, 30, 0.95);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             text-align: center;
             max-width: 400px;
             width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .logo {
             font-size: 3em;
             margin-bottom: 20px;
         }
         h1 {
-            color: #333;
+            color: #ffffff;
             margin-bottom: 10px;
             font-size: 28px;
+            font-weight: 700;
         }
         .subtitle {
-            color: #666;
+            color: #cccccc;
             margin-bottom: 30px;
             font-size: 16px;
         }
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 50px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
         }
         .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
         .features {
             margin-top: 30px;
             text-align: left;
             font-size: 14px;
-            color: #666;
+            color: #e5e5e5;
+            background: rgba(40, 40, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .feature {
             margin: 8px 0;
@@ -163,17 +171,17 @@ function setupAuthRoutes(app, sock) {
 </head>
 <body>
     <div class="container">
-        <div class="logo">🤖</div>
-        <h1>WhatsApp Bot</h1>
-        <p class="subtitle">Advanced WhatsApp Management System</p>
+        <div class="logo">⚡</div>
+        <h1>NoMercy</h1>
+        <p class="subtitle">Advanced WhatsApp Bot Management System</p>
 
-        <a href="/login" class="btn">Masuk ke Dashboard</a>
+        <a href="/login" class="btn">Enter Dashboard</a>
 
         <div class="features">
             <div class="feature">Anti View-Once Protection</div>
-            <div class="feature">Group Management Tools</div>
-            <div class="feature">User Permission System</div>
-            <div class="feature">Automated Moderation</div>
+            <div class="feature">Advanced Group Management</div>
+            <div class="feature">Premium User System</div>
+            <div class="feature">Real-time Analytics</div>
         </div>
     </div>
 </body>
@@ -184,107 +192,120 @@ function setupAuthRoutes(app, sock) {
     // Login page
     app.get('/login', (req, res) => {
         if (req.session.user) {
-            return res.redirect('/dashboard');
+            return res.redirect('/home');
         }
 
         res.send(`
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login - WhatsApp Bot</title>
+    <title>Login - NoMercy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #ffffff;
         }
         .container {
-            background: white;
+            background: rgba(30, 30, 30, 0.95);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             max-width: 400px;
             width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
         .logo { font-size: 2.5em; margin-bottom: 15px; }
-        h1 { color: #333; margin-bottom: 5px; }
-        .subtitle { color: #666; font-size: 14px; }
+        h1 { color: #ffffff; margin-bottom: 5px; font-weight: 700; }
+        .subtitle { color: #cccccc; font-size: 14px; }
         .form-group {
             margin-bottom: 20px;
         }
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #ffffff;
             font-weight: 500;
         }
         input[type="text"] {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: rgba(40, 40, 40, 0.8);
+            color: #ffffff;
         }
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #6366f1;
+            background: rgba(50, 50, 50, 0.9);
+        }
+        input[type="text"]::placeholder {
+            color: #888888;
         }
         .btn {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
             padding: 15px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
         }
         .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
         .help-text {
             margin-top: 15px;
             font-size: 13px;
-            color: #666;
+            color: #cccccc;
             text-align: center;
         }
         .error {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 15px;
             text-align: center;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
         .back-link {
             text-align: center;
             margin-top: 20px;
         }
         .back-link a {
-            color: #667eea;
+            color: #6366f1;
             text-decoration: none;
             font-size: 14px;
+        }
+        .back-link a:hover {
+            color: #8b5cf6;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🔐</div>
-            <h1>Login</h1>
-            <p class="subtitle">Masukkan nomor WhatsApp Anda</p>
+            <div class="logo">⚡</div>
+            <h1>NoMercy Login</h1>
+            <p class="subtitle">Enter your WhatsApp number</p>
         </div>
 
         <form id="loginForm">
@@ -354,40 +375,44 @@ function setupAuthRoutes(app, sock) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Verifikasi - WhatsApp Bot</title>
+    <title>Verification - NoMercy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #ffffff;
         }
         .container {
-            background: white;
+            background: rgba(30, 30, 30, 0.95);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             max-width: 400px;
             width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
         .logo { font-size: 2.5em; margin-bottom: 15px; }
-        h1 { color: #333; margin-bottom: 5px; }
-        .subtitle { color: #666; font-size: 14px; }
+        h1 { color: #ffffff; margin-bottom: 5px; font-weight: 700; }
+        .subtitle { color: #cccccc; font-size: 14px; }
         .phone-info {
-            background: #f8f9fa;
+            background: rgba(40, 40, 40, 0.8);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
             font-weight: 500;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .form-group {
             margin-bottom: 20px;
@@ -395,64 +420,77 @@ function setupAuthRoutes(app, sock) {
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #ffffff;
             font-weight: 500;
         }
         input[type="text"] {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             font-size: 18px;
             text-align: center;
             letter-spacing: 2px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: rgba(40, 40, 40, 0.8);
+            color: #ffffff;
         }
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #6366f1;
+            background: rgba(50, 50, 50, 0.9);
+        }
+        input[type="text"]::placeholder {
+            color: #888888;
         }
         .btn {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
             padding: 15px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
         }
         .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
         .resend-link {
             text-align: center;
             margin-top: 15px;
         }
         .resend-link a {
-            color: #667eea;
+            color: #6366f1;
             text-decoration: none;
             font-size: 14px;
+        }
+        .resend-link a:hover {
+            color: #8b5cf6;
         }
         .back-link {
             text-align: center;
             margin-top: 20px;
         }
         .back-link a {
-            color: #999;
+            color: #999999;
             text-decoration: none;
             font-size: 14px;
+        }
+        .back-link a:hover {
+            color: #cccccc;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">📱</div>
-            <h1>Verifikasi</h1>
-            <p class="subtitle">Masukkan kode yang dikirim ke WhatsApp</p>
+            <div class="logo">⚡</div>
+            <h1>NoMercy Verification</h1>
+            <p class="subtitle">Enter the code sent to your WhatsApp</p>
         </div>
 
         <div class="phone-info">
@@ -499,7 +537,7 @@ function setupAuthRoutes(app, sock) {
                 const result = await response.json();
 
                 if (result.success) {
-                    window.location.href = '/dashboard';
+                    window.location.href = '/home';
                 } else {
                     alert(result.message || 'Kode verifikasi salah');
                     btn.textContent = 'Verifikasi & Masuk';

@@ -155,6 +155,19 @@ Changelog:
 - July 06, 2025. Implemented secure owner-only QR code access system for deployment environments
 - July 06, 2025. Created authentication-protected web interface for QR code scanning
 - July 06, 2025. Fixed deployment QR code visibility issue with owner verification system
+- July 06, 2025. Implemented responsive navigation system with top navigation for desktop and bottom navigation for mobile
+- July 06, 2025. Created new page structure: Home, Squad, Games, and Profile with elegant dark theme
+- July 06, 2025. Rebranded from "WhatsApp Bot" to "NoMercy" with lightning bolt logo (⚡)
+- July 06, 2025. Added currency display in top navigation showing balance and chips
+- July 06, 2025. Fixed currency data synchronization between database and dashboard display
+- July 06, 2025. Updated all login flows to redirect to new /home page instead of /dashboard
+- July 06, 2025. Redesigned login and welcome pages with NoMercy dark elegant theme
+- July 06, 2025. Fixed verification page theme to match NoMercy dark elegant design
+- July 06, 2025. Corrected redirect after successful verification to go to /home instead of /dashboard
+- July 06, 2025. Implemented mobile top navigation showing brand name and currency for screens below desktop size
+- July 06, 2025. Fixed routing conflict between web-server.js and dashboard-system.js landing pages
+- July 06, 2025. Updated all landing pages to use consistent NoMercy dark theme branding
+- July 06, 2025. Resolved duplicate route handlers to prevent routing conflicts
 ```
 
 ## User Preferences

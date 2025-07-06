@@ -2,16 +2,16 @@ const config = require('../config/config');
 
 async function execute(context) {
     const { sock, remoteJid, senderName } = context;
-    
+
     try {
         const menuText = createMenuText(senderName);
-        
+
         await sock.sendMessage(remoteJid, {
             text: menuText
         });
-        
+
         console.log('📋 Menu sent successfully');
-        
+
     } catch (error) {
         console.error('❌ Failed to send menu:', error);
         await sock.sendMessage(remoteJid, {
@@ -23,7 +23,7 @@ async function execute(context) {
 function createMenuText(userName) {
     const prefixes = config.prefixes.join(' | ');
     const owners = config.owners.join(', ');
-    
+
     return `╭─「 ${config.botName} 」
 │ 👋 Hello ${userName}!
 │ 🤖 I'm your WhatsApp assistant
