@@ -28,8 +28,236 @@ app.use(session({
     }
 }));
 
-// QR Code endpoint
-app.get('/qr', (req, res) => {
+// Main QR Code page (owner-only access)
+app.get('/', (req, res) => {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Bot - Owner Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 30px; }
+        .auth-form {
+            margin: 20px 0;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background: #25d366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .auth-form button:hover {
+            background: #128c7e;
+        }
+        .error { 
+            color: #e74c3c; 
+            margin: 10px 0; 
+            padding: 10px;
+            background: #ffeaea;
+            border-radius: 5px;
+        }
+        .info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        #qr-section {
+            display: none;
+        }
+        #qr-code { 
+            max-width: 100%; 
+            height: auto; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .status { 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            font-weight: bold;
+        }
+        .waiting { background: #fff3cd; color: #856404; }
+        .ready { background: #d4edda; color: #155724; }
+        .expired { background: #f8d7da; color: #721c24; }
+        .connected { background: #cce5ff; color: #004085; }
+        .refresh-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 14px;
+        }
+        .refresh-btn:hover { background: #0056b3; }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 12px;
+        }
+        .logout-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 WhatsApp Bot</h1>
+        
+        <div id="auth-section">
+            <div class="auth-form">
+                <input type="text" id="phone" placeholder="Enter your phone number (+6285709557572)" />
+                <button onclick="authenticate()">Access QR Code</button>
+            </div>
+            <div id="auth-error" class="error" style="display: none;"></div>
+            <div class="info">
+                <p><strong>Owner Access Only</strong></p>
+                <p>Enter your registered phone number to access the QR code</p>
+            </div>
+        </div>
+
+        <div id="qr-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>QR Code Login</h3>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div id="status" class="status waiting">Waiting for QR code...</div>
+            <div id="qr-container"></div>
+            <button class="refresh-btn" onclick="checkQR()">Refresh QR Code</button>
+            <p><small>Last updated: <span id="timestamp">-</span></small></p>
+        </div>
+    </div>
+
+    <script>
+        const ownerNumbers = ['+6285709557572', '+6283895472636', '+628973062538'];
+        
+        function authenticate() {
+            const phone = document.getElementById('phone').value.trim();
+            const errorDiv = document.getElementById('auth-error');
+            
+            if (!phone) {
+                showError('Please enter your phone number');
+                return;
+            }
+            
+            if (ownerNumbers.includes(phone)) {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('qr-section').style.display = 'block';
+                checkQR();
+                // Set refresh interval
+                setInterval(checkQR, 5000);
+            } else {
+                showError('Access denied. Only bot owners can access this page.');
+            }
+        }
+        
+        function logout() {
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('qr-section').style.display = 'none';
+            document.getElementById('phone').value = '';
+            hideError();
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('auth-error').style.display = 'none';
+        }
+        
+        function checkQR() {
+            fetch('/qr-data')
+                .then(response => response.json())
+                .then(data => {
+                    const status = document.getElementById('status');
+                    const qrContainer = document.getElementById('qr-container');
+                    const timestamp = document.getElementById('timestamp');
+
+                    timestamp.textContent = new Date().toLocaleString();
+
+                    if (data.status === 'ready') {
+                        status.textContent = data.message;
+                        status.className = 'status ready';
+                        qrContainer.innerHTML = '<img id="qr-code" src="data:image/png;base64,' + data.qr + '" alt="QR Code" />';
+                    } else if (data.status === 'expired') {
+                        status.textContent = data.message;
+                        status.className = 'status expired';
+                        qrContainer.innerHTML = '<p>QR code has expired. Please restart the bot.</p>';
+                    } else if (data.status === 'connected') {
+                        status.textContent = 'Bot is connected to WhatsApp!';
+                        status.className = 'status connected';
+                        qrContainer.innerHTML = '<p>✅ Successfully connected to WhatsApp</p>';
+                    } else {
+                        status.textContent = data.message;
+                        status.className = 'status waiting';
+                        qrContainer.innerHTML = '<p>Waiting for QR code...</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('status').textContent = 'Error loading QR code';
+                });
+        }
+        
+        // Allow Enter key to authenticate
+        document.getElementById('phone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                authenticate();
+            }
+        });
+    </script>
+</body>
+</html>`;
+    res.send(html);
+});
+
+// QR Code data endpoint (for authenticated access)
+app.get('/qr-data', (req, res) => {
+    if (botConnected) {
+        return res.json({
+            status: 'connected',
+            message: 'Bot is already connected to WhatsApp!'
+        });
+    }
+    
     if (!currentQRCode) {
         return res.json({ 
             status: 'waiting',
