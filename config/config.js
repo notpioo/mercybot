@@ -1,3 +1,8 @@
+// Import configurations
+const database = require('./database');
+const messages = require('./messages');
+const pin = require('./pin');
+
 module.exports = {
     // Bot Configuration
     botName: "WhatsApp Bot",
@@ -5,17 +10,22 @@ module.exports = {
     prefixes: [".", "!", "/"],
 
     // MongoDB Configuration
-    mongodb: {
-        uri:
-            process.env.MONGODB_URI ||
-            "mongodb+srv://pioo:Avionika27@cluster0.feboa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-        options: {
-            // Remove deprecated options
-        },
-    },
+    mongodb: database.mongodb,
 
     // Session Configuration
     sessionPath: "./sessions",
+
+    // Sticker Configuration
+    sticker: {
+        packName: "Seana Bot",
+        authorName: "pioo",
+        quality: 80,
+        maxSize: 10 * 1024 * 1024, // 10MB
+        dimensions: {
+            width: 512,
+            height: 512
+        }
+    },
 
     // Bot Settings
     settings: {
@@ -254,6 +264,36 @@ module.exports = {
         resetwarn: {
             aliases: ["resetwarn"],
             description: "Reset user warnings or all warnings",
+            permission: "admin",
+            useLimit: false,
+        },
+        del: {
+            aliases: ["del", "delete"],
+            description: "Delete replied message",
+            permission: "admin",
+            useLimit: false,
+        },
+        opengc: {
+            aliases: ["opengc", "open"],
+            description: "Open group chat",
+            permission: "admin",
+            useLimit: false,
+        },
+        closegc: {
+            aliases: ["closegc", "close"],
+            description: "Close group chat",
+            permission: "admin",
+            useLimit: false,
+        },
+        setppgrup: {
+            aliases: ["setppgrup", "setgrouppp"],
+            description: "Set group profile picture",
+            permission: "admin",
+            useLimit: false,
+        },
+        setpp: {
+            aliases: ["setpp", "setbotpp"],
+            description: "Set bot profile picture",
             permission: "owner",
             useLimit: false,
         },
@@ -281,58 +321,20 @@ module.exports = {
             permission: "admin",
             useLimit: false,
         },
+        stiker: {
+            aliases: ["stiker", "sticker", "s"],
+            description: "Convert image/video to sticker",
+            permission: "basic",
+            useLimit: true,
+        },
     },
 
     // Messages
-    messages: {
-        greeting: "👋 Halo! Saya adalah bot asisten WhatsApp Anda.",
-        ownerContact: "👤 Berikut adalah kontak owner saya:",
-        commandNotFound:
-            "❌ Command tidak ditemukan. Ketik .menu untuk melihat command yang tersedia.",
-        error: "❌ Terjadi kesalahan saat memproses permintaan Anda.",
-        processing: "⏳ Memproses permintaan Anda...",
-        success: "✅ Operasi berhasil diselesaikan!",
-        invalidFormat: "❌ Format tidak valid. Silakan periksa command Anda.",
-        premiumRequired: "💎 Fitur ini hanya untuk pengguna premium.",
-        groupOnly: "👥 Command ini hanya dapat digunakan dalam grup.",
-        privateOnly: "🔒 Command ini hanya dapat digunakan dalam chat pribadi.",
-        noPermission: "❌ Anda tidak memiliki izin untuk menggunakan command ini.",
-        userNotFound: "❌ Pengguna tidak ditemukan.",
-        alreadyExists: "❌ Sudah ada.",
-        notFound: "❌ Tidak ditemukan.",
-        limitExceeded: "⚠️ Anda telah melebihi batas harian.",
-        serverError: "❌ Server error. Silakan coba lagi nanti.",
-        underMaintenance: "🔧 Bot sedang dalam pemeliharaan. Silakan coba lagi nanti.",
-        bannedUser: "🚫 Anda dilarang menggunakan bot ini.",
-        cooldown: "⏰ Silakan tunggu sebelum menggunakan command ini lagi.",
-        missingArguments: "❌ Argumen yang diperlukan tidak ada.",
-        invalidArguments: "❌ Argumen yang diberikan tidak valid.",
-        userBanned: "🚫 Pengguna telah dilarang.",
-        userUnbanned: "✅ Pengguna telah dibuka larangannya.",
-        userPromoted: "⬆️ Pengguna telah dipromosikan menjadi admin.",
-        userDemoted: "⬇️ Pengguna telah diturunkan menjadi member.",
-        userKicked: "👢 Pengguna telah dikeluarkan dari grup.",
-        userAdded: "➕ Pengguna telah ditambahkan ke grup.",
-        groupClosed: "🔒 Grup telah ditutup.",
-        groupOpened: "🔓 Grup telah dibuka.",
-        welcomeEnabled: "👋 Pesan selamat datang diaktifkan.",
-        welcomeDisabled: "👋 Pesan selamat datang dinonaktifkan.",
-        antilinkEnabled: "🔗 Antilink diaktifkan.",
-        antilinkDisabled: "🔗 Antilink dinonaktifkan.",
-        antibadwordEnabled: "🚫 Anti-badword diaktifkan.",
-        antibadwordDisabled: "🚫 Anti-badword dinonaktifkan.",
-        warningIssued: "⚠️ Peringatan diberikan!",
-        warningRemoved: "✅ Peringatan dihapus.",
-        allWarningsCleared: "🧹 Semua peringatan dibersihkan.",
-        maxWarningsReached: "🚨 Peringatan maksimum tercapai! Pengguna akan dikeluarkan.",
-        balanceAdded: "💰 Saldo berhasil ditambahkan.",
-        balanceRemoved: "💸 Saldo berhasil dikurangi.",
-        chipsAdded: "🎰 Chip berhasil ditambahkan.",
-        chipsRemoved: "🎰 Chip berhasil dikurangi.",
-        limitAdded: "📈 Limit berhasil ditambahkan.",
-        limitRemoved: "📉 Limit berhasil dikurangi.",
-        premiumAdded: "💎 Status premium ditambahkan.",
-        premiumRemoved: "💎 Status premium dihapus.",
-        limitReset: "🔄 Limit berhasil direset."
-    },
+    messages: messages,
+
+    // PIN Configuration
+    pin: pin,
+
+    // Database Configuration
+    database: database,
 };

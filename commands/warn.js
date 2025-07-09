@@ -74,8 +74,10 @@ async function execute(context) {
                 { $set: { warnings: newWarnings } }
             );
 
-            // Check if warnings exceed max
-            const maxWarnings = config.userSystem.maxWarnings || 3;
+            // Get group settings for maxWarnings
+            const { getGroup } = require('../lib/database');
+            const group = await getGroup(remoteJid);
+            const maxWarnings = group?.settings?.maxWarnings || 3;
             if (newWarnings >= maxWarnings) {
                 try {
                     // Try to remove user from group
@@ -106,19 +108,38 @@ async function execute(context) {
             }
             
         } else if (commandName === 'maxwarn') {
-            const newMaxWarn = parseInt(args[0]);
-            if (!newMaxWarn || newMaxWarn < 1) {
+            if (args.length < 1) {
+                // Show current maxwarn setting
+                const { getGroup } = require('../lib/database');
+                const group = await getGroup(remoteJid);
+                const currentMaxWarnings = group?.settings?.maxWarnings || 3;
+                
                 await sock.sendMessage(remoteJid, {
-                    text: `❌ Usage: ${config.prefixes[0]}maxwarn <number>\nCurrent max warnings: ${config.userSystem.maxWarnings || 3}`
+                    text: `📊 Current max warnings for this group: ${currentMaxWarnings}\n\n` +
+                          `💡 Usage: ${config.prefixes[0]}maxwarn <number>\n` +
+                          `Range: 1-10 warnings`
                 });
                 return;
             }
-            
-            // Update config (note: this is runtime only, not persistent)
-            config.userSystem.maxWarnings = newMaxWarn;
-            
+
+            const newMaxWarnings = parseInt(args[0]);
+            if (isNaN(newMaxWarnings) || newMaxWarnings < 1 || newMaxWarnings > 10) {
+                await sock.sendMessage(remoteJid, {
+                    text: '❌ Max warnings must be between 1 and 10.'
+                });
+                return;
+            }
+
+            // Update group settings in database
+            const { Group } = require('../lib/database');
+            await Group.updateOne(
+                { jid: remoteJid },
+                { $set: { 'settings.maxWarnings': newMaxWarnings } },
+                { upsert: true }
+            );
+
             await sock.sendMessage(remoteJid, {
-                text: `✅ Maximum warnings set to ${newMaxWarn}`
+                text: `✅ Maximum warnings for this group set to: ${newMaxWarnings}`
             });
         }
 

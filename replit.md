@@ -168,6 +168,31 @@ Changelog:
 - July 06, 2025. Fixed routing conflict between web-server.js and dashboard-system.js landing pages
 - July 06, 2025. Updated all landing pages to use consistent NoMercy dark theme branding
 - July 06, 2025. Resolved duplicate route handlers to prevent routing conflicts
+- July 09, 2025. Successfully migrated project from Replit Agent to standard Replit environment
+- July 09, 2025. Verified all dependencies install correctly without vulnerabilities
+- July 09, 2025. Confirmed MongoDB connection and WhatsApp authentication working properly
+- July 09, 2025. Implemented comprehensive sticker creation command (.stiker)
+- July 09, 2025. Added support for image to sticker conversion using Sharp library
+- July 09, 2025. Added support for video to animated sticker conversion using FFmpeg
+- July 09, 2025. Command supports both direct image send with caption and reply to media messages
+- July 09, 2025. Fixed sticker command handler registration and downloadMediaMessage function usage
+- July 09, 2025. Added sticker pack name and author metadata to generated stickers (NoMercy Sticker Pack)
+- July 09, 2025. Reorganized configuration structure with separate config files for better maintainability
+- July 09, 2025. Created config/messages.js for centralized message management
+- July 09, 2025. Created config/database.js for database configuration and defaults
+- July 09, 2025. Enhanced sticker configuration with customizable pack name, author, quality, and dimensions
+- July 09, 2025. Added comprehensive view once message support to sticker command
+- July 09, 2025. Installed additional dependencies: node-webpmux, file-type, mime-types for better media handling
+- July 09, 2025. Enhanced sticker command with improved media extraction from viewOnceMessage and ephemeralMessage
+- July 09, 2025. Added detailed debug logging for troubleshooting view once message processing
+- July 09, 2025. Improved wa-sticker-formatter implementation with proper metadata embedding
+- July 09, 2025. Fixed getMessageText function to properly read captions from view once messages (viewOnceMessage and viewOnceMessageV2)
+- July 09, 2025. Bot now fully supports commands sent as captions in view once images/videos
+- July 09, 2025. View once sticker creation working properly with both reply method and direct caption method
+- July 09, 2025. Fixed maxwarn system to be per-group instead of global setting
+- July 09, 2025. Added maxWarnings field to group schema with default value of 3
+- July 09, 2025. Updated warn and maxwarn commands to use group-specific maxWarnings setting
+- July 09, 2025. Each group can now have different maxwarn values (1-10), stored in database
 ```
 
 ## User Preferences

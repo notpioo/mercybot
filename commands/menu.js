@@ -71,6 +71,10 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}demote @user/number - Remove admin
 │ ${config.prefixes[0]}tagall - Mention all members
 │ ${config.prefixes[0]}grouplink - Get group invite link
+│ ${config.prefixes[0]}del - Delete replied message
+│ ${config.prefixes[0]}opengc - Open group chat
+│ ${config.prefixes[0]}closegc - Close group chat
+│ ${config.prefixes[0]}setppgrup - Set group profile picture
 │ 
 │ 🚫 Anti-Badword System:
 │ ${config.prefixes[0]}antibadword on/off - Toggle filter
@@ -78,6 +82,9 @@ function createMenuText(userName) {
 │ 
 │ 📸 Anti-ViewOnce System:
 │ ${config.prefixes[0]}antivc on/off - Toggle view once detection
+│ 
+│ 🎨 Convert Commands:
+│ ${config.prefixes[0]}stiker - Convert image/video to sticker
 │ 
 │ 👥 User Commands:
 │ ${config.prefixes[0]}profile - Show your profile
@@ -88,6 +95,10 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}menu - Show this menu
 │ ${config.prefixes[0]}help - Show this menu
 │ ${config.prefixes[0]}commands - Show this menu
+│ 
+│ 
+│ 🤖 Owner Commands:
+│ ${config.prefixes[0]}setpp - Set bot profile picture
 │ 
 │ 🔧 Prefixes: ${prefixes}
 │ 👤 Owners: ${owners}

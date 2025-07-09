@@ -1,8 +1,9 @@
-modules = ["nodejs-20", "postgresql-16"]
+modules = ["nodejs-20"]
 run = "node index.js"
 
 [nix]
 channel = "stable-24_05"
+packages = ["ffmpeg"]
 
 [workflows]
 runButton = "Project"
