@@ -56,6 +56,7 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}delwarn @user amount
 │ ${config.prefixes[0]}resetwarn @user
 │ ${config.prefixes[0]}maxwarn number
+│ ${config.prefixes[0]}resetdaily @user - Reset daily login
 │ 
 │ 📋 List Commands:
 │ ${config.prefixes[0]}prem @user/number - Check premium
@@ -90,6 +91,8 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}profile - Show your profile
 │ ${config.prefixes[0]}profile @mention - Show someone's profile
 │ ${config.prefixes[0]}me - Show your profile
+│ ${config.prefixes[0]}dailylogin - Check daily login status
+│ ${config.prefixes[0]}dailylogin claim - Claim daily reward
 │ 
 │ 📖 Information:
 │ ${config.prefixes[0]}menu - Show this menu

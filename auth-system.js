@@ -31,15 +31,14 @@ function generateVerificationCode() {
 
 // Initialize auth system
 function initializeAuthSystem(sock) {
-    whatsappSocket = sock;
-    console.log('🔐 Authentication system initialized with WhatsApp socket');
-
-    // Store socket reference
-    if (sock) {
+    if (sock && sock.user) {
         whatsappSocket = sock;
+        console.log('🔐 Authentication system initialized with WhatsApp socket');
         console.log('✅ WhatsApp socket stored for authentication');
+        console.log('📞 Bot connected as:', sock.user.id);
     } else {
-        console.log('❌ No WhatsApp socket provided');
+        console.log('❌ Invalid WhatsApp socket provided or bot not connected');
+        whatsappSocket = null;
     }
 }
 
@@ -599,8 +598,9 @@ function setupAuthRoutes(app, sock) {
             });
 
             // Send verification code via WhatsApp
-            if (whatsappSocket && whatsappSocket.user) {
+            if (whatsappSocket && whatsappSocket.user && whatsappSocket.user.id) {
                 try {
+                    console.log('📤 Attempting to send verification code...');
                     const message = `🔐 *Kode Verifikasi Bot*\n\nKode verifikasi Anda: *${code}*\n\nMasukkan kode ini di halaman login.\n\n_Kode berlaku selama 5 menit_`;
 
                     await whatsappSocket.sendMessage(whatsappJid, {
@@ -616,11 +616,28 @@ function setupAuthRoutes(app, sock) {
                     });
                 } catch (sendError) {
                     console.error('❌ Failed to send WhatsApp message:', sendError);
-                    throw new Error('Failed to send verification code');
+                    
+                    // Still store the code for manual verification
+                    console.log(`⚠️ Code stored for manual verification: ${code}`);
+                    res.json({ 
+                        success: false, 
+                        message: `Gagal mengirim otomatis. Kode verifikasi Anda: ${code}. Masukkan kode ini di halaman verifikasi.`
+                    });
+                    return;
                 }
             } else {
-                console.log('❌ WhatsApp socket not available or not connected');
-                throw new Error('WhatsApp bot is not connected properly');
+                console.log('❌ WhatsApp socket status:');
+                console.log('- Socket exists:', !!whatsappSocket);
+                console.log('- User exists:', !!(whatsappSocket && whatsappSocket.user));
+                console.log('- User ID exists:', !!(whatsappSocket && whatsappSocket.user && whatsappSocket.user.id));
+                
+                // Still store the code for manual use
+                console.log(`⚠️ Code generated but cannot send automatically: ${code}`);
+                res.json({ 
+                    success: false, 
+                    message: `Bot belum terhubung. Kode verifikasi Anda: ${code}. Masukkan kode ini di halaman verifikasi.`
+                });
+                return;
             }
 
         } catch (error) {

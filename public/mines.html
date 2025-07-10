@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines - NoMercy Casino</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 60px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
+        }
+
+        .nav-currency {
+            display: flex;
+            gap: 20px;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .currency-icon {
+            font-size: 1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(139, 92, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: calc(100vh - 140px);
+            padding: 80px 20px 100px 20px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: fit-content;
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #e2e8f0;
+        }
+
+        .bet-input-group {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .bet-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .bet-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .bet-buttons {
+            display: flex;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .bet-btn {
+            background: rgba(139, 92, 246, 0.3);
+            border: 1px solid #8b5cf6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .bet-btn:hover {
+            background: #8b5cf6;
+        }
+
+        .grid-size-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .grid-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .grid-btn.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .mines-selector {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .mines-input-group {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 10px;
+        }
+
+        .mines-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            appearance: none;
+        }
+
+        .mines-btn {
+            background: rgba(139, 92, 246, 0.3);
+            border: 1px solid #8b5cf6;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .mines-btn:hover {
+            background: #8b5cf6;
+            transform: scale(1.05);
+        }
+
+        .mines-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mines-display {
+            text-align: center;
+            color: #8b5cf6;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .place-bet-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .place-bet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .place-bet-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: #cbd5e1;
+        }
+
+        .stat-value {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .grid-25 { grid-template-columns: repeat(5, 60px); }
+        .grid-36 { grid-template-columns: repeat(6, 55px); }
+        .grid-49 { grid-template-columns: repeat(7, 50px); }
+        .grid-64 { grid-template-columns: repeat(8, 45px); }
+
+        .tile {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .tile:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .tile.revealed {
+            cursor: not-allowed;
+        }
+
+        .tile.safe {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #10b981;
+            color: white;
+        }
+
+        .tile.mine {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .cashout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .cashout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .balance-display {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .game-status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-waiting {
+            color: #cbd5e1;
+        }
+
+        .status-playing {
+            color: #3b82f6;
+        }
+
+        .status-won {
+            color: #10b981;
+        }
+
+        .status-lost {
+            color: #ef4444;
+        }
+
+        .multiplier-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .current-multiplier {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 5px;
+        }
+
+        .multiplier-label {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .multiplier-data-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .multiplier-data-container h4 {
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .multiplier-data {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+        }
+
+        .multiplier-data::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .multiplier-data::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .multiplier-data::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 3px;
+        }
+
+        .multiplier-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            min-width: 70px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .multiplier-item.achieved {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .multiplier-item.current {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            transform: scale(1.05);
+        }
+
+        .multiplier-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 4px;
+        }
+
+        .multiplier-item.achieved .multiplier-value {
+            color: #10b981;
+        }
+
+        .multiplier-item.current .multiplier-value {
+            color: #8b5cf6;
+        }
+
+        .multiplier-tiles {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .multiplier-item.achieved .multiplier-tiles {
+            color: #a7f3d0;
+        }
+
+        .multiplier-item.current .multiplier-tiles {
+            color: #c4b5fd;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                height: 50px;
+            }
+            
+            .nav-container {
+                padding: 0 15px;
+            }
+            
+            .nav-center {
+                display: none;
+            }
+            
+            .nav-right {
+                display: none;
+            }
+            
+            .brand-text {
+                font-size: 1rem;
+            }
+            
+            .container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 70px 15px 120px 15px;
+                min-height: calc(100vh - 160px);
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .game-area {
+                order: 1;
+            }
+            
+            .grid-25 { grid-template-columns: repeat(5, 50px); }
+            .grid-36 { grid-template-columns: repeat(6, 45px); }
+            .grid-49 { grid-template-columns: repeat(7, 40px); }
+            .grid-64 { grid-template-columns: repeat(8, 35px); }
+        }
+
+        @media (min-width: 769px) {
+            .bottom-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/home" class="nav-brand">
+                    <span class="brand-icon">⚡</span>
+                    <span class="brand-text">NoMercy</span>
+                </a>
+            </div>
+            <div class="nav-center">
+                <div class="nav-currency">
+                    <span class="currency-item">
+                        <span class="currency-icon">💰</span>
+                        <span class="currency-value" id="navBalance">0</span>
+                    </span>
+                    <span class="currency-item">
+                        <span class="currency-icon">🎰</span>
+                        <span class="currency-value" id="navChips">0</span>
+                    </span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/profile" class="nav-btn">Profile</a>
+                <a href="/home" class="nav-btn">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="/home" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="/squad" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span class="nav-label">Squad</span>
+        </a>
+        <a href="/games" class="nav-item active">
+            <span class="nav-icon">🎮</span>
+            <span class="nav-label">Games</span>
+        </a>
+        <a href="/profile" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Profile</span>
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="balance-display">
+                    <div class="balance-amount" id="userChips">0</div>
+                    <div class="balance-label">🎰 Casino Chips</div>
+                </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="manual">Manual</button>
+                <button class="mode-btn" data-mode="auto">Auto</button>
+            </div>
+
+            <!-- Bet Amount -->
+            <div class="section">
+                <h3>Bet Amount</h3>
+                <div class="bet-input-group">
+                    <input type="number" class="bet-input" id="betAmount" placeholder="Amount" min="1">
+                    <div class="bet-buttons">
+                        <button class="bet-btn" data-action="half">½</button>
+                        <button class="bet-btn" data-action="double">2x</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Size -->
+            <div class="section">
+                <h3>Grid Size</h3>
+                <div class="grid-size-options">
+                    <button class="grid-btn active" data-size="25">25</button>
+                    <button class="grid-btn" data-size="36">36</button>
+                    <button class="grid-btn" data-size="49">49</button>
+                    <button class="grid-btn" data-size="64">64</button>
+                </div>
+            </div>
+
+            <!-- Number of Mines -->
+            <div class="section">
+                <h3>Number Of Mines</h3>
+                <div class="mines-selector">
+                    <div class="mines-input-group">
+                        <button class="mines-btn mines-down" id="minesDown">-</button>
+                        <input type="number" class="mines-input" id="minesCount" value="3" min="1" max="10" readonly>
+                        <button class="mines-btn mines-up" id="minesUp">+</button>
+                    </div>
+                    <div class="mines-display">
+                        <span id="minesDisplay">3 💣</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Place Bet Button -->
+            <button class="place-bet-btn" id="placeBetBtn">Place Bet</button>
+
+            <!-- Cashout Button (hidden initially) -->
+            <button class="cashout-btn" id="cashoutBtn" style="display: none;">Cash Out</button>
+
+            <!-- Game Stats -->
+            <div class="stats">
+                <div class="stat-row">
+                    <span class="stat-label">Current Bet:</span>
+                    <span class="stat-value" id="currentBet">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Mines:</span>
+                    <span class="stat-value" id="currentMines">3</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Safe Tiles:</span>
+                    <span class="stat-value" id="safeTiles">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Potential Win:</span>
+                    <span class="stat-value" id="potentialWin">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <!-- Game Status -->
+            <div class="game-status status-waiting" id="gameStatus">
+                Place your bet to start playing!
+            </div>
+
+            
+
+            <!-- Multiplier Data Display -->
+            <div class="multiplier-data-container">
+                <h4>Multiplier Progress</h4>
+                <div class="multiplier-data" id="multiplierData">
+                    <!-- Multiplier data will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Game Grid -->
+            <div class="grid-container grid-25" id="gameGrid">
+                <!-- Grid tiles will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MinesGame {
+            constructor() {
+                this.userChips = 0;
+                this.currentBet = 0;
+                this.gridSize = 25;
+                this.minesCount = 3;
+                this.gameActive = false;
+                this.gameStarted = false;
+                this.safeTilesFound = 0;
+                this.minePositions = [];
+                this.revealedTiles = [];
+                this.currentMultiplier = 1.0;
+                
+                this.initializeElements();
+                this.attachEventListeners();
+                this.fetchUserData();
+                this.generateGrid();
+            }
+
+            initializeElements() {
+                this.elements = {
+                    userChips: document.getElementById('userChips'),
+                    betAmount: document.getElementById('betAmount'),
+                    placeBetBtn: document.getElementById('placeBetBtn'),
+                    cashoutBtn: document.getElementById('cashoutBtn'),
+                    gameStatus: document.getElementById('gameStatus'),
+                    
+                    gameGrid: document.getElementById('gameGrid'),
+                    currentBet: document.getElementById('currentBet'),
+                    currentMines: document.getElementById('currentMines'),
+                    safeTiles: document.getElementById('safeTiles'),
+                    potentialWin: document.getElementById('potentialWin'),
+                    minesCount: document.getElementById('minesCount')
+                };
+            }
+
+            attachEventListeners() {
+                // Mode selector
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
+
+                // Bet buttons
+                document.querySelectorAll('.bet-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.dataset.action;
+                        const currentAmount = parseFloat(this.elements.betAmount.value) || 0;
+                        
+                        if (action === 'half') {
+                            this.elements.betAmount.value = Math.floor(currentAmount / 2);
+                        } else if (action === 'double') {
+                            this.elements.betAmount.value = currentAmount * 2;
+                        }
+                    });
+                });
+
+                // Grid size selector
+                document.querySelectorAll('.grid-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (this.gameStarted) return;
+                        
+                        document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        
+                        this.gridSize = parseInt(e.target.dataset.size);
+                        this.updateMinesCountOptions();
+                        this.generateGrid();
+                    });
+                });
+
+                // Mines count selector
+                this.elements.minesCount.addEventListener('input', (e) => {
+                    this.minesCount = parseInt(e.target.value);
+                    this.elements.currentMines.textContent = this.minesCount;
+                    this.updateMinesDisplay();
+                });
+
+                // Mines up/down buttons
+                document.getElementById('minesUp').addEventListener('click', () => {
+                    if (this.gameStarted) return;
+                    this.adjustMinesCount(1);
+                });
+
+                document.getElementById('minesDown').addEventListener('click', () => {
+                    if (this.gameStarted) return;
+                    this.adjustMinesCount(-1);
+                });
+
+                // Place bet button
+                this.elements.placeBetBtn.addEventListener('click', () => {
+                    this.placeBet();
+                });
+
+                // Cashout button
+                this.elements.cashoutBtn.addEventListener('click', () => {
+                    this.cashOut();
+                });
+            }
+
+            async fetchUserData() {
+                try {
+                    const response = await fetch('/api/user/chips');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.userChips = data.chips || 0;
+                        this.userBalance = data.balance || 0;
+                        
+                        // Update navigation currency display
+                        document.getElementById('navChips').textContent = this.userChips;
+                        document.getElementById('navBalance').textContent = this.userBalance;
+                    } else {
+                        this.userChips = 1000; // Default for demo
+                        this.userBalance = 0;
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                    this.userChips = 1000; // Default for demo
+                    this.userBalance = 0;
+                }
+                this.elements.userChips.textContent = this.userChips;
+            }
+
+            updateMinesCountOptions() {
+                let minMines, maxMines;
+                
+                // Set mine limits based on grid size
+                switch(this.gridSize) {
+                    case 25:
+                        minMines = 1;
+                        maxMines = 24;
+                        break;
+                    case 36:
+                        minMines = 3;
+                        maxMines = 35;
+                        break;
+                    case 49:
+                        minMines = 5;
+                        maxMines = 48;
+                        break;
+                    case 64:
+                        minMines = 7;
+                        maxMines = 63;
+                        break;
+                    default:
+                        minMines = 1;
+                        maxMines = Math.floor(this.gridSize * 0.9);
+                }
+                
+                // Update input limits
+                const minesInput = this.elements.minesCount;
+                minesInput.min = minMines;
+                minesInput.max = maxMines;
+                
+                // Set default mine count if current is out of range
+                const defaultMines = Math.max(minMines, Math.min(this.minesCount, maxMines));
+                minesInput.value = defaultMines;
+                this.minesCount = defaultMines;
+                this.elements.currentMines.textContent = defaultMines;
+                
+                // Update button states
+                this.updateMinesButtons();
+                this.updateMinesDisplay();
+            }
+
+            adjustMinesCount(delta) {
+                const minesInput = this.elements.minesCount;
+                const minMines = parseInt(minesInput.min);
+                const maxMines = parseInt(minesInput.max);
+                const newCount = Math.max(minMines, Math.min(maxMines, this.minesCount + delta));
+                
+                if (newCount !== this.minesCount) {
+                    this.minesCount = newCount;
+                    minesInput.value = newCount;
+                    this.elements.currentMines.textContent = newCount;
+                    this.updateMinesButtons();
+                    this.updateMinesDisplay();
+                }
+            }
+
+            updateMinesButtons() {
+                const minesInput = this.elements.minesCount;
+                const minMines = parseInt(minesInput.min);
+                const maxMines = parseInt(minesInput.max);
+                
+                const upBtn = document.getElementById('minesUp');
+                const downBtn = document.getElementById('minesDown');
+                
+                upBtn.disabled = this.minesCount >= maxMines || this.gameStarted;
+                downBtn.disabled = this.minesCount <= minMines || this.gameStarted;
+            }
+
+            updateMinesDisplay() {
+                document.getElementById('minesDisplay').textContent = `${this.minesCount} 💣`;
+            }
+
+            generateGrid() {
+                const grid = this.elements.gameGrid;
+                grid.innerHTML = '';
+                grid.className = `grid-container grid-${this.gridSize}`;
+                
+                for (let i = 0; i < this.gridSize; i++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.index = i;
+                    tile.addEventListener('click', () => this.handleTileClick(i));
+                    grid.appendChild(tile);
+                }
+                
+                // Update mines count options when grid changes
+                this.updateMinesCountOptions();
+            }
+
+            placeBet() {
+                const betAmount = parseFloat(this.elements.betAmount.value);
+                
+                if (!betAmount || betAmount <= 0) {
+                    alert('Please enter a valid bet amount!');
+                    return;
+                }
+                
+                if (betAmount > this.userChips) {
+                    alert('Insufficient chips!');
+                    return;
+                }
+
+                // Immediately deduct chips when placing bet
+                this.userChips -= betAmount;
+                this.elements.userChips.textContent = this.userChips;
+                
+                // Save the chip deduction to backend immediately
+                this.saveChips(-betAmount);
+
+                this.currentBet = betAmount;
+                this.gameStarted = true;
+                this.gameActive = true;
+                this.safeTilesFound = 0;
+                this.revealedTiles = [];
+                this.currentMultiplier = 1.0;
+                
+                // Generate mine positions
+                this.generateMinePositions();
+                
+                // Update UI
+                this.elements.placeBetBtn.style.display = 'none';
+                this.elements.cashoutBtn.style.display = 'block';
+                this.elements.gameStatus.textContent = 'Click tiles to reveal! Avoid the mines!';
+                this.elements.gameStatus.className = 'game-status status-playing';
+                this.elements.currentBet.textContent = betAmount;
+                this.elements.safeTiles.textContent = '0';
+                this.updateMultiplierAndWin();
+                this.updateMinesButtons();
+                
+                // Initialize multiplier data display
+                this.updateMultiplierData();
+                
+                // Reset grid visual state
+                document.querySelectorAll('.tile').forEach(tile => {
+                    tile.className = 'tile';
+                    tile.textContent = '';
+                });
+            }
+
+            generateMinePositions() {
+                this.minePositions = [];
+                const availablePositions = Array.from({ length: this.gridSize }, (_, i) => i);
+                
+                for (let i = 0; i < this.minesCount; i++) {
+                    const randomIndex = Math.floor(Math.random() * availablePositions.length);
+                    this.minePositions.push(availablePositions[randomIndex]);
+                    availablePositions.splice(randomIndex, 1);
+                }
+            }
+
+            handleTileClick(index) {
+                if (!this.gameActive || this.revealedTiles.includes(index)) {
+                    return;
+                }
+
+                const tile = document.querySelector(`[data-index="${index}"]`);
+                this.revealedTiles.push(index);
+
+                if (this.minePositions.includes(index)) {
+                    // Hit a mine - game over
+                    tile.classList.add('revealed', 'mine');
+                    tile.textContent = '💣';
+                    this.gameOver(false);
+                } else {
+                    // Safe tile
+                    tile.classList.add('revealed', 'safe');
+                    tile.textContent = '💎';
+                    this.safeTilesFound++;
+                    this.elements.safeTiles.textContent = this.safeTilesFound;
+                    this.updateMultiplierAndWin();
+                    
+                    // Check if all safe tiles found
+                    if (this.safeTilesFound === this.gridSize - this.minesCount) {
+                        this.gameOver(true);
+                    }
+                }
+            }
+
+            updateMultiplierAndWin() {
+                const safeTilesTotal = this.gridSize - this.minesCount;
+                
+                // Calculate multiplier based on mines count and safe tiles found
+                let multiplier = 1.0;
+                
+                if (this.safeTilesFound > 0) {
+                    // Base increment depending on number of mines (more mines = higher multiplier)
+                    const mineMultiplier = 1 + (this.minesCount * 0.15); // 15% increase per mine
+                    
+                    // Progressive increments that scale with mines
+                    const baseIncrements = [0, 0.01, 0.03, 0.07, 0.12, 0.17, 0.24, 0.28, 0.36, 0.45, 0.55, 0.66, 0.78, 0.91, 1.05, 1.20, 1.36, 1.53, 1.71, 1.90, 2.10, 2.31, 2.53, 2.76, 3.00];
+                    
+                    let increment;
+                    if (this.safeTilesFound < baseIncrements.length) {
+                        increment = baseIncrements[this.safeTilesFound] * mineMultiplier;
+                    } else {
+                        // For higher numbers, use progressive formula
+                        increment = (baseIncrements[baseIncrements.length - 1] + ((this.safeTilesFound - baseIncrements.length + 1) * 0.05)) * mineMultiplier;
+                    }
+                    
+                    multiplier = 1.0 + increment;
+                }
+                
+                this.currentMultiplier = multiplier;
+                
+                
+                this.elements.potentialWin.textContent = Math.floor(this.currentBet * this.currentMultiplier);
+                
+                // Update multiplier data display
+                this.updateMultiplierData();
+            }
+
+            updateMultiplierData() {
+                const multiplierDataContainer = document.getElementById('multiplierData');
+                if (!multiplierDataContainer) return;
+                
+                multiplierDataContainer.innerHTML = '';
+                
+                // Show multipliers for each safe tile with mine adjustment
+                const baseIncrements = [0, 0.01, 0.03, 0.07, 0.12, 0.17, 0.24, 0.28, 0.36, 0.45, 0.55, 0.66, 0.78, 0.91, 1.05, 1.20, 1.36, 1.53, 1.71, 1.90, 2.10, 2.31, 2.53, 2.76, 3.00];
+                const mineMultiplier = 1 + (this.minesCount * 0.15); // 15% increase per mine
+                
+                // Calculate start and end indices to show max 5 items centered around current
+                const maxItems = 5;
+                const totalItems = Math.min(this.gridSize - this.minesCount, 20); // Limit total calculation
+                let startIndex = Math.max(0, this.safeTilesFound - Math.floor(maxItems / 2));
+                let endIndex = Math.min(totalItems, startIndex + maxItems);
+                
+                // Adjust if we're at the end
+                if (endIndex - startIndex < maxItems) {
+                    startIndex = Math.max(0, endIndex - maxItems);
+                }
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                    const multiplierItem = document.createElement('div');
+                    multiplierItem.className = 'multiplier-item';
+                    if (i < this.safeTilesFound) {
+                        multiplierItem.classList.add('achieved');
+                    }
+                    if (i === this.safeTilesFound) {
+                        multiplierItem.classList.add('current');
+                    }
+                    
+                    let baseIncrement;
+                    if (i < baseIncrements.length) {
+                        baseIncrement = baseIncrements[i] * mineMultiplier;
+                    } else {
+                        baseIncrement = (baseIncrements[baseIncrements.length - 1] + ((i - baseIncrements.length + 1) * 0.05)) * mineMultiplier;
+                    }
+                    
+                    const multiplierValue = 1.0 + baseIncrement;
+                    
+                    multiplierItem.innerHTML = `
+                        <div class="multiplier-value">${multiplierValue.toFixed(2)}x</div>
+                        <div class="multiplier-tiles">${i}</div>
+                    `;
+                    
+                    multiplierDataContainer.appendChild(multiplierItem);
+                }
+            }
+
+            cashOut() {
+                if (!this.gameActive) return;
+                
+                const winAmount = Math.floor(this.currentBet * this.currentMultiplier);
+                this.userChips += winAmount;
+                this.elements.userChips.textContent = this.userChips;
+                
+                this.elements.gameStatus.textContent = `Cashed out! Won ${winAmount} chips!`;
+                this.elements.gameStatus.className = 'game-status status-won';
+                
+                this.endGame();
+                
+                // Save chips to backend
+                this.saveChips(winAmount);
+            }
+
+            gameOver(won) {
+                this.gameActive = false;
+                
+                if (won) {
+                    const winAmount = Math.floor(this.currentBet * this.currentMultiplier);
+                    this.userChips += winAmount;
+                    this.elements.userChips.textContent = this.userChips;
+                    this.elements.gameStatus.textContent = `You won ${winAmount} chips! All safe tiles found!`;
+                    this.elements.gameStatus.className = 'game-status status-won';
+                    this.saveChips(winAmount);
+                } else {
+                    // Don't deduct chips again since we already deducted them in placeBet()
+                    this.elements.gameStatus.textContent = `Game Over! You lost ${this.currentBet} chips!`;
+                    this.elements.gameStatus.className = 'game-status status-lost';
+                    
+                    // Reveal all mines
+                    this.minePositions.forEach(pos => {
+                        const tile = document.querySelector(`[data-index="${pos}"]`);
+                        if (!tile.classList.contains('revealed')) {
+                            tile.classList.add('revealed', 'mine');
+                            tile.textContent = '💣';
+                        }
+                    });
+                }
+                
+                this.endGame();
+            }
+
+            endGame() {
+                this.gameStarted = false;
+                this.elements.placeBetBtn.style.display = 'block';
+                this.elements.cashoutBtn.style.display = 'none';
+                this.elements.currentBet.textContent = '0';
+                this.elements.safeTiles.textContent = '0';
+                this.elements.potentialWin.textContent = '0';
+                this.updateMinesButtons();
+                
+                // Reset bet amount
+                this.elements.betAmount.value = '';
+            }
+
+            async saveChips(amount) {
+                try {
+                    const response = await fetch('/api/user/update-chips', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ amount: amount })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Update navigation currency display
+                        document.getElementById('navChips').textContent = data.newChips || this.userChips;
+                    }
+                } catch (error) {
+                    console.error('Error saving chips:', error);
+                }
+            }
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new MinesGame();
+        });
+    </script>
+</body>
+</html>
