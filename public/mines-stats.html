@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines Stats - NoMercy Casino</title>
+    <title>NoMercy - Mines Statistics</title>
     <style>
         * {
             margin: 0;
@@ -13,161 +12,33 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            height: 60px;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: white;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .brand-icon {
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
-        }
-
-        .nav-currency {
-            display: flex;
-            gap: 20px;
-        }
-
-        .currency-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .currency-icon {
-            font-size: 1rem;
-        }
-
-        .nav-right {
-            display: flex;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            background: rgba(139, 92, 246, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            background: rgba(139, 92, 246, 0.4);
-            transform: translateY(-1px);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 8px;
-        }
-
-        .nav-item.active,
-        .nav-item:hover {
-            color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .nav-icon {
-            font-size: 1.2rem;
-            margin-bottom: 2px;
-        }
-
-        .nav-label {
-            font-size: 0.7rem;
-            font-weight: 500;
+            color: #ffffff;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 80px 20px 100px 20px;
-            min-height: calc(100vh - 140px);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #8b5cf6, #f59e0b);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .header p {
-            color: #cbd5e1;
-            font-size: 1.1rem;
         }
 
         .stats-grid {
@@ -178,957 +49,747 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 15px;
             padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
         }
 
-        .stat-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-icon {
-            font-size: 2rem;
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(139, 92, 246, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-
-        .stat-title {
+        .stat-card h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
             font-size: 1.2rem;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #8b5cf6;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #8b5cf6, #f59e0b);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        .detailed-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .detailed-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .detailed-card h3 {
-            color: #e2e8f0;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .stat-row {
+        .stat-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
+            margin-bottom: 10px;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .stat-row:last-child {
+        .stat-item:last-child {
             border-bottom: none;
+            margin-bottom: 0;
         }
 
-        .stat-row-label {
-            color: #94a3b8;
-            font-size: 0.95rem;
+        .stat-label {
+            color: #cccccc;
         }
 
-        .stat-row-value {
-            color: #8b5cf6;
+        .stat-value {
+            color: #ffffff;
             font-weight: 600;
-            font-size: 1rem;
         }
 
-        .chart-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 25px;
+        .stat-value.positive {
+            color: #4ade80;
+        }
+
+        .stat-value.negative {
+            color: #f87171;
+        }
+
+        /* Navigation Styles */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(15, 15, 15, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .chart-header {
+        
+        .nav-desktop {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-
-        .chart-title {
-            font-size: 1.3rem;
-            color: #e2e8f0;
-            font-weight: 600;
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
         }
-
-        .chart-period {
+        
+        .nav-links {
             display: flex;
-            gap: 10px;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-links a {
+            color: #cccccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #6366f1;
         }
 
-        .period-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .period-btn.active {
-            background: #8b5cf6;
-            border-color: #8b5cf6;
-        }
-
-        .period-btn:hover {
-            background: rgba(139, 92, 246, 0.3);
-        }
-
-        .chart-area {
-            height: 300px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            padding: 20px;
+        /* Currency Navigation */
+        .nav-currency {
             display: flex;
-            align-items: end;
-            gap: 8px;
+            gap: 1rem;
+            align-items: center;
         }
-
-        .chart-bar {
-            flex: 1;
-            background: linear-gradient(180deg, #8b5cf6, #7c3aed);
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .chart-bar:hover {
-            background: linear-gradient(180deg, #a78bfa, #8b5cf6);
-            transform: scale(1.05);
-        }
-
-        .chart-bar-tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            margin-bottom: 5px;
-        }
-
-        .chart-bar:hover .chart-bar-tooltip {
-            opacity: 1;
-        }
-
-        .achievements {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .achievements h3 {
-            color: #e2e8f0;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
+        
+        .currency-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .achievement-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .achievement-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .achievement-item.unlocked {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .achievement-item:hover {
-            transform: translateY(-3px);
-        }
-
-        .achievement-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .achievement-item.unlocked .achievement-icon {
-            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
-        }
-
-        .achievement-name {
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            margin-bottom: 5px;
-            color: #e2e8f0;
+        }
+        
+        .currency-icon {
+            font-size: 1rem;
         }
 
-        .achievement-desc {
+        /* Mobile Navigation */
+        .nav-mobile {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            z-index: 1000;
+        }
+        
+        .nav-mobile-links {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-mobile-links a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-mobile-links a:hover,
+        .nav-mobile-links a.active {
+            color: #6366f1;
+        }
+        
+        .nav-mobile-links .nav-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Mobile Top Navigation */
+        .nav-mobile-top {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-mobile-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .nav-mobile-currency {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .nav-mobile-currency .currency-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
             font-size: 0.8rem;
-            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Navigation Button */
+        .nav-btn {
+            background: linear-gradient(45deg, #1f1f1f, #2d2d2d);
+            color: #ffffff;
+            padding: 12px 24px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-desktop {
+                display: none;
+            }
+            
+            .nav-mobile {
+                display: block;
+            }
+            
+            .nav-mobile-top {
+                display: flex;
+            }
+            
+            body {
+                padding-top: 120px;
+                padding-bottom: 100px;
+            }
+        }
+
+        .stat-value.warning {
+            color: #fbbf24;
         }
 
         .recent-games {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 15px;
             padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
         }
 
-        .recent-games h3 {
-            color: #e2e8f0;
+        .recent-games h2 {
+            color: #ffd700;
             margin-bottom: 20px;
-            font-size: 1.3rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .game-history {
-            max-height: 400px;
-            overflow-y: auto;
+        .games-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
 
-        .game-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.03);
+        .games-table th,
+        .games-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .games-table th {
+            color: #ffd700;
+            font-weight: 600;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .games-table td {
+            color: #cccccc;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
             border-radius: 12px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-won {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .status-lost {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+
+        .status-cashed-out {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #cccccc;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #1f1f1f, #2d2d2d);
+            color: #ffffff;
+            padding: 12px 24px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .game-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(5px);
+        .nav-btn:hover {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
-        .game-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .refresh-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
         }
 
-        .game-result {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .game-result.won {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .game-result.lost {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .game-details {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .game-amount {
-            text-align: right;
-        }
-
-        .game-bet {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .game-win {
-            color: #10b981;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .game-loss {
-            color: #ef4444;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .game-time {
-            color: #64748b;
-            font-size: 0.8rem;
+        .refresh-btn:hover {
+            background: #ffd700;
         }
 
         @media (max-width: 768px) {
-            .top-nav {
-                height: 50px;
-            }
-            
-            .nav-container {
-                padding: 0 15px;
-            }
-            
-            .nav-center {
-                display: none;
-            }
-            
-            .nav-right {
-                display: none;
-            }
-            
-            .container {
-                padding: 70px 15px 120px 15px;
-            }
-            
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .detailed-stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .achievement-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-        }
 
-        @media (min-width: 769px) {
-            .bottom-nav {
-                display: none;
+            .games-table {
+                font-size: 0.9rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Top Navigation -->
-    <nav class="top-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="/home" class="nav-brand">
-                    <span class="brand-icon">⚡</span>
-                    <span class="brand-text">NoMercy</span>
-                </a>
-            </div>
-            <div class="nav-center">
-                <div class="nav-currency">
-                    <span class="currency-item">
-                        <span class="currency-icon">💰</span>
-                        <span class="currency-value" id="navBalance">0</span>
-                    </span>
-                    <span class="currency-item">
-                        <span class="currency-icon">🎰</span>
-                        <span class="currency-value" id="navChips">0</span>
-                    </span>
+    <!-- Desktop Navigation -->
+    <div class="nav-container">
+        <div class="nav-desktop">
+            <a href="/home" class="nav-logo">⚡ NoMercy</a>
+            <ul class="nav-links">
+                <li><a href="/home">Home</a></li>
+                <li><a href="/list/mine" class="active">Games</a></li>
+                <li><a href="/profile">Profile</a></li>
+            </ul>
+            <div class="nav-currency" id="currency-display">
+                <div class="currency-item">
+                    <span class="currency-icon">💰</span>
+                    <span id="nav-balance">280</span>
+                </div>
+                <div class="currency-item">
+                    <span class="currency-icon">🎰</span>
+                    <span id="nav-chips">16</span>
                 </div>
             </div>
-            <div class="nav-right">
-                <a href="/games/mines" class="nav-btn">Play Mines</a>
-                <a href="/profile" class="nav-btn">Profile</a>
-                <a href="/home" class="nav-btn">Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Mobile Top Navigation -->
+    <div class="nav-mobile-top">
+        <div class="nav-mobile-logo">⚡ NoMercy</div>
+        <div class="nav-mobile-currency" id="mobile-currency-display">
+            <div class="currency-item">
+                <span class="currency-icon">💰</span>
+                <span id="mobile-nav-balance">280</span>
+            </div>
+            <div class="currency-item">
+                <span class="currency-icon">🎰</span>
+                <span id="mobile-nav-chips">16</span>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Bottom Navigation (Mobile) -->
-    <nav class="bottom-nav">
-        <a href="/home" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Home</span>
-        </a>
-        <a href="/squad" class="nav-item">
-            <span class="nav-icon">👥</span>
-            <span class="nav-label">Squad</span>
-        </a>
-        <a href="/games" class="nav-item active">
-            <span class="nav-icon">🎮</span>
-            <span class="nav-label">Games</span>
-        </a>
-        <a href="/profile" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Profile</span>
-        </a>
+    <!-- Mobile Bottom Navigation -->
+    <nav class="nav-mobile">
+        <ul class="nav-mobile-links">
+            <li><a href="/home">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </a></li>
+            <li><a href="/list/mine" class="active">
+                <span class="nav-icon">🎮</span>
+                <span>Games</span>
+            </a></li>
+            <li><a href="/profile">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </a></li>
+        </ul>
     </nav>
 
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>💎 Mines Statistics</h1>
-            <p>Complete overview of your mining adventure performance and achievements</p>
+            <h1>⚡ Mines Statistics</h1>
+            <p>Track your performance and improve your gameplay</p>
         </div>
 
-        <!-- Main Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🎮</span>
-                    <span class="stat-title">Total Games</span>
-                </div>
-                <div class="stat-value" id="totalGames">0</div>
-                <div class="stat-label">Games Played</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="gamesProgress"></div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🏆</span>
-                    <span class="stat-title">Win Rate</span>
-                </div>
-                <div class="stat-value" id="winRate">0%</div>
-                <div class="stat-label">Success Percentage</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="winRateProgress"></div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">💰</span>
-                    <span class="stat-title">Total Winnings</span>
-                </div>
-                <div class="stat-value" id="totalWinnings">0</div>
-                <div class="stat-label">Chips Won</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="winningsProgress"></div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">📈</span>
-                    <span class="stat-title">Best Multiplier</span>
-                </div>
-                <div class="stat-value" id="bestMultiplier">1.00x</div>
-                <div class="stat-label">Highest Achievement</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="multiplierProgress"></div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">💎</span>
-                    <span class="stat-title">Safe Tiles Found</span>
-                </div>
-                <div class="stat-value" id="safeTilesTotal">0</div>
-                <div class="stat-label">Gems Discovered</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="tilesProgress"></div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🔥</span>
-                    <span class="stat-title">Current Streak</span>
-                </div>
-                <div class="stat-value" id="currentStreak">0</div>
-                <div class="stat-label">Consecutive Wins</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%" id="streakProgress"></div>
-                </div>
-            </div>
+        <div class="nav-buttons">
+            <a href="/games/mines" class="nav-btn">🎮 Play Mines</a>
+            <a href="/games/leaderboard" class="nav-btn">🏆 Leaderboard</a>
+            <button class="nav-btn refresh-btn" onclick="loadStats()">🔄 Refresh Stats</button>
         </div>
 
-        <!-- Detailed Statistics -->
-        <div class="detailed-stats">
-            <div class="detailed-card">
-                <h3>🎯 Game Performance</h3>
-                <div class="stat-row">
-                    <span class="stat-row-label">Games Won</span>
-                    <span class="stat-row-value" id="gamesWon">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Games Lost</span>
-                    <span class="stat-row-value" id="gamesLost">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Perfect Games</span>
-                    <span class="stat-row-value" id="perfectGames">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Early Cashouts</span>
-                    <span class="stat-row-value" id="earlyCashouts">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Longest Win Streak</span>
-                    <span class="stat-row-value" id="longestStreak">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Average Multiplier</span>
-                    <span class="stat-row-value" id="avgMultiplier">1.00x</span>
-                </div>
-            </div>
-
-            <div class="detailed-card">
-                <h3>💵 Financial Overview</h3>
-                <div class="stat-row">
-                    <span class="stat-row-label">Total Wagered</span>
-                    <span class="stat-row-value" id="totalWagered">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Net Profit</span>
-                    <span class="stat-row-value" id="netProfit">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Biggest Win</span>
-                    <span class="stat-row-value" id="biggestWin">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Biggest Loss</span>
-                    <span class="stat-row-value" id="biggestLoss">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Average Bet</span>
-                    <span class="stat-row-value" id="avgBet">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-row-label">Return to Player</span>
-                    <span class="stat-row-value" id="rtp">0%</span>
-                </div>
-            </div>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading your statistics...</p>
         </div>
 
-        <!-- Chart Section -->
-        <div class="chart-container">
-            <div class="chart-header">
-                <h3 class="chart-title">📊 Performance Over Time</h3>
-                <div class="chart-period">
-                    <button class="period-btn active" data-period="7d">7D</button>
-                    <button class="period-btn" data-period="30d">30D</button>
-                    <button class="period-btn" data-period="90d">90D</button>
-                    <button class="period-btn" data-period="1y">1Y</button>
+        <div id="stats-container" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>🎯 Game Overview</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Games</span>
+                        <span class="stat-value" id="total-games">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Games Won</span>
+                        <span class="stat-value positive" id="games-won">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Games Lost</span>
+                        <span class="stat-value negative" id="games-lost">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Games Cashed Out</span>
+                        <span class="stat-value warning" id="games-cashed-out">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value" id="win-rate">0%</span>
+                    </div>
                 </div>
-            </div>
-            <div class="chart-area" id="performanceChart">
-                <!-- Chart bars will be generated by JavaScript -->
-            </div>
-        </div>
 
-        <!-- Achievements -->
-        <div class="achievements">
-            <h3>🏅 Achievements</h3>
-            <div class="achievement-grid">
-                <div class="achievement-item unlocked">
-                    <div class="achievement-icon">👶</div>
-                    <div class="achievement-name">First Steps</div>
-                    <div class="achievement-desc">Play your first game</div>
+                <div class="stat-card">
+                    <h3>💰 Financial Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Wagered</span>
+                        <span class="stat-value" id="total-wagered">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Winnings</span>
+                        <span class="stat-value positive" id="total-winnings">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Net Profit</span>
+                        <span class="stat-value" id="net-profit">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Biggest Win</span>
+                        <span class="stat-value positive" id="biggest-win">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Biggest Loss</span>
+                        <span class="stat-value negative" id="biggest-loss">0</span>
+                    </div>
                 </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🔟</div>
-                    <div class="achievement-name">Veteran Player</div>
-                    <div class="achievement-desc">Play 10 games</div>
+
+                <div class="stat-card">
+                    <h3>🔥 Streaks & Performance</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Current Streak</span>
+                        <span class="stat-value" id="current-streak">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Longest Win Streak</span>
+                        <span class="stat-value positive" id="longest-win-streak">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Longest Loss Streak</span>
+                        <span class="stat-value negative" id="longest-loss-streak">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Best Multiplier</span>
+                        <span class="stat-value positive" id="best-multiplier">0x</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Multiplier</span>
+                        <span class="stat-value" id="average-multiplier">0x</span>
+                    </div>
                 </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">💯</div>
-                    <div class="achievement-name">Century Club</div>
-                    <div class="achievement-desc">Play 100 games</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🎯</div>
-                    <div class="achievement-name">Sharpshooter</div>
-                    <div class="achievement-desc">Win 10 games in a row</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">💎</div>
-                    <div class="achievement-name">Gem Hunter</div>
-                    <div class="achievement-desc">Find 1000 safe tiles</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🚀</div>
-                    <div class="achievement-name">Risk Taker</div>
-                    <div class="achievement-desc">Achieve 10x multiplier</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">💰</div>
-                    <div class="achievement-name">Millionaire</div>
-                    <div class="achievement-desc">Win 1,000,000 chips total</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🔥</div>
-                    <div class="achievement-name">On Fire</div>
-                    <div class="achievement-desc">Win 25 games in a row</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🎰</div>
-                    <div class="achievement-name">High Roller</div>
-                    <div class="achievement-desc">Bet 10,000 chips in one game</div>
-                </div>
-                <div class="achievement-item">
-                    <div class="achievement-icon">🌟</div>
-                    <div class="achievement-name">Perfectionist</div>
-                    <div class="achievement-desc">Win 50 perfect games</div>
+
+                <div class="stat-card">
+                    <h3>⏱️ Gameplay Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Play Time</span>
+                        <span class="stat-value" id="total-play-time">0m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Game Duration</span>
+                        <span class="stat-value" id="average-duration">0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Favorite Grid Size</span>
+                        <span class="stat-value" id="favorite-grid-size">5x5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Cells Revealed</span>
+                        <span class="stat-value" id="total-cells-revealed">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Risk Level</span>
+                        <span class="stat-value" id="average-risk">Low</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Games -->
-        <div class="recent-games">
-            <h3>📝 Recent Game History</h3>
-            <div class="game-history" id="gameHistory">
-                <!-- Game history items will be populated by JavaScript -->
+            <div class="recent-games">
+                <h2>📋 Recent Games</h2>
+                <div class="games-table-container">
+                    <table class="games-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Grid</th>
+                                <th>Mines</th>
+                                <th>Bet</th>
+                                <th>Multiplier</th>
+                                <th>Win Amount</th>
+                                <th>Status</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-games-tbody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 20px;">No recent games found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        class MinesStats {
-            constructor() {
-                this.initializeElements();
-                this.attachEventListeners();
-                this.fetchUserData();
-                this.loadStatsData();
-                this.generateChart();
-                this.loadGameHistory();
-            }
+        async function loadStats() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('stats-container');
+            
+            loading.style.display = 'block';
+            container.style.display = 'none';
 
-            initializeElements() {
-                // Elements for stats display
-                this.elements = {
-                    totalGames: document.getElementById('totalGames'),
-                    winRate: document.getElementById('winRate'),
-                    totalWinnings: document.getElementById('totalWinnings'),
-                    bestMultiplier: document.getElementById('bestMultiplier'),
-                    safeTilesTotal: document.getElementById('safeTilesTotal'),
-                    currentStreak: document.getElementById('currentStreak'),
-                    
-                    gamesWon: document.getElementById('gamesWon'),
-                    gamesLost: document.getElementById('gamesLost'),
-                    perfectGames: document.getElementById('perfectGames'),
-                    earlyCashouts: document.getElementById('earlyCashouts'),
-                    longestStreak: document.getElementById('longestStreak'),
-                    avgMultiplier: document.getElementById('avgMultiplier'),
-                    
-                    totalWagered: document.getElementById('totalWagered'),
-                    netProfit: document.getElementById('netProfit'),
-                    biggestWin: document.getElementById('biggestWin'),
-                    biggestLoss: document.getElementById('biggestLoss'),
-                    avgBet: document.getElementById('avgBet'),
-                    rtp: document.getElementById('rtp'),
-                    
-                    gameHistory: document.getElementById('gameHistory')
-                };
-            }
+            try {
+                // Load user statistics
+                const statsResponse = await fetch('/api/mines/stats');
+                const stats = await statsResponse.json();
 
-            attachEventListeners() {
-                // Chart period selector
-                document.querySelectorAll('.period-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
-                        this.generateChart(e.target.dataset.period);
-                    });
-                });
-            }
-
-            async fetchUserData() {
-                try {
-                    const response = await fetch('/api/user/chips');
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        // Update navigation currency display
-                        document.getElementById('navChips').textContent = data.chips || 0;
-                        document.getElementById('navBalance').textContent = data.balance || 0;
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
+                if (stats.success) {
+                    updateStatsDisplay(stats.data);
+                } else {
+                    console.error('Failed to load stats:', stats.error);
                 }
-            }
 
-            loadStatsData() {
-                // Generate realistic sample data for demonstration
-                const sampleStats = this.generateSampleStats();
-                
-                // Update main stats
-                this.elements.totalGames.textContent = sampleStats.totalGames.toLocaleString();
-                this.elements.winRate.textContent = sampleStats.winRate + '%';
-                this.elements.totalWinnings.textContent = sampleStats.totalWinnings.toLocaleString();
-                this.elements.bestMultiplier.textContent = sampleStats.bestMultiplier + 'x';
-                this.elements.safeTilesTotal.textContent = sampleStats.safeTilesTotal.toLocaleString();
-                this.elements.currentStreak.textContent = sampleStats.currentStreak;
-                
-                // Update detailed stats
-                this.elements.gamesWon.textContent = sampleStats.gamesWon.toLocaleString();
-                this.elements.gamesLost.textContent = sampleStats.gamesLost.toLocaleString();
-                this.elements.perfectGames.textContent = sampleStats.perfectGames.toLocaleString();
-                this.elements.earlyCashouts.textContent = sampleStats.earlyCashouts.toLocaleString();
-                this.elements.longestStreak.textContent = sampleStats.longestStreak;
-                this.elements.avgMultiplier.textContent = sampleStats.avgMultiplier + 'x';
-                
-                // Update financial stats
-                this.elements.totalWagered.textContent = sampleStats.totalWagered.toLocaleString();
-                this.elements.netProfit.textContent = sampleStats.netProfit.toLocaleString();
-                this.elements.biggestWin.textContent = sampleStats.biggestWin.toLocaleString();
-                this.elements.biggestLoss.textContent = sampleStats.biggestLoss.toLocaleString();
-                this.elements.avgBet.textContent = sampleStats.avgBet.toLocaleString();
-                this.elements.rtp.textContent = sampleStats.rtp + '%';
-                
-                // Update progress bars
-                this.updateProgressBars(sampleStats);
-                
-                // Update achievements
-                this.updateAchievements(sampleStats);
-            }
+                // Load recent games
+                const gamesResponse = await fetch('/api/mines/recent-games');
+                const games = await gamesResponse.json();
 
-            generateSampleStats() {
-                return {
-                    totalGames: 247,
-                    winRate: 68,
-                    totalWinnings: 156750,
-                    bestMultiplier: 18.45,
-                    safeTilesTotal: 3456,
-                    currentStreak: 7,
-                    
-                    gamesWon: 168,
-                    gamesLost: 79,
-                    perfectGames: 34,
-                    earlyCashouts: 89,
-                    longestStreak: 23,
-                    avgMultiplier: 2.84,
-                    
-                    totalWagered: 89340,
-                    netProfit: 67410,
-                    biggestWin: 23650,
-                    biggestLoss: -8970,
-                    avgBet: 362,
-                    rtp: 175
-                };
-            }
-
-            updateProgressBars(stats) {
-                // Calculate progress percentages
-                const progressData = [
-                    { element: 'gamesProgress', value: Math.min((stats.totalGames / 500) * 100, 100) },
-                    { element: 'winRateProgress', value: stats.winRate },
-                    { element: 'winningsProgress', value: Math.min((stats.totalWinnings / 200000) * 100, 100) },
-                    { element: 'multiplierProgress', value: Math.min((stats.bestMultiplier / 20) * 100, 100) },
-                    { element: 'tilesProgress', value: Math.min((stats.safeTilesTotal / 5000) * 100, 100) },
-                    { element: 'streakProgress', value: Math.min((stats.currentStreak / 50) * 100, 100) }
-                ];
-                
-                progressData.forEach(progress => {
-                    const element = document.getElementById(progress.element);
-                    if (element) {
-                        setTimeout(() => {
-                            element.style.width = progress.value + '%';
-                        }, 500);
-                    }
-                });
-            }
-
-            updateAchievements(stats) {
-                const achievements = document.querySelectorAll('.achievement-item');
-                
-                // Achievement unlock conditions
-                const unlockConditions = [
-                    stats.totalGames >= 1,    // First Steps
-                    stats.totalGames >= 10,   // Veteran Player
-                    stats.totalGames >= 100,  // Century Club
-                    stats.longestStreak >= 10, // Sharpshooter
-                    stats.safeTilesTotal >= 1000, // Gem Hunter
-                    stats.bestMultiplier >= 10, // Risk Taker
-                    stats.totalWinnings >= 1000000, // Millionaire
-                    stats.longestStreak >= 25, // On Fire
-                    stats.avgBet >= 10000,    // High Roller
-                    stats.perfectGames >= 50  // Perfectionist
-                ];
-                
-                achievements.forEach((achievement, index) => {
-                    if (unlockConditions[index]) {
-                        achievement.classList.add('unlocked');
-                    }
-                });
-            }
-
-            generateChart(period = '7d') {
-                const chartArea = document.getElementById('performanceChart');
-                chartArea.innerHTML = '';
-                
-                // Generate sample chart data based on period
-                let dataPoints = [];
-                let labels = [];
-                
-                switch(period) {
-                    case '7d':
-                        dataPoints = [45, 67, 23, 89, 34, 78, 56];
-                        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                        break;
-                    case '30d':
-                        dataPoints = Array.from({length: 30}, () => Math.floor(Math.random() * 100));
-                        labels = Array.from({length: 30}, (_, i) => `${i + 1}`);
-                        break;
-                    case '90d':
-                        dataPoints = Array.from({length: 12}, () => Math.floor(Math.random() * 100));
-                        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                        break;
-                    case '1y':
-                        dataPoints = Array.from({length: 12}, () => Math.floor(Math.random() * 100));
-                        labels = ['2023', '2024'];
-                        break;
+                if (games.success) {
+                    updateRecentGames(games.data);
+                } else {
+                    console.error('Failed to load recent games:', games.error);
                 }
-                
-                const maxValue = Math.max(...dataPoints);
-                
-                dataPoints.forEach((value, index) => {
-                    const bar = document.createElement('div');
-                    bar.className = 'chart-bar';
-                    bar.style.height = `${(value / maxValue) * 100}%`;
-                    
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'chart-bar-tooltip';
-                    tooltip.textContent = `${labels[index]}: ${value} chips`;
-                    
-                    bar.appendChild(tooltip);
-                    chartArea.appendChild(bar);
-                });
-            }
 
-            loadGameHistory() {
-                // Generate sample game history
-                const sampleGames = this.generateSampleGameHistory();
-                
-                this.elements.gameHistory.innerHTML = '';
-                
-                sampleGames.forEach(game => {
-                    const gameItem = document.createElement('div');
-                    gameItem.className = 'game-item';
-                    
-                    gameItem.innerHTML = `
-                        <div class="game-info">
-                            <div class="game-result ${game.result}">${game.result === 'won' ? 'WON' : 'LOST'}</div>
-                            <div class="game-details">
-                                Grid: ${game.gridSize} | Mines: ${game.mines} | Multiplier: ${game.multiplier}x
-                            </div>
-                        </div>
-                        <div class="game-amount">
-                            <div class="game-bet">Bet: ${game.bet}</div>
-                            <div class="${game.result === 'won' ? 'game-win' : 'game-loss'}">
-                                ${game.result === 'won' ? '+' : '-'}${game.amount}
-                            </div>
-                            <div class="game-time">${game.time}</div>
-                        </div>
-                    `;
-                    
-                    this.elements.gameHistory.appendChild(gameItem);
-                });
-            }
+                loading.style.display = 'none';
+                container.style.display = 'block';
 
-            generateSampleGameHistory() {
-                const games = [];
-                const now = new Date();
-                
-                for (let i = 0; i < 20; i++) {
-                    const isWon = Math.random() > 0.3;
-                    const bet = Math.floor(Math.random() * 1000) + 100;
-                    const multiplier = isWon ? (Math.random() * 10 + 1).toFixed(2) : 0;
-                    const amount = isWon ? Math.floor(bet * multiplier) : bet;
-                    
-                    const gameTime = new Date(now.getTime() - (i * 3600000)); // i hours ago
-                    
-                    games.push({
-                        result: isWon ? 'won' : 'lost',
-                        gridSize: [25, 36, 49, 64][Math.floor(Math.random() * 4)],
-                        mines: Math.floor(Math.random() * 10) + 1,
-                        multiplier: multiplier,
-                        bet: bet,
-                        amount: amount,
-                        time: gameTime.toLocaleTimeString()
-                    });
-                }
-                
-                return games;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                loading.innerHTML = '<p>Error loading statistics. Please try again.</p>';
             }
         }
 
-        // Initialize stats when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new MinesStats();
-        });
+        function updateStatsDisplay(stats) {
+            // Game Overview
+            document.getElementById('total-games').textContent = stats.totalGames || 0;
+            document.getElementById('games-won').textContent = stats.gamesWon || 0;
+            document.getElementById('games-lost').textContent = stats.gamesLost || 0;
+            document.getElementById('games-cashed-out').textContent = stats.gamesCashedOut || 0;
+            
+            const winRate = stats.totalGames > 0 ? ((stats.gamesWon / stats.totalGames) * 100).toFixed(1) : 0;
+            document.getElementById('win-rate').textContent = winRate + '%';
+
+            // Financial Stats
+            document.getElementById('total-wagered').textContent = formatNumber(stats.totalWagered || 0);
+            document.getElementById('total-winnings').textContent = formatNumber(stats.totalWinnings || 0);
+            
+            const netProfit = (stats.netProfit || 0);
+            const netProfitElement = document.getElementById('net-profit');
+            netProfitElement.textContent = formatNumber(netProfit);
+            netProfitElement.className = `stat-value ${netProfit >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('biggest-win').textContent = formatNumber(stats.biggestWin || 0);
+            document.getElementById('biggest-loss').textContent = formatNumber(stats.biggestLoss || 0);
+
+            // Streaks & Performance
+            const currentStreakElement = document.getElementById('current-streak');
+            const streakText = stats.currentStreak ? `${stats.currentStreak} ${stats.streakType}` : '0';
+            currentStreakElement.textContent = streakText;
+            currentStreakElement.className = `stat-value ${stats.streakType === 'win' ? 'positive' : stats.streakType === 'loss' ? 'negative' : ''}`;
+            
+            document.getElementById('longest-win-streak').textContent = stats.longestWinStreak || 0;
+            document.getElementById('longest-loss-streak').textContent = stats.longestLossStreak || 0;
+            document.getElementById('best-multiplier').textContent = (stats.bestMultiplier || 0) + 'x';
+            document.getElementById('average-multiplier').textContent = (stats.averageMultiplier || 0) + 'x';
+
+            // Gameplay Stats
+            const totalPlayTime = stats.totalPlayTime || 0;
+            const hours = Math.floor(totalPlayTime / 3600);
+            const minutes = Math.floor((totalPlayTime % 3600) / 60);
+            const playTimeText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+            document.getElementById('total-play-time').textContent = playTimeText;
+
+            const avgDuration = stats.totalGames > 0 ? Math.round(totalPlayTime / stats.totalGames) : 0;
+            document.getElementById('average-duration').textContent = avgDuration + 's';
+
+            const gridSize = stats.favoriteGridSize || 25;
+            const gridText = `${Math.sqrt(gridSize)}x${Math.sqrt(gridSize)}`;
+            document.getElementById('favorite-grid-size').textContent = gridText;
+
+            // Calculate additional stats
+            document.getElementById('total-cells-revealed').textContent = formatNumber(stats.totalCellsRevealed || 0);
+            
+            // Calculate average risk level based on mine density
+            const avgRisk = calculateRiskLevel(stats);
+            document.getElementById('average-risk').textContent = avgRisk;
+        }
+
+        function updateRecentGames(games) {
+            const tbody = document.getElementById('recent-games-tbody');
+            tbody.innerHTML = '';
+
+            if (!games || games.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No recent games found</td></tr>';
+                return;
+            }
+
+            games.forEach(game => {
+                const row = document.createElement('tr');
+                
+                const date = new Date(game.createdAt).toLocaleDateString();
+                const gridSize = Math.sqrt(game.gridSize);
+                const duration = game.duration ? game.duration + 's' : '-';
+                
+                let statusClass = 'status-lost';
+                if (game.gameStatus === 'won') statusClass = 'status-won';
+                else if (game.gameStatus === 'cashed_out') statusClass = 'status-cashed-out';
+
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${gridSize}x${gridSize}</td>
+                    <td>${game.mineCount}</td>
+                    <td>${formatNumber(game.betAmount)}</td>
+                    <td>${game.finalMultiplier}x</td>
+                    <td>${formatNumber(game.winAmount || 0)}</td>
+                    <td><span class="status-badge ${statusClass}">${game.gameStatus}</span></td>
+                    <td>${duration}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function calculateRiskLevel(stats) {
+            if (!stats.totalGames) return 'No Data';
+            
+            // This is a simplified risk calculation
+            // You could make this more sophisticated based on your game mechanics
+            const avgMultiplier = parseFloat(stats.averageMultiplier || 0);
+            
+            if (avgMultiplier >= 3) return 'High';
+            if (avgMultiplier >= 1.5) return 'Medium';
+            return 'Low';
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', loadStats);
     </script>
 </body>
 </html>
