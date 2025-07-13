@@ -445,10 +445,10 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="dropdown-section">
                                     <h4>🎯 Main</h4>
                                     <ul>
-                                        <li><a href="/list/leaderboard">🏆 Leaderboard</a></li>
                                         <li><a href="/list/shop">🛒 Shop</a></li>
                                         <li><a href="/list/quiz">🧠 Quiz</a></li>
                                         <li><a href="/list/redeem">🎁 Redeem</a></li>
+                                        <li><a href="/list/inventory">🎒 Inventory</a></li>
                                     </ul>
                                 </div>
                                 <div class="dropdown-section">
@@ -535,10 +535,10 @@ function setupDashboardRoutes(app, qrFunctions) {
             <div class="bottom-sheet-content active" id="main-content">
                 <div class="bottom-sheet-section">
                     <ul>
-                        <li><a href="/list/leaderboard"><span class="icon">🏆</span> Leaderboard</a></li>
                         <li><a href="/list/shop"><span class="icon">🛒</span> Shop</a></li>
                         <li><a href="/list/quiz"><span class="icon">🧠</span> Quiz</a></li>
                         <li><a href="/list/redeem"><span class="icon">🎁</span> Redeem</a></li>
+                        <li><a href="/list/inventory"><span class="icon">🎒</span> Inventory</a></li>
                     </ul>
                 </div>
             </div>
@@ -819,6 +819,25 @@ function setupDashboardRoutes(app, qrFunctions) {
                 `;
             }
             
+            // Get leaderboard data
+            const { User } = require('./lib/database');
+            const topBalance = await User.find({ balance: { $gt: 0 } })
+                .sort({ balance: -1 })
+                .limit(5)
+                .select('name jid balance');
+            
+            const topChips = await User.find({ chips: { $gt: 0 } })
+                .sort({ chips: -1 })
+                .limit(5)
+                .select('name jid chips');
+            
+            const formatName = (name, jid) => {
+                if (name && name !== 'Unknown') {
+                    return name;
+                }
+                return jid.split('@')[0];
+            };
+            
             const content = `
                 <div class="card">
                     <h1>Welcome to NoMercy</h1>
@@ -827,6 +846,43 @@ function setupDashboardRoutes(app, qrFunctions) {
                 </div>
                 
                 ${dailyLoginSection}
+                
+                <!-- Leaderboard Section -->
+                <div class="card">
+                    <h2>🏆 Leaderboard</h2>
+                    <div class="leaderboard-grid">
+                        <div class="leaderboard-section">
+                            <h3>💰 Top Balance</h3>
+                            <div class="leaderboard-list">
+                                ${topBalance.map((user, index) => `
+                                    <div class="leaderboard-item">
+                                        <span class="rank">${index + 1}</span>
+                                        <span class="name">${formatName(user.name, user.jid)}</span>
+                                        <span class="value">${user.balance}</span>
+                                    </div>
+                                `).join('')}
+                                ${topBalance.length === 0 ? '<div class="no-data">No data yet</div>' : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-section">
+                            <h3>🎰 Top Chips</h3>
+                            <div class="leaderboard-list">
+                                ${topChips.map((user, index) => `
+                                    <div class="leaderboard-item">
+                                        <span class="rank">${index + 1}</span>
+                                        <span class="name">${formatName(user.name, user.jid)}</span>
+                                        <span class="value">${user.chips}</span>
+                                    </div>
+                                `).join('')}
+                                ${topChips.length === 0 ? '<div class="no-data">No data yet</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-footer">
+                        <a href="/list/leaderboard" class="btn btn-secondary">View Full Leaderboard</a>
+                    </div>
+                </div>
                 
                 <div class="grid">
                     <div class="card">
@@ -1039,6 +1095,84 @@ function setupDashboardRoutes(app, qrFunctions) {
                             padding: 0.75rem 0.25rem;
                         }
                     }
+                    
+                    /* Leaderboard Styles */
+                    .leaderboard-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 1.5rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .leaderboard-section h3 {
+                        color: #ffffff;
+                        margin-bottom: 1rem;
+                        font-size: 1.2rem;
+                    }
+                    
+                    .leaderboard-list {
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 10px;
+                        padding: 1rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .leaderboard-item {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 0.75rem 0;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .leaderboard-item:last-child {
+                        border-bottom: none;
+                    }
+                    
+                    .leaderboard-item .rank {
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        flex-shrink: 0;
+                    }
+                    
+                    .leaderboard-item .name {
+                        color: #ffffff;
+                        font-weight: 500;
+                        flex: 1;
+                        margin-left: 1rem;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                    
+                    .leaderboard-item .value {
+                        color: #10b981;
+                        font-weight: 600;
+                        background: rgba(16, 185, 129, 0.1);
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 15px;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .leaderboard-footer {
+                        text-align: center;
+                        margin-top: 1.5rem;
+                    }
+                    
+                    .no-data {
+                        text-align: center;
+                        color: #888;
+                        font-style: italic;
+                        padding: 2rem;
+                    }
                 </style>
                 
                 <script>
@@ -1171,6 +1305,57 @@ function setupDashboardRoutes(app, qrFunctions) {
     });
 
     // List pages - Main section
+    app.get('/list/inventory', requireAuth, async (req, res) => {
+        try {
+            const content = `
+                <div class="card">
+                    <h1>🎒 Inventory</h1>
+                    <p>Manage your collected items and rewards.</p>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>📦 Items</h3>
+                        <p>Your collected items will appear here.</p>
+                        <div class="coming-soon">
+                            <span class="coming-soon-badge">🚀 Coming Soon</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🏆 Rewards</h3>
+                        <p>Track your earned rewards and achievements.</p>
+                        <div class="coming-soon">
+                            <span class="coming-soon-badge">🚀 Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                    .coming-soon {
+                        text-align: center;
+                        padding: 2rem;
+                        color: #888;
+                    }
+                    
+                    .coming-soon-badge {
+                        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                    }
+                </style>
+            `;
+            
+            res.send(getBaseTemplate('Inventory', content, 'list-inventory'));
+        } catch (error) {
+            console.error('Error in inventory:', error);
+            res.status(500).send('Error loading inventory');
+        }
+    });
+
     app.get('/list/leaderboard', requireAuth, async (req, res) => {
         try {
             const { User } = require('./lib/database');
@@ -1214,7 +1399,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[1] ? `
                                         <div class="podium-name">${formatName(podiumData[1].name, podiumData[1].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[1].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[1].balance : podiumData[1].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1229,7 +1413,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[0] ? `
                                         <div class="podium-name">${formatName(podiumData[0].name, podiumData[0].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[0].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[0].balance : podiumData[0].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1243,7 +1426,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[2] ? `
                                         <div class="podium-name">${formatName(podiumData[2].name, podiumData[2].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[2].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[2].balance : podiumData[2].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1267,7 +1449,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <tr>
                                     <th>Rank</th>
                                     <th>Name</th>
-                                    <th>Phone</th>
                                     <th>${type === 'balance' ? 'Balance' : 'Chips'}</th>
                                 </tr>
                             </thead>
@@ -1276,7 +1457,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                     <tr>
                                         <td><span class="rank-number">${startRank + index}</span></td>
                                         <td><span class="user-name">${formatName(user.name, user.jid)}</span></td>
-                                        <td><span class="phone-number">${formatPhoneNumber(user.jid)}</span></td>
                                         <td><span class="value-amount">${type === 'balance' ? user.balance : user.chips}</span></td>
                                     </tr>
                                 `).join('')}

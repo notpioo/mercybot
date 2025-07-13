@@ -93,6 +93,7 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}me - Show your profile
 │ ${config.prefixes[0]}dailylogin - Check daily login status
 │ ${config.prefixes[0]}dailylogin claim - Claim daily reward
+│ ${config.prefixes[0]}inventory - View your inventory
 │ 
 │ 📖 Information:
 │ ${config.prefixes[0]}menu - Show this menu
