@@ -597,13 +597,17 @@ function setupAuthRoutes(app, sock) {
                 attempts: 0
             });
 
+            // Get current socket from whatsapp module
+            const { getSocket } = require('./lib/whatsapp');
+            const currentSocket = getSocket() || whatsappSocket;
+
             // Send verification code via WhatsApp
-            if (whatsappSocket && whatsappSocket.user && whatsappSocket.user.id) {
+            if (currentSocket && currentSocket.user && currentSocket.user.id) {
                 try {
                     console.log('📤 Attempting to send verification code...');
                     const message = `🔐 *Kode Verifikasi Bot*\n\nKode verifikasi Anda: *${code}*\n\nMasukkan kode ini di halaman login.\n\n_Kode berlaku selama 5 menit_`;
 
-                    await whatsappSocket.sendMessage(whatsappJid, {
+                    await currentSocket.sendMessage(whatsappJid, {
                         text: message
                     });
 
@@ -627,9 +631,10 @@ function setupAuthRoutes(app, sock) {
                 }
             } else {
                 console.log('❌ WhatsApp socket status:');
-                console.log('- Socket exists:', !!whatsappSocket);
-                console.log('- User exists:', !!(whatsappSocket && whatsappSocket.user));
-                console.log('- User ID exists:', !!(whatsappSocket && whatsappSocket.user && whatsappSocket.user.id));
+                console.log('- Current Socket exists:', !!currentSocket);
+                console.log('- Stored Socket exists:', !!whatsappSocket);
+                console.log('- User exists:', !!(currentSocket && currentSocket.user));
+                console.log('- User ID exists:', !!(currentSocket && currentSocket.user && currentSocket.user.id));
                 
                 // Still store the code for manual use
                 console.log(`⚠️ Code generated but cannot send automatically: ${code}`);

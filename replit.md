@@ -222,6 +222,17 @@ Changelog:
 - July 10, 2025. Built professional statistics dashboard with detailed game analytics and performance metrics
 - July 10, 2025. Added interactive leaderboard with podium display, filtering options, and real-time rankings
 - July 10, 2025. Integrated API endpoints for stats tracking, game creation, and leaderboard management
+- July 13, 2025. Successfully migrated project from Replit Agent to standard Replit environment
+- July 13, 2025. Fixed profile command bug where owners showed as basic status instead of owner
+- July 13, 2025. Enhanced profile command to properly check config-based owner status
+- July 13, 2025. Updated database owner creation to ensure existing owners get proper status
+- July 13, 2025. Modified badword detection system so group admins now receive warnings
+- July 13, 2025. Only bot owners are now exempt from badword warnings and deletion
+- July 13, 2025. Group admins who reach max warnings won't be auto-kicked but get special warning message
+- July 13, 2025. Successfully migrated project from Replit Agent to standard Replit environment
+- July 13, 2025. Fixed profile command bug where owner status was not displayed correctly
+- July 13, 2025. Updated owner status detection to properly check config owners and override database status
+- July 13, 2025. Enhanced createOwnerUser function to update existing owner users with correct status
 ```
 
 ## User Preferences
