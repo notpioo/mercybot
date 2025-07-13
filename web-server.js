@@ -1,7 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
 const { setupAuthRoutes, initializeAuthSystem: initAuth } = require('./auth-system');
-const { setupDashboardRoutes } = require('./dashboard-system');
+const { setupDashboardRoutes } = require('./dashboard/index');
 const pinConfig = require('./config/pin');
 
 const app = express();
