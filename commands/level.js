@@ -69,7 +69,7 @@ async function execute(context) {
                 });
             } else {
                 await sock.sendMessage(remoteJid, {
-                    text: `❌ Failed to claim reward!\n\n${result.message}`
+                    text: `❌ Failed to claim reward!\n\n📋 Error: ${result.message}\n\n💡 Make sure you have reached the required level or tier before claiming rewards.`
                 });
             }
             return;
