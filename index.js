@@ -1,6 +1,7 @@
 const { startWhatsApp } = require('./lib/whatsapp');
 const { connectDatabase } = require('./lib/database');
 const config = require('./config/config');
+const { initializeDefaultLevelRewards } = require('./lib/levelRewardSystem');
 
 // Start web server for QR code display
 require('./web-server');
@@ -13,6 +14,9 @@ async function main() {
         
         // Connect to MongoDB
         await connectDatabase();
+        
+        // Initialize level reward system
+        await initializeDefaultLevelRewards();
         
         // Start WhatsApp client
         await startWhatsApp();

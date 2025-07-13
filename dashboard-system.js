@@ -445,10 +445,10 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="dropdown-section">
                                     <h4>🎯 Main</h4>
                                     <ul>
-                                        <li><a href="/list/leaderboard">🏆 Leaderboard</a></li>
                                         <li><a href="/list/shop">🛒 Shop</a></li>
                                         <li><a href="/list/quiz">🧠 Quiz</a></li>
                                         <li><a href="/list/redeem">🎁 Redeem</a></li>
+                                        <li><a href="/list/inventory">🎒 Inventory</a></li>
                                     </ul>
                                 </div>
                                 <div class="dropdown-section">
@@ -535,10 +535,10 @@ function setupDashboardRoutes(app, qrFunctions) {
             <div class="bottom-sheet-content active" id="main-content">
                 <div class="bottom-sheet-section">
                     <ul>
-                        <li><a href="/list/leaderboard"><span class="icon">🏆</span> Leaderboard</a></li>
                         <li><a href="/list/shop"><span class="icon">🛒</span> Shop</a></li>
                         <li><a href="/list/quiz"><span class="icon">🧠</span> Quiz</a></li>
                         <li><a href="/list/redeem"><span class="icon">🎁</span> Redeem</a></li>
+                        <li><a href="/list/inventory"><span class="icon">🎒</span> Inventory</a></li>
                     </ul>
                 </div>
             </div>
@@ -819,6 +819,25 @@ function setupDashboardRoutes(app, qrFunctions) {
                 `;
             }
             
+            // Get leaderboard data
+            const { User } = require('./lib/database');
+            const topBalance = await User.find({ balance: { $gt: 0 } })
+                .sort({ balance: -1 })
+                .limit(5)
+                .select('name jid balance');
+            
+            const topChips = await User.find({ chips: { $gt: 0 } })
+                .sort({ chips: -1 })
+                .limit(5)
+                .select('name jid chips');
+            
+            const formatName = (name, jid) => {
+                if (name && name !== 'Unknown') {
+                    return name;
+                }
+                return jid.split('@')[0];
+            };
+            
             const content = `
                 <div class="card">
                     <h1>Welcome to NoMercy</h1>
@@ -827,6 +846,43 @@ function setupDashboardRoutes(app, qrFunctions) {
                 </div>
                 
                 ${dailyLoginSection}
+                
+                <!-- Leaderboard Section -->
+                <div class="card">
+                    <h2>🏆 Leaderboard</h2>
+                    <div class="leaderboard-grid">
+                        <div class="leaderboard-section">
+                            <h3>💰 Top Balance</h3>
+                            <div class="leaderboard-list">
+                                ${topBalance.map((user, index) => `
+                                    <div class="leaderboard-item">
+                                        <span class="rank">${index + 1}</span>
+                                        <span class="name">${formatName(user.name, user.jid)}</span>
+                                        <span class="value">${user.balance}</span>
+                                    </div>
+                                `).join('')}
+                                ${topBalance.length === 0 ? '<div class="no-data">No data yet</div>' : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-section">
+                            <h3>🎰 Top Chips</h3>
+                            <div class="leaderboard-list">
+                                ${topChips.map((user, index) => `
+                                    <div class="leaderboard-item">
+                                        <span class="rank">${index + 1}</span>
+                                        <span class="name">${formatName(user.name, user.jid)}</span>
+                                        <span class="value">${user.chips}</span>
+                                    </div>
+                                `).join('')}
+                                ${topChips.length === 0 ? '<div class="no-data">No data yet</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-footer">
+                        <a href="/list/leaderboard" class="btn btn-secondary">View Full Leaderboard</a>
+                    </div>
+                </div>
                 
                 <div class="grid">
                     <div class="card">
@@ -1039,6 +1095,84 @@ function setupDashboardRoutes(app, qrFunctions) {
                             padding: 0.75rem 0.25rem;
                         }
                     }
+                    
+                    /* Leaderboard Styles */
+                    .leaderboard-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 1.5rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .leaderboard-section h3 {
+                        color: #ffffff;
+                        margin-bottom: 1rem;
+                        font-size: 1.2rem;
+                    }
+                    
+                    .leaderboard-list {
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 10px;
+                        padding: 1rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .leaderboard-item {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 0.75rem 0;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .leaderboard-item:last-child {
+                        border-bottom: none;
+                    }
+                    
+                    .leaderboard-item .rank {
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        flex-shrink: 0;
+                    }
+                    
+                    .leaderboard-item .name {
+                        color: #ffffff;
+                        font-weight: 500;
+                        flex: 1;
+                        margin-left: 1rem;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                    
+                    .leaderboard-item .value {
+                        color: #10b981;
+                        font-weight: 600;
+                        background: rgba(16, 185, 129, 0.1);
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 15px;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .leaderboard-footer {
+                        text-align: center;
+                        margin-top: 1.5rem;
+                    }
+                    
+                    .no-data {
+                        text-align: center;
+                        color: #888;
+                        font-style: italic;
+                        padding: 2rem;
+                    }
                 </style>
                 
                 <script>
@@ -1171,6 +1305,57 @@ function setupDashboardRoutes(app, qrFunctions) {
     });
 
     // List pages - Main section
+    app.get('/list/inventory', requireAuth, async (req, res) => {
+        try {
+            const content = `
+                <div class="card">
+                    <h1>🎒 Inventory</h1>
+                    <p>Manage your collected items and rewards.</p>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>📦 Items</h3>
+                        <p>Your collected items will appear here.</p>
+                        <div class="coming-soon">
+                            <span class="coming-soon-badge">🚀 Coming Soon</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🏆 Rewards</h3>
+                        <p>Track your earned rewards and achievements.</p>
+                        <div class="coming-soon">
+                            <span class="coming-soon-badge">🚀 Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                    .coming-soon {
+                        text-align: center;
+                        padding: 2rem;
+                        color: #888;
+                    }
+                    
+                    .coming-soon-badge {
+                        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                    }
+                </style>
+            `;
+            
+            res.send(getBaseTemplate('Inventory', content, 'list-inventory'));
+        } catch (error) {
+            console.error('Error in inventory:', error);
+            res.status(500).send('Error loading inventory');
+        }
+    });
+
     app.get('/list/leaderboard', requireAuth, async (req, res) => {
         try {
             const { User } = require('./lib/database');
@@ -1214,7 +1399,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[1] ? `
                                         <div class="podium-name">${formatName(podiumData[1].name, podiumData[1].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[1].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[1].balance : podiumData[1].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1229,7 +1413,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[0] ? `
                                         <div class="podium-name">${formatName(podiumData[0].name, podiumData[0].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[0].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[0].balance : podiumData[0].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1243,7 +1426,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <div class="podium-info">
                                     ${podiumData[2] ? `
                                         <div class="podium-name">${formatName(podiumData[2].name, podiumData[2].jid)}</div>
-                                        <div class="podium-phone">${formatPhoneNumber(podiumData[2].jid)}</div>
                                         <div class="podium-value">${type === 'balance' ? podiumData[2].balance : podiumData[2].chips}</div>
                                     ` : '<div class="empty-text">No Data</div>'}
                                 </div>
@@ -1267,7 +1449,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                 <tr>
                                     <th>Rank</th>
                                     <th>Name</th>
-                                    <th>Phone</th>
                                     <th>${type === 'balance' ? 'Balance' : 'Chips'}</th>
                                 </tr>
                             </thead>
@@ -1276,7 +1457,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                                     <tr>
                                         <td><span class="rank-number">${startRank + index}</span></td>
                                         <td><span class="user-name">${formatName(user.name, user.jid)}</span></td>
-                                        <td><span class="phone-number">${formatPhoneNumber(user.jid)}</span></td>
                                         <td><span class="value-amount">${type === 'balance' ? user.balance : user.chips}</span></td>
                                     </tr>
                                 `).join('')}
@@ -2800,6 +2980,567 @@ function setupDashboardRoutes(app, qrFunctions) {
 
     // Profile page
     app.get('/profile', requireAuth, async (req, res) => {
+        try {
+            const { User } = require('./lib/database');
+            const { getUserLevelInfo } = require('./lib/levelSystem');
+            const { getAvailableRewards } = require('./lib/levelRewardSystem');
+            
+            const userPhone = req.session.user.phone;
+            const userJid = userPhone.replace(/^\+/, '') + '@s.whatsapp.net';
+            
+            // Get user data
+            const user = await User.findOne({ jid: userJid });
+            if (!user) {
+                return res.status(404).send('User not found');
+            }
+            
+            // Get level information
+            const levelInfo = await getUserLevelInfo(userJid);
+            const availableRewards = await getAvailableRewards(userJid, levelInfo?.level || 1, levelInfo?.tier || 'warrior');
+            
+            const content = `
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <span class="avatar-text">${user.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div class="level-badge">
+                            <span class="level-number">${levelInfo?.level || 1}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1>${user.name}</h1>
+                        <p class="phone-number">${userPhone}</p>
+                        <p class="tier-badge ${levelInfo?.tier || 'warrior'}">${levelInfo?.tierName || 'Warrior'}</p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${user.balance || 0}</div>
+                        <div class="stat-label">Balance</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${user.chips || 0}</div>
+                        <div class="stat-label">Chips</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${levelInfo?.level || 1}</div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${levelInfo?.experience || 0}</div>
+                        <div class="stat-label">Experience</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Level Progress</h3>
+                    <div class="level-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${levelInfo?.progressPercentage || 0}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Level ${levelInfo?.level || 1}</span>
+                            <span>${levelInfo?.experience || 0} / ${levelInfo?.experienceForNextLevel || 100} EXP</span>
+                        </div>
+                    </div>
+                    <p class="next-level">Next Level: ${levelInfo?.experienceToNext || 100} EXP needed</p>
+                </div>
+                
+                <div class="card">
+                    <h3>🎁 Available Rewards</h3>
+                    <div class="rewards-summary">
+                        <div class="reward-count">
+                            <span class="count">${availableRewards.totalAvailable}</span>
+                            <span class="label">Rewards Available</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="showRewards()">View Milestone Rewards</button>
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>🏆 Status</h3>
+                        <p>Status: <span class="status-badge ${user.status}">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span></p>
+                        <p>Warnings: ${user.warnings || 0}</p>
+                        <p>Commands Used: ${user.commandCount || 0}</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📅 Member Info</h3>
+                        <p>Member Since: ${new Date(user.createdAt).toLocaleDateString()}</p>
+                        <p>Last Seen: ${new Date(user.lastSeen).toLocaleDateString()}</p>
+                        <p>Days Active: ${Math.floor((new Date() - new Date(user.createdAt)) / (1000 * 60 * 60 * 24))}</p>
+                    </div>
+                </div>
+                
+                <!-- Rewards Modal -->
+                <div id="rewardsModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>🎁 Milestone Rewards</h3>
+                            <span class="close" onclick="closeRewards()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="reward-tabs">
+                                <button class="tab-btn active" onclick="showRewardTab('level')">Level Rewards</button>
+                                <button class="tab-btn" onclick="showRewardTab('tier')">Tier Rewards</button>
+                            </div>
+                            <div id="levelRewards" class="reward-tab active">
+                                <div class="reward-list">
+                                    ${availableRewards.levelRewards.map(reward => `
+                                        <div class="reward-item">
+                                            <div class="reward-level">Level ${reward.level}</div>
+                                            <div class="reward-details">
+                                                ${reward.rewards.balance ? `<span class="reward-badge">💰 ${reward.rewards.balance}</span>` : ''}
+                                                ${reward.rewards.chips ? `<span class="reward-badge">🎰 ${reward.rewards.chips}</span>` : ''}
+                                                ${reward.rewards.premium ? `<span class="reward-badge">⭐ ${reward.rewards.premium}d</span>` : ''}
+                                                ${reward.rewards.special ? `<span class="reward-badge special">🎁 ${reward.rewards.special}</span>` : ''}
+                                            </div>
+                                            <button class="btn btn-small" onclick="claimReward('level', ${reward.level})">Claim</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div id="tierRewards" class="reward-tab">
+                                <div class="reward-list">
+                                    ${availableRewards.tierRewards.map(reward => `
+                                        <div class="reward-item">
+                                            <div class="reward-level">${reward.tier.charAt(0).toUpperCase() + reward.tier.slice(1)} Tier</div>
+                                            <div class="reward-details">
+                                                ${reward.rewards.balance ? `<span class="reward-badge">💰 ${reward.rewards.balance}</span>` : ''}
+                                                ${reward.rewards.chips ? `<span class="reward-badge">🎰 ${reward.rewards.chips}</span>` : ''}
+                                                ${reward.rewards.premium ? `<span class="reward-badge">⭐ ${reward.rewards.premium}d</span>` : ''}
+                                                ${reward.rewards.special ? `<span class="reward-badge special">🎁 ${reward.rewards.special}</span>` : ''}
+                                            </div>
+                                            <button class="btn btn-small" onclick="claimReward('tier', '${reward.tier}')">Claim</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                    .profile-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 2rem;
+                        margin-bottom: 2rem;
+                        padding: 2rem;
+                        background: rgba(30, 30, 30, 0.95);
+                        border-radius: 15px;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .profile-avatar {
+                        position: relative;
+                    }
+                    
+                    .avatar-circle {
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 3px solid rgba(255, 255, 255, 0.2);
+                    }
+                    
+                    .avatar-text {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        color: white;
+                    }
+                    
+                    .level-badge {
+                        position: absolute;
+                        bottom: -5px;
+                        right: -5px;
+                        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+                        color: white;
+                        width: 35px;
+                        height: 35px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        font-size: 0.9rem;
+                        border: 2px solid #1a1a1a;
+                    }
+                    
+                    .profile-info h1 {
+                        margin: 0 0 0.5rem 0;
+                        color: white;
+                        font-size: 1.8rem;
+                    }
+                    
+                    .phone-number {
+                        color: #888;
+                        margin: 0 0 1rem 0;
+                        font-size: 1rem;
+                    }
+                    
+                    .tier-badge {
+                        display: inline-block;
+                        padding: 0.5rem 1rem;
+                        border-radius: 15px;
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .tier-badge.warrior { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; }
+                    .tier-badge.elite { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+                    .tier-badge.master { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; }
+                    .tier-badge.grandmaster { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
+                    .tier-badge.epic { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+                    .tier-badge.legend { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+                    .tier-badge.mythic { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; }
+                    .tier-badge.honor { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; }
+                    .tier-badge.immortal { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: black; }
+                    
+                    .profile-stats {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                        gap: 1.5rem;
+                        margin-bottom: 2rem;
+                    }
+                    
+                    .stat-item {
+                        text-align: center;
+                        padding: 1.5rem;
+                        background: rgba(30, 30, 30, 0.95);
+                        border-radius: 10px;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .stat-value {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        color: #6366f1;
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    .stat-label {
+                        color: #888;
+                        font-size: 0.9rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .level-progress {
+                        margin-bottom: 1rem;
+                    }
+                    
+                    .progress-bar {
+                        width: 100%;
+                        height: 20px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 10px;
+                        overflow: hidden;
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    .progress-fill {
+                        height: 100%;
+                        background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+                        transition: width 0.3s ease;
+                    }
+                    
+                    .progress-text {
+                        display: flex;
+                        justify-content: space-between;
+                        color: #ccc;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .next-level {
+                        color: #888;
+                        font-size: 0.9rem;
+                        margin: 0;
+                    }
+                    
+                    .rewards-summary {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .reward-count {
+                        text-align: center;
+                    }
+                    
+                    .reward-count .count {
+                        display: block;
+                        font-size: 2rem;
+                        font-weight: bold;
+                        color: #f59e0b;
+                        margin-bottom: 0.25rem;
+                    }
+                    
+                    .reward-count .label {
+                        color: #888;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .status-badge {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 10px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                    }
+                    
+                    .status-badge.basic { background: #374151; color: white; }
+                    .status-badge.premium { background: #f59e0b; color: white; }
+                    .status-badge.owner { background: #ef4444; color: white; }
+                    
+                    /* Modal Styles */
+                    .modal {
+                        display: none;
+                        position: fixed;
+                        z-index: 1000;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0, 0, 0, 0.8);
+                    }
+                    
+                    .modal-content {
+                        background-color: #1a1a1a;
+                        margin: 5% auto;
+                        padding: 0;
+                        border-radius: 15px;
+                        width: 90%;
+                        max-width: 800px;
+                        max-height: 80vh;
+                        overflow-y: auto;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .modal-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1.5rem;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .modal-header h3 {
+                        margin: 0;
+                        color: white;
+                    }
+                    
+                    .close {
+                        color: #aaa;
+                        font-size: 28px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: color 0.3s;
+                    }
+                    
+                    .close:hover {
+                        color: white;
+                    }
+                    
+                    .modal-body {
+                        padding: 1.5rem;
+                    }
+                    
+                    .reward-tabs {
+                        display: flex;
+                        gap: 1rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .tab-btn {
+                        padding: 0.75rem 1.5rem;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(30, 30, 30, 0.95);
+                        color: #ccc;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .tab-btn.active {
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        border-color: #6366f1;
+                    }
+                    
+                    .reward-tab {
+                        display: none;
+                    }
+                    
+                    .reward-tab.active {
+                        display: block;
+                    }
+                    
+                    .reward-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1rem;
+                    }
+                    
+                    .reward-item {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 1rem;
+                        background: rgba(30, 30, 30, 0.95);
+                        border-radius: 10px;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .reward-level {
+                        font-weight: bold;
+                        color: #6366f1;
+                        min-width: 100px;
+                    }
+                    
+                    .reward-details {
+                        flex: 1;
+                        display: flex;
+                        gap: 0.5rem;
+                        margin: 0 1rem;
+                    }
+                    
+                    .reward-badge {
+                        display: inline-block;
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 5px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        background: rgba(99, 102, 241, 0.2);
+                        color: #6366f1;
+                    }
+                    
+                    .reward-badge.special {
+                        background: rgba(245, 158, 11, 0.2);
+                        color: #f59e0b;
+                    }
+                    
+                    .btn-small {
+                        padding: 0.5rem 1rem;
+                        font-size: 0.9rem;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .profile-header {
+                            flex-direction: column;
+                            text-align: center;
+                            gap: 1rem;
+                        }
+                        
+                        .profile-stats {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
+                        
+                        .rewards-summary {
+                            flex-direction: column;
+                            gap: 1rem;
+                        }
+                        
+                        .reward-tabs {
+                            flex-direction: column;
+                        }
+                        
+                        .reward-item {
+                            flex-direction: column;
+                            gap: 1rem;
+                            text-align: center;
+                        }
+                        
+                        .reward-details {
+                            margin: 0;
+                            justify-content: center;
+                        }
+                    }
+                </style>
+                
+                <script>
+                    function showRewards() {
+                        document.getElementById('rewardsModal').style.display = 'block';
+                    }
+                    
+                    function closeRewards() {
+                        document.getElementById('rewardsModal').style.display = 'none';
+                    }
+                    
+                    function showRewardTab(tab) {
+                        // Hide all tabs
+                        document.querySelectorAll('.reward-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        
+                        // Show selected tab
+                        document.getElementById(tab + 'Rewards').classList.add('active');
+                        event.target.classList.add('active');
+                    }
+                    
+                    async function claimReward(type, levelOrTier) {
+                        try {
+                            const response = await fetch('/api/level-rewards/claim', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    type,
+                                    levelOrTier
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                alert(\`🎉 Reward Claimed!\\n\\n\` +
+                                      \`\${type === 'level' ? 'Level' : 'Tier'} reward claimed successfully!\\n\\n\` +
+                                      \`Rewards received:\\n\` +
+                                      \`\${data.rewards.balance ? '💰 ' + data.rewards.balance + ' Balance\\n' : ''}\` +
+                                      \`\${data.rewards.chips ? '🎰 ' + data.rewards.chips + ' Chips\\n' : ''}\` +
+                                      \`\${data.rewards.premium ? '⭐ ' + data.rewards.premium + ' days Premium\\n' : ''}\` +
+                                      \`\${data.rewards.special ? '🎁 ' + data.rewards.special + '\\n' : ''}\`);
+                                
+                                // Reload page to update rewards
+                                window.location.reload();
+                            } else {
+                                alert('❌ Failed to claim reward: ' + (data.message || 'Unknown error'));
+                            }
+                        } catch (error) {
+                            console.error('Error claiming reward:', error);
+                            alert('❌ Error claiming reward. Please try again.');
+                        }
+                    }
+                    
+                    // Close modal when clicking outside
+                    window.onclick = function(event) {
+                        const modal = document.getElementById('rewardsModal');
+                        if (event.target === modal) {
+                            closeRewards();
+                        }
+                    }
+                </script>
+            `;
+            
+            res.send(getBaseTemplate('Profile', content, 'profile'));
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            res.status(500).send('Error loading profile');
+        }
+    });
+
+    // Original profile page
+    app.get('/profile-old', requireAuth, async (req, res) => {
         try {
             const { User } = require('./lib/database');
             
@@ -6432,6 +7173,571 @@ function setupDashboardRoutes(app, qrFunctions) {
     app.get('/logout', (req, res) =>{
         req.session.destroy();
         res.redirect('/');
+    });
+
+    // API endpoints for level rewards
+    app.get('/api/level-rewards/available', requireAuth, async (req, res) => {
+        try {
+            const { getUserLevelInfo } = require('./lib/levelSystem');
+            const { getAvailableRewards } = require('./lib/levelRewardSystem');
+            
+            const userPhone = req.session.user.phone;
+            const userJid = userPhone.replace(/^\+/, '') + '@s.whatsapp.net';
+            
+            const levelInfo = await getUserLevelInfo(userJid);
+            const availableRewards = await getAvailableRewards(userJid, levelInfo?.level || 1, levelInfo?.tier || 'warrior');
+            
+            res.json({
+                success: true,
+                levelInfo,
+                availableRewards
+            });
+        } catch (error) {
+            console.error('Error getting available rewards:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error getting available rewards'
+            });
+        }
+    });
+
+    app.post('/api/level-rewards/claim', requireAuth, async (req, res) => {
+        try {
+            const { claimReward } = require('./lib/levelRewardSystem');
+            const { type, levelOrTier } = req.body;
+            
+            const userPhone = req.session.user.phone;
+            const userJid = userPhone.replace(/^\+/, '') + '@s.whatsapp.net';
+            
+            const result = await claimReward(userJid, type, levelOrTier);
+            
+            if (result.success) {
+                res.json({
+                    success: true,
+                    rewards: result.rewards,
+                    message: result.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: result.message
+                });
+            }
+        } catch (error) {
+            console.error('Error claiming reward:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error claiming reward'
+            });
+        }
+    });
+
+    // Admin panel for level rewards management
+    app.get('/admin/level-rewards', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { LevelReward, TierMilestone } = require('./lib/levelRewardSystem');
+            const { getTierProgression } = require('./lib/levelSystem');
+            
+            const levelRewards = await LevelReward.find({}).sort({ level: 1 });
+            const tierRewards = await TierMilestone.find({}).sort({ tier: 1 });
+            const tierProgression = getTierProgression();
+            
+            const content = `
+                <div class="card">
+                    <h1>🎁 Level Rewards Management</h1>
+                    <p>Configure level and tier milestone rewards for users.</p>
+                </div>
+                
+                <div class="reward-tabs">
+                    <button class="tab-btn active" onclick="showTab('level')">Level Rewards</button>
+                    <button class="tab-btn" onclick="showTab('tier')">Tier Rewards</button>
+                </div>
+                
+                <div id="levelTab" class="tab-content active">
+                    <div class="card">
+                        <h3>📊 Level Rewards</h3>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Level</th>
+                                        <th>Tier</th>
+                                        <th>Balance</th>
+                                        <th>Chips</th>
+                                        <th>Premium (Days)</th>
+                                        <th>Special</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${levelRewards.map(reward => `
+                                        <tr>
+                                            <td>${reward.level}</td>
+                                            <td><span class="tier-badge ${reward.tier}">${reward.tier}</span></td>
+                                            <td>
+                                                <input type="number" value="${reward.rewards.balance}" 
+                                                       onchange="updateLevelReward(${reward.level}, 'balance', this.value)">
+                                            </td>
+                                            <td>
+                                                <input type="number" value="${reward.rewards.chips}" 
+                                                       onchange="updateLevelReward(${reward.level}, 'chips', this.value)">
+                                            </td>
+                                            <td>
+                                                <input type="number" value="${reward.rewards.premium}" 
+                                                       onchange="updateLevelReward(${reward.level}, 'premium', this.value)">
+                                            </td>
+                                            <td>
+                                                <input type="text" value="${reward.rewards.special || ''}" 
+                                                       onchange="updateLevelReward(${reward.level}, 'special', this.value)">
+                                            </td>
+                                            <td>
+                                                <span class="status-badge ${reward.isActive ? 'active' : 'inactive'}">
+                                                    ${reward.isActive ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-small" onclick="toggleLevelReward(${reward.level})">
+                                                    ${reward.isActive ? 'Disable' : 'Enable'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tierTab" class="tab-content">
+                    <div class="card">
+                        <h3>🏆 Tier Milestone Rewards</h3>
+                        <div class="tier-grid">
+                            ${tierRewards.map(reward => `
+                                <div class="tier-reward-card">
+                                    <div class="tier-header">
+                                        <span class="tier-badge ${reward.tier}">${reward.tier.toUpperCase()}</span>
+                                        <span class="status-badge ${reward.isActive ? 'active' : 'inactive'}">
+                                            ${reward.isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                    <div class="tier-rewards">
+                                        <div class="reward-input">
+                                            <label>Balance:</label>
+                                            <input type="number" value="${reward.rewards.balance}" 
+                                                   onchange="updateTierReward('${reward.tier}', 'balance', this.value)">
+                                        </div>
+                                        <div class="reward-input">
+                                            <label>Chips:</label>
+                                            <input type="number" value="${reward.rewards.chips}" 
+                                                   onchange="updateTierReward('${reward.tier}', 'chips', this.value)">
+                                        </div>
+                                        <div class="reward-input">
+                                            <label>Premium (Days):</label>
+                                            <input type="number" value="${reward.rewards.premium}" 
+                                                   onchange="updateTierReward('${reward.tier}', 'premium', this.value)">
+                                        </div>
+                                        <div class="reward-input">
+                                            <label>Special:</label>
+                                            <input type="text" value="${reward.rewards.special || ''}" 
+                                                   onchange="updateTierReward('${reward.tier}', 'special', this.value)">
+                                        </div>
+                                    </div>
+                                    <div class="tier-actions">
+                                        <button class="btn btn-small" onclick="toggleTierReward('${reward.tier}')">
+                                            ${reward.isActive ? 'Disable' : 'Enable'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                    .reward-tabs {
+                        display: flex;
+                        gap: 1rem;
+                        margin-bottom: 2rem;
+                    }
+                    
+                    .tab-btn {
+                        padding: 0.75rem 1.5rem;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(30, 30, 30, 0.95);
+                        color: #ccc;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .tab-btn.active {
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        border-color: #6366f1;
+                    }
+                    
+                    .tab-content {
+                        display: none;
+                    }
+                    
+                    .tab-content.active {
+                        display: block;
+                    }
+                    
+                    .table-container {
+                        overflow-x: auto;
+                    }
+                    
+                    .admin-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 1rem;
+                    }
+                    
+                    .admin-table th,
+                    .admin-table td {
+                        padding: 0.75rem;
+                        text-align: left;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .admin-table th {
+                        background: rgba(30, 30, 30, 0.95);
+                        color: white;
+                        font-weight: 600;
+                    }
+                    
+                    .admin-table td {
+                        background: rgba(20, 20, 20, 0.95);
+                        color: #ccc;
+                    }
+                    
+                    .admin-table input {
+                        width: 100%;
+                        padding: 0.5rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(30, 30, 30, 0.95);
+                        color: white;
+                        border-radius: 5px;
+                    }
+                    
+                    .tier-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 1.5rem;
+                        margin-top: 1rem;
+                    }
+                    
+                    .tier-reward-card {
+                        background: rgba(30, 30, 30, 0.95);
+                        border-radius: 10px;
+                        padding: 1.5rem;
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .tier-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1rem;
+                    }
+                    
+                    .tier-rewards {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1rem;
+                        margin-bottom: 1rem;
+                    }
+                    
+                    .reward-input {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .reward-input label {
+                        min-width: 100px;
+                        color: #ccc;
+                        font-weight: 500;
+                    }
+                    
+                    .reward-input input {
+                        flex: 1;
+                        padding: 0.5rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(20, 20, 20, 0.95);
+                        color: white;
+                        border-radius: 5px;
+                    }
+                    
+                    .tier-actions {
+                        text-align: center;
+                    }
+                    
+                    .tier-badge {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 10px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                    }
+                    
+                    .tier-badge.warrior { background: #6b7280; color: white; }
+                    .tier-badge.elite { background: #10b981; color: white; }
+                    .tier-badge.master { background: #3b82f6; color: white; }
+                    .tier-badge.grandmaster { background: #8b5cf6; color: white; }
+                    .tier-badge.epic { background: #f59e0b; color: white; }
+                    .tier-badge.legend { background: #ef4444; color: white; }
+                    .tier-badge.mythic { background: #ec4899; color: white; }
+                    .tier-badge.honor { background: #06b6d4; color: white; }
+                    .tier-badge.immortal { background: #fbbf24; color: black; }
+                    
+                    .status-badge {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 10px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                    }
+                    
+                    .status-badge.active { background: #10b981; color: white; }
+                    .status-badge.inactive { background: #6b7280; color: white; }
+                    
+                    .btn-small {
+                        padding: 0.5rem 1rem;
+                        font-size: 0.9rem;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .reward-tabs {
+                            flex-direction: column;
+                        }
+                        
+                        .tier-grid {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .reward-input {
+                            flex-direction: column;
+                            align-items: flex-start;
+                        }
+                        
+                        .reward-input label {
+                            min-width: auto;
+                        }
+                    }
+                </style>
+                
+                <script>
+                    function showTab(tab) {
+                        // Hide all tabs
+                        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        
+                        // Show selected tab
+                        document.getElementById(tab + 'Tab').classList.add('active');
+                        event.target.classList.add('active');
+                    }
+                    
+                    async function updateLevelReward(level, field, value) {
+                        try {
+                            const response = await fetch('/api/admin/level-rewards/update', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    type: 'level',
+                                    level,
+                                    field,
+                                    value
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                console.log('Level reward updated successfully');
+                            } else {
+                                alert('Error updating level reward: ' + data.message);
+                            }
+                        } catch (error) {
+                            console.error('Error updating level reward:', error);
+                            alert('Error updating level reward');
+                        }
+                    }
+                    
+                    async function updateTierReward(tier, field, value) {
+                        try {
+                            const response = await fetch('/api/admin/level-rewards/update', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    type: 'tier',
+                                    tier,
+                                    field,
+                                    value
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                console.log('Tier reward updated successfully');
+                            } else {
+                                alert('Error updating tier reward: ' + data.message);
+                            }
+                        } catch (error) {
+                            console.error('Error updating tier reward:', error);
+                            alert('Error updating tier reward');
+                        }
+                    }
+                    
+                    async function toggleLevelReward(level) {
+                        try {
+                            const response = await fetch('/api/admin/level-rewards/toggle', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    type: 'level',
+                                    level
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Error toggling level reward: ' + data.message);
+                            }
+                        } catch (error) {
+                            console.error('Error toggling level reward:', error);
+                            alert('Error toggling level reward');
+                        }
+                    }
+                    
+                    async function toggleTierReward(tier) {
+                        try {
+                            const response = await fetch('/api/admin/level-rewards/toggle', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    type: 'tier',
+                                    tier
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Error toggling tier reward: ' + data.message);
+                            }
+                        } catch (error) {
+                            console.error('Error toggling tier reward:', error);
+                            alert('Error toggling tier reward');
+                        }
+                    }
+                </script>
+            `;
+            
+            res.send(getBaseTemplate('Level Rewards Management', content, 'admin'));
+        } catch (error) {
+            console.error('Error loading level rewards admin:', error);
+            res.status(500).send('Error loading level rewards admin');
+        }
+    });
+
+    // Admin API endpoints for level rewards
+    app.post('/api/admin/level-rewards/update', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { LevelReward, TierMilestone } = require('./lib/levelRewardSystem');
+            const { type, level, tier, field, value } = req.body;
+            
+            if (type === 'level') {
+                const reward = await LevelReward.findOne({ level });
+                if (!reward) {
+                    return res.status(404).json({ success: false, message: 'Level reward not found' });
+                }
+                
+                const updateField = `rewards.${field}`;
+                const updateValue = field === 'special' ? value : parseInt(value) || 0;
+                
+                await LevelReward.updateOne(
+                    { level },
+                    { $set: { [updateField]: updateValue } }
+                );
+                
+                console.log(`✏️ Level ${level} reward updated: ${field} = ${updateValue}`);
+                
+            } else if (type === 'tier') {
+                const reward = await TierMilestone.findOne({ tier });
+                if (!reward) {
+                    return res.status(404).json({ success: false, message: 'Tier reward not found' });
+                }
+                
+                const updateField = `rewards.${field}`;
+                const updateValue = field === 'special' ? value : parseInt(value) || 0;
+                
+                await TierMilestone.updateOne(
+                    { tier },
+                    { $set: { [updateField]: updateValue } }
+                );
+                
+                console.log(`✏️ Tier ${tier} reward updated: ${field} = ${updateValue}`);
+            }
+            
+            res.json({ success: true, message: 'Reward updated successfully' });
+        } catch (error) {
+            console.error('Error updating reward:', error);
+            res.status(500).json({ success: false, message: 'Error updating reward' });
+        }
+    });
+
+    app.post('/api/admin/level-rewards/toggle', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { LevelReward, TierMilestone } = require('./lib/levelRewardSystem');
+            const { type, level, tier } = req.body;
+            
+            if (type === 'level') {
+                const reward = await LevelReward.findOne({ level });
+                if (!reward) {
+                    return res.status(404).json({ success: false, message: 'Level reward not found' });
+                }
+                
+                await LevelReward.updateOne(
+                    { level },
+                    { $set: { isActive: !reward.isActive } }
+                );
+                
+                console.log(`🔄 Level ${level} reward toggled: ${!reward.isActive ? 'enabled' : 'disabled'}`);
+                
+            } else if (type === 'tier') {
+                const reward = await TierMilestone.findOne({ tier });
+                if (!reward) {
+                    return res.status(404).json({ success: false, message: 'Tier reward not found' });
+                }
+                
+                await TierMilestone.updateOne(
+                    { tier },
+                    { $set: { isActive: !reward.isActive } }
+                );
+                
+                console.log(`🔄 Tier ${tier} reward toggled: ${!reward.isActive ? 'enabled' : 'disabled'}`);
+            }
+            
+            res.json({ success: true, message: 'Reward toggled successfully' });
+        } catch (error) {
+            console.error('Error toggling reward:', error);
+            res.status(500).json({ success: false, message: 'Error toggling reward' });
+        }
     });
 }
 

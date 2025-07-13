@@ -1,9 +1,9 @@
-modules = ["nodejs-20", "web"]
+modules = ["nodejs-20", "web", "python-3.11"]
 run = "node index.js"
 
 [nix]
 channel = "stable-24_05"
-packages = ["ffmpeg"]
+packages = ["ffmpeg", "pkg-config", "vips"]
 
 [workflows]
 runButton = "Project"
