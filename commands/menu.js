@@ -91,6 +91,8 @@ function createMenuText(userName) {
 │ ${config.prefixes[0]}profile - Show your profile
 │ ${config.prefixes[0]}profile @mention - Show someone's profile
 │ ${config.prefixes[0]}me - Show your profile
+│ ${config.prefixes[0]}level - View level progress
+│ ${config.prefixes[0]}level @mention - View someone's level
 │ ${config.prefixes[0]}dailylogin - Check daily login status
 │ ${config.prefixes[0]}dailylogin claim - Claim daily reward
 │ ${config.prefixes[0]}inventory - View your inventory
