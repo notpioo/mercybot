@@ -138,6 +138,95 @@ function setupApiRoutes(app) {
         }
     });
 
+    // Get daily login rewards (Admin)
+    app.get('/api/admin/daily-login-rewards', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { DailyLoginConfig } = require('../../lib/dailyLoginModel');
+            
+            const rewards = await DailyLoginConfig.find().sort({ day: 1 });
+            
+            res.json({
+                success: true,
+                rewards: rewards
+            });
+        } catch (error) {
+            console.error('Error fetching daily login rewards:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching rewards'
+            });
+        }
+    });
+
+    // Update daily login reward (Admin)
+    app.put('/api/admin/daily-login-rewards', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { DailyLoginConfig } = require('../../lib/dailyLoginModel');
+            const { day, rewardType, rewardAmount, premiumDuration, isActive } = req.body;
+            
+            const updateData = {
+                rewardType,
+                rewardAmount,
+                isActive
+            };
+            
+            if (rewardType === 'premium' && premiumDuration) {
+                updateData.premiumDuration = premiumDuration;
+            }
+            
+            await DailyLoginConfig.findOneAndUpdate(
+                { day: day },
+                updateData,
+                { upsert: true }
+            );
+            
+            res.json({
+                success: true,
+                message: 'Reward updated successfully'
+            });
+        } catch (error) {
+            console.error('Error updating daily login reward:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error updating reward'
+            });
+        }
+    });
+
+    // Reset daily login rewards to default (Admin)
+    app.post('/api/admin/daily-login-rewards/reset', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const { DailyLoginConfig } = require('../../lib/dailyLoginModel');
+            
+            // Clear existing rewards
+            await DailyLoginConfig.deleteMany({});
+            
+            // Insert default rewards
+            const defaultRewards = [
+                { day: 1, rewardType: 'balance', rewardAmount: 500 },
+                { day: 2, rewardType: 'chips', rewardAmount: 100 },
+                { day: 3, rewardType: 'balance', rewardAmount: 750 },
+                { day: 4, rewardType: 'chips', rewardAmount: 200 },
+                { day: 5, rewardType: 'balance', rewardAmount: 1000 },
+                { day: 6, rewardType: 'chips', rewardAmount: 300 },
+                { day: 7, rewardType: 'premium', rewardAmount: 1, premiumDuration: 1 }
+            ];
+            
+            await DailyLoginConfig.insertMany(defaultRewards);
+            
+            res.json({
+                success: true,
+                message: 'Rewards reset to default successfully'
+            });
+        } catch (error) {
+            console.error('Error resetting daily login rewards:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error resetting rewards'
+            });
+        }
+    });
+
     // Daily login claim API
     app.post('/api/daily-login/claim', requireAuth, async (req, res) => {
         try {
@@ -293,51 +382,9 @@ function setupApiRoutes(app) {
         }
     });
 
-    // Admin reset daily login API
-    app.post('/api/admin/reset-daily-login', requireAuth, requireOwner, async (req, res) => {
-        try {
-            const { resetUserDailyLogin } = require('../../lib/dailyLoginModel');
-            const { phone } = req.body;
-            
-            if (!phone) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Phone number is required'
-                });
-            }
-            
-            let userPhone = phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const result = await resetUserDailyLogin(userJid);
-            
-            if (result.success) {
-                res.json({
-                    success: true,
-                    message: 'Daily login reset successfully'
-                });
-            } else {
-                res.json({
-                    success: false,
-                    message: result.message
-                });
-            }
-        } catch (error) {
-            console.error('Error resetting daily login:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Error resetting daily login'
-            });
-        }
+    // Admin reset daily login API - removed
+    app.post('/api/admin/reset-daily-login', async (req, res) => {
+        res.status(404).json({ success: false, message: 'Admin API removed' });
     });
 
     // News management API endpoints
@@ -373,18 +420,19 @@ function setupApiRoutes(app) {
     // Create news (admin only)
     app.post('/api/admin/news', requireAuth, requireOwner, async (req, res) => {
         try {
-            const { title, content, status = 'active' } = req.body;
+            const { title, content, category, status = 'active' } = req.body;
             
-            if (!title || !content) {
+            if (!title || !content || !category) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Title and content are required'
+                    message: 'Title, content, and category are required'
                 });
             }
             
             const newsData = {
                 title,
                 content,
+                category,
                 status,
                 author: req.session.user.phone
             };
@@ -404,11 +452,12 @@ function setupApiRoutes(app) {
     app.put('/api/admin/news/:id', requireAuth, requireOwner, async (req, res) => {
         try {
             const { id } = req.params;
-            const { title, content, status } = req.body;
+            const { title, content, category, status } = req.body;
             
             const updateData = {};
             if (title) updateData.title = title;
             if (content) updateData.content = content;
+            if (category) updateData.category = category;
             if (status) updateData.status = status;
             
             const result = await updateNews(id, updateData);
@@ -418,6 +467,20 @@ function setupApiRoutes(app) {
             res.status(500).json({
                 success: false,
                 message: 'Error updating news'
+            });
+        }
+    });
+
+    // Delete all news (admin only) - Must come before /:id route
+    app.delete('/api/admin/news/all', requireAuth, requireOwner, async (req, res) => {
+        try {
+            const result = await deleteAllNews();
+            res.json(result);
+        } catch (error) {
+            console.error('Error deleting all news:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error deleting all news'
             });
         }
     });
@@ -433,20 +496,6 @@ function setupApiRoutes(app) {
             res.status(500).json({
                 success: false,
                 message: 'Error deleting news'
-            });
-        }
-    });
-
-    // Delete all news (admin only)
-    app.delete('/api/admin/news/all', requireAuth, requireOwner, async (req, res) => {
-        try {
-            const result = await deleteAllNews();
-            res.json(result);
-        } catch (error) {
-            console.error('Error deleting all news:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Error deleting all news'
             });
         }
     });

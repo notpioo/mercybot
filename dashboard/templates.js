@@ -6,8 +6,15 @@ function getBaseTemplate(title, content, activePage = '') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NoMercy - ${title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NoMercy - ${title}</title>
+    <meta name="description" content="NoMercy Dashboard - Manage your WhatsApp bot and casino games">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0idXJsKCNncmFkaWVudDBfbGluZWFyXzFfMSkiLz4KPHBhdGggZD0iTTE2IDhMMTMuNSAxNkwxOC41IDE2TDE4LjUgMjFMMTMuNSAyMUwxNiAyOUwxOC41IDIxTDIzLjUgMjFMMjEgMTNMMjMuNSAxM0wyMSA4TDE2IDhaIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMzIiIHkyPSIzMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzYzNjZmMSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -238,7 +245,7 @@ function getBaseTemplate(title, content, activePage = '') {
         .disabled\\:cursor-not-allowed:disabled {
             cursor: not-allowed;
         }
-        
+
         /* Form styles */
         .form-group {
             margin-bottom: 1.5rem;
@@ -297,7 +304,7 @@ function getBaseTemplate(title, content, activePage = '') {
             border-color: #6366f1;
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
-        
+
         /* Table styles */
         .table {
             width: 100%;
@@ -325,7 +332,7 @@ function getBaseTemplate(title, content, activePage = '') {
         .table tr:last-child td {
             border-bottom: none;
         }
-        
+
         /* Alert styles */
         .alert {
             padding: 1rem;
@@ -353,7 +360,7 @@ function getBaseTemplate(title, content, activePage = '') {
             border-color: rgba(59, 130, 246, 0.3);
             color: #60a5fa;
         }
-        
+
         /* Badge styles */
         .badge {
             display: inline-block;
@@ -384,7 +391,7 @@ function getBaseTemplate(title, content, activePage = '') {
             background: rgba(107, 114, 128, 0.2);
             color: #9ca3af;
         }
-        
+
         /* Progress bar styles */
         .progress {
             width: 100%;
@@ -398,7 +405,7 @@ function getBaseTemplate(title, content, activePage = '') {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             transition: width 0.3s ease;
         }
-        
+
         /* Loading spinner */
         .spinner {
             width: 1rem;
@@ -408,12 +415,12 @@ function getBaseTemplate(title, content, activePage = '') {
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -440,7 +447,7 @@ function getBaseTemplate(title, content, activePage = '') {
 </head>
 <body>
     ${getNavigationTemplate(activePage)}
-    
+
     <div class="container">
         ${content}
     </div>

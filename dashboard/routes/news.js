@@ -47,7 +47,7 @@ function setupNewsRoutes(app) {
                     .news-header {
                         display: flex;
                         justify-content: space-between;
-                        align-items: center;
+                        align-items: flex-start;
                         margin-bottom: 1rem;
                         flex-wrap: wrap;
                         gap: 1rem;
@@ -58,6 +58,38 @@ function setupNewsRoutes(app) {
                         font-size: 1.3rem;
                         font-weight: 600;
                         margin: 0;
+                        flex: 1;
+                    }
+                    
+                    .news-meta {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5rem;
+                        align-items: flex-end;
+                    }
+                    
+                    .news-category {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 12px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                    }
+                    
+                    .news-category.Pengumuman {
+                        background: #3b82f6;
+                        color: white;
+                    }
+                    
+                    .news-category.Update {
+                        background: #10b981;
+                        color: white;
+                    }
+                    
+                    .news-category.Penting {
+                        background: #ef4444;
+                        color: white;
                     }
                     
                     .news-date {
@@ -134,11 +166,14 @@ function setupNewsRoutes(app) {
                                     '<div class="card news-item">' +
                                     '<div class="news-header">' +
                                     '<h3 class="news-title">' + news.title + '</h3>' +
+                                    '<div class="news-meta">' +
+                                    '<span class="news-category ' + (news.category || 'Pengumuman') + '">' + getCategoryIcon(news.category || 'Pengumuman') + ' ' + (news.category || 'Pengumuman') + '</span>' +
                                     '<span class="news-date">' + new Date(news.createdAt).toLocaleDateString('en-US', { 
                                         year: 'numeric', 
                                         month: 'long', 
                                         day: 'numeric' 
                                     }) + '</span>' +
+                                    '</div>' +
                                     '</div>' +
                                     '<div class="news-content">' + news.content.replace(/\\n/g, '<br>') + '</div>' +
                                     '<div class="news-author">By: ' + news.author + '</div>' +
@@ -160,6 +195,16 @@ function setupNewsRoutes(app) {
                                 '<p>Unable to load news at the moment.</p>' +
                                 '<p>Please try again later.</p>' +
                                 '</div>';
+                        }
+                    }
+                    
+                    // Get category icon
+                    function getCategoryIcon(category) {
+                        switch(category) {
+                            case 'Pengumuman': return '📢';
+                            case 'Update': return '🔄';
+                            case 'Penting': return '⚠️';
+                            default: return '📝';
                         }
                     }
                     

@@ -361,12 +361,33 @@ function setupProfileRoutes(app) {
                     }
                     
                     @media (max-width: 768px) {
+                        .profile-section {
+                            padding: 0 10px;
+                            max-width: 100%;
+                            overflow-x: hidden;
+                        }
+                        
                         .profile-grid {
                             grid-template-columns: 1fr;
+                            gap: 1rem;
                         }
                         
                         .stats-grid {
                             grid-template-columns: repeat(2, 1fr);
+                            gap: 0.5rem;
+                        }
+                        
+                        .stat-card {
+                            padding: 0.75rem;
+                            gap: 0.5rem;
+                        }
+                        
+                        .stat-icon {
+                            font-size: 1.2rem;
+                        }
+                        
+                        .stat-value {
+                            font-size: 1rem;
                         }
                         
                         .level-info {
@@ -383,6 +404,43 @@ function setupProfileRoutes(app) {
                             flex-direction: column;
                             gap: 0.5rem;
                             text-align: center;
+                        }
+                        
+                        .info-item {
+                            padding: 0.75rem;
+                            flex-direction: column;
+                            gap: 0.5rem;
+                            text-align: center;
+                        }
+                        
+                        .info-label {
+                            font-size: 0.8rem;
+                        }
+                        
+                        .info-value {
+                            font-size: 0.9rem;
+                        }
+                        
+                        .admin-actions {
+                            justify-content: stretch;
+                        }
+                        
+                        .btn-admin {
+                            padding: 0.75rem 1rem;
+                            font-size: 0.9rem;
+                        }
+                        
+                        .card {
+                            padding: 1rem;
+                            margin-bottom: 1rem;
+                        }
+                        
+                        .card h3 {
+                            font-size: 1.1rem;
+                        }
+                        
+                        .card p {
+                            font-size: 0.9rem;
                         }
                     }
                     

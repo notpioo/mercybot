@@ -43,10 +43,40 @@ function setupHomeRoutes(app) {
                     `${nextReward.amount} day${nextReward.amount > 1 ? 's' : ''}` : 
                     `${nextReward?.amount || 0}`;
                 
+                // Generate weekly rewards display
+                let weeklyRewardsHtml = '';
+                if (dailyLoginStatus.rewards && dailyLoginStatus.rewards.length > 0) {
+                    weeklyRewardsHtml = dailyLoginStatus.rewards.map(reward => {
+                        const icon = rewardIcons[reward.rewardType] || '🎁';
+                        let rewardText = '';
+                        if (reward.rewardType === 'premium') {
+                            rewardText = `Premium ${reward.premiumDuration || 1} hari`;
+                        } else {
+                            rewardText = `${reward.rewardAmount} ${reward.rewardType}`;
+                        }
+                        
+                        const isCurrentDay = reward.day === currentDay;
+                        const isCompleted = reward.day < currentDay || (!canClaim && reward.day === currentDay);
+                        
+                        return `
+                            <div class="reward-day ${isCurrentDay ? 'current' : ''} ${isCompleted ? 'completed' : ''}">
+                                <div class="day-number">Day ${reward.day}</div>
+                                <div class="reward-icon-large">${icon}</div>
+                                <div class="reward-details">
+                                    <div class="reward-name">${rewardText}</div>
+                                    ${isCurrentDay && canClaim ? '<div class="claim-indicator">Ready to Claim!</div>' : ''}
+                                    ${isCompleted ? '<div class="completed-indicator">✓ Claimed</div>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
                 dailyLoginSection = `
                 <div class="card">
-                    <h3>🗓️ Daily Login Status</h3>
-                    <div class="daily-login-info">
+                    <h3>🗓️ Daily Login System</h3>
+                    
+                    <div class="daily-login-header">
                         <div class="daily-stats">
                             <div class="stat-item">
                                 <div class="stat-label">Current Day</div>
@@ -58,18 +88,18 @@ function setupHomeRoutes(app) {
                             </div>
                         </div>
                         
-                        <div class="daily-reward">
-                            <div class="reward-info">
-                                <div class="reward-icon">${rewardIcon}</div>
-                                <div class="reward-text">
-                                    <div class="reward-title">Day ${currentDay} Reward</div>
-                                    <div class="reward-amount">${rewardText}</div>
-                                </div>
-                            </div>
+                        <div class="claim-section">
                             ${canClaim ? 
-                                '<button class="btn btn-claim" onclick="claimDailyReward()">Claim Reward</button>' : 
-                                '<button class="btn btn-secondary" disabled>Already Claimed</button>'
+                                '<button class="btn btn-claim" onclick="claimDailyReward()">Claim Day ' + currentDay + ' Reward</button>' : 
+                                '<button class="btn btn-secondary" disabled>Already Claimed Today</button>'
                             }
+                        </div>
+                    </div>
+                    
+                    <div class="weekly-rewards">
+                        <h4>🎁 Weekly Rewards Cycle</h4>
+                        <div class="rewards-grid">
+                            ${weeklyRewardsHtml}
                         </div>
                     </div>
                 </div>
@@ -199,64 +229,141 @@ function setupHomeRoutes(app) {
                         margin-bottom: 2rem;
                     }
                     
-                    .daily-login-info {
+                    .daily-login-header {
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        gap: 1rem;
+                        gap: 0.75rem;
+                        margin-bottom: 1rem;
+                        padding-bottom: 0.75rem;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                     }
                     
                     .daily-stats {
                         display: flex;
-                        gap: 2rem;
+                        gap: 1rem;
                     }
                     
                     .stat-item {
                         text-align: center;
+                        background: rgba(255, 255, 255, 0.03);
+                        padding: 0.5rem 0.75rem;
+                        border-radius: 6px;
+                        border: 1px solid rgba(255, 255, 255, 0.05);
                     }
                     
                     .stat-label {
-                        font-size: 0.9rem;
-                        color: #cccccc;
-                        margin-bottom: 0.5rem;
+                        font-size: 0.7rem;
+                        color: #aaaaaa;
+                        margin-bottom: 0.25rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
                     }
                     
                     .stat-value {
-                        font-size: 1.5rem;
-                        font-weight: bold;
+                        font-size: 1.1rem;
+                        font-weight: 600;
                         color: #6366f1;
                     }
                     
-                    .daily-reward {
+                    .claim-section {
                         display: flex;
                         align-items: center;
                         gap: 1rem;
                     }
                     
-                    .reward-info {
-                        display: flex;
-                        align-items: center;
-                        gap: 1rem;
-                    }
-                    
-                    .reward-icon {
-                        font-size: 2rem;
-                    }
-                    
-                    .reward-title {
-                        font-weight: bold;
+                    .weekly-rewards h4 {
                         color: #ffffff;
+                        margin-bottom: 0.75rem;
+                        font-size: 0.95rem;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
                     }
                     
-                    .reward-amount {
+                    .rewards-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                        gap: 0.5rem;
+                    }
+                    
+                    .reward-day {
+                        background: rgba(255, 255, 255, 0.03);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        border-radius: 8px;
+                        padding: 0.75rem 0.5rem;
+                        text-align: center;
+                        transition: all 0.3s ease;
+                        position: relative;
+                        min-height: 90px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                    }
+                    
+                    .reward-day.current {
+                        border-color: #6366f1;
+                        background: rgba(99, 102, 241, 0.1);
+                        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+                    }
+                    
+                    .reward-day.completed {
+                        border-color: #10b981;
+                        background: rgba(16, 185, 129, 0.1);
+                    }
+                    
+                    .day-number {
+                        font-size: 0.65rem;
+                        color: #aaaaaa;
+                        font-weight: 500;
+                        margin-bottom: 0.25rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .reward-icon-large {
+                        font-size: 1.5rem;
+                        margin-bottom: 0.25rem;
+                        line-height: 1;
+                    }
+                    
+                    .reward-details {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        min-height: 35px;
+                    }
+                    
+                    .reward-name {
+                        font-size: 0.75rem;
+                        color: #ffffff;
+                        font-weight: 500;
+                        margin-bottom: 0.15rem;
+                        line-height: 1.2;
+                    }
+                    
+                    .claim-indicator {
+                        font-size: 0.6rem;
                         color: #6366f1;
-                        font-weight: bold;
+                        font-weight: 600;
+                        animation: pulse 2s infinite;
+                    }
+                    
+                    .completed-indicator {
+                        font-size: 0.6rem;
+                        color: #10b981;
+                        font-weight: 500;
                     }
                     
                     .btn-claim {
                         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
                         animation: pulse 2s infinite;
+                        padding: 0.6rem 1.2rem;
+                        font-size: 0.9rem;
+                        border-radius: 6px;
                     }
                     
                     @keyframes pulse {
@@ -409,26 +516,101 @@ function setupHomeRoutes(app) {
                     }
                     
                     @media (max-width: 768px) {
-                        .daily-login-info {
+                        body {
+                            overflow-x: hidden;
+                        }
+                        
+                        .welcome-section,
+                        .grid,
+                        .card {
+                            max-width: 100%;
+                            overflow-x: hidden;
+                        }
+                        
+                        .daily-login-header {
                             flex-direction: column;
                             align-items: stretch;
+                            gap: 0.5rem;
                         }
                         
                         .daily-stats {
                             justify-content: center;
+                            gap: 0.75rem;
+                        }
+                        
+                        .rewards-grid {
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 0.4rem;
+                        }
+                        
+                        .reward-day {
+                            min-height: 80px;
+                            padding: 0.5rem 0.3rem;
+                        }
+                        
+                        .reward-name {
+                            font-size: 0.7rem;
+                        }
+                        
+                        .day-number {
+                            font-size: 0.6rem;
                         }
                         
                         .actions-grid {
                             grid-template-columns: repeat(2, 1fr);
+                            gap: 0.5rem;
                         }
                         
                         .stats-grid {
                             grid-template-columns: repeat(2, 1fr);
+                            gap: 0.5rem;
                         }
                         
                         .feature-item {
                             flex-direction: column;
                             text-align: center;
+                            gap: 0.5rem;
+                        }
+                        
+                        .grid {
+                            gap: 1rem;
+                        }
+                        
+                        .card {
+                            padding: 1rem;
+                        }
+                        
+                        .card h3 {
+                            font-size: 1.1rem;
+                        }
+                        
+                        .action-item {
+                            padding: 0.75rem;
+                        }
+                        
+                        .action-icon {
+                            font-size: 1.5rem;
+                        }
+                        
+                        .action-text {
+                            font-size: 0.8rem;
+                        }
+                        
+                        .stat-box {
+                            padding: 0.75rem;
+                            gap: 0.5rem;
+                        }
+                        
+                        .stat-icon {
+                            font-size: 1.2rem;
+                        }
+                        
+                        .stat-value {
+                            font-size: 1rem;
+                        }
+                        
+                        .stat-label {
+                            font-size: 0.7rem;
                         }
                     }
                 </style>

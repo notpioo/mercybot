@@ -6,11 +6,13 @@ const config = require('../config/config');
 const { requireAuth, requireOwner } = require('./middleware');
 
 // Import route handlers
+const { setupAdminRoutes } = require('./routes/admin');
+const { setupAdminDailyLoginRoutes } = require('./routes/admin-daily-login');
 const { setupHomeRoutes } = require('./routes/home');
 const { setupNewsRoutes } = require('./routes/news');
 const { setupProfileRoutes } = require('./routes/profile');
 const { setupApiRoutes } = require('./routes/api');
-const { setupAdminRoutes } = require('./routes/admin');
+
 
 function setupDashboardRoutes(app, qrFunctions) {
     // Setup all route handlers
@@ -19,6 +21,8 @@ function setupDashboardRoutes(app, qrFunctions) {
     setupProfileRoutes(app);
     setupApiRoutes(app);
     setupAdminRoutes(app);
+    setupAdminDailyLoginRoutes(app);
+    setupNewsRoutes(app);
 
     // Additional routes that were in the original dashboard-system.js
     // These are the remaining routes that haven't been moved to separate files

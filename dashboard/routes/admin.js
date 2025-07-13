@@ -32,6 +32,12 @@ function setupAdminRoutes(app) {
                         </div>
                         
                         <div class="card admin-card">
+                            <h3>🗓️ Daily Login Rewards</h3>
+                            <p>Manage daily login rewards for all 7 days.</p>
+                            <a href="/admin/daily-login" class="btn">Manage Daily Rewards</a>
+                        </div>
+                        
+                        <div class="card admin-card">
                             <h3>⚙️ Bot Settings</h3>
                             <p>Configure bot behavior and features.</p>
                             <a href="/admin/settings" class="btn">Bot Settings</a>
@@ -154,16 +160,73 @@ function setupAdminRoutes(app) {
                             </div>
                             
                             <div class="form-group">
-                                <label for="news-status">Status</label>
-                                <select id="news-status" name="status">
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
+                                <label for="news-category">Category</label>
+                                <select id="news-category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Pengumuman">📢 Pengumuman</option>
+                                    <option value="Update">🔄 Update</option>
+                                    <option value="Penting">⚠️ Penting</option>
                                 </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="news-status">Status</label>
+                                <div class="toggle-container">
+                                    <input type="checkbox" id="news-status" name="status" checked>
+                                    <label for="news-status" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Active</span>
+                                    </label>
+                                </div>
                             </div>
                             
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">Create News</button>
                                 <button type="button" class="btn btn-secondary" onclick="hideCreateNewsForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Edit News Form -->
+                    <div id="edit-news-form" class="card" style="display: none;">
+                        <h3>✏️ Edit News</h3>
+                        <form id="edit-news-form-element">
+                            <input type="hidden" id="edit-news-id" name="id">
+                            
+                            <div class="form-group">
+                                <label for="edit-news-title">Title</label>
+                                <input type="text" id="edit-news-title" name="title" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-news-content">Content</label>
+                                <textarea id="edit-news-content" name="content" rows="6" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-news-category">Category</label>
+                                <select id="edit-news-category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Pengumuman">📢 Pengumuman</option>
+                                    <option value="Update">🔄 Update</option>
+                                    <option value="Penting">⚠️ Penting</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-news-status">Status</label>
+                                <div class="toggle-container">
+                                    <input type="checkbox" id="edit-news-status" name="status">
+                                    <label for="edit-news-status" class="toggle-label">
+                                        <span class="toggle-switch"></span>
+                                        <span class="toggle-text">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Update News</button>
+                                <button type="button" class="btn btn-secondary" onclick="hideEditNewsForm()">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -312,6 +375,79 @@ function setupAdminRoutes(app) {
                         background: #d97706;
                     }
                     
+                    .toggle-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .toggle-label {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                        color: #ffffff;
+                        font-weight: 600;
+                    }
+                    
+                    .toggle-switch {
+                        width: 50px;
+                        height: 24px;
+                        background: #374151;
+                        border-radius: 12px;
+                        position: relative;
+                        transition: background 0.3s ease;
+                    }
+                    
+                    .toggle-switch::before {
+                        content: '';
+                        position: absolute;
+                        width: 20px;
+                        height: 20px;
+                        background: white;
+                        border-radius: 50%;
+                        top: 2px;
+                        left: 2px;
+                        transition: transform 0.3s ease;
+                    }
+                    
+                    input[type="checkbox"] {
+                        display: none;
+                    }
+                    
+                    input[type="checkbox"]:checked + .toggle-label .toggle-switch {
+                        background: #10b981;
+                    }
+                    
+                    input[type="checkbox"]:checked + .toggle-label .toggle-switch::before {
+                        transform: translateX(26px);
+                    }
+                    
+                    .news-category {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 12px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        margin-right: 0.5rem;
+                    }
+                    
+                    .news-category.Pengumuman {
+                        background: #3b82f6;
+                        color: white;
+                    }
+                    
+                    .news-category.Update {
+                        background: #10b981;
+                        color: white;
+                    }
+                    
+                    .news-category.Penting {
+                        background: #ef4444;
+                        color: white;
+                    }
+                    
                     @media (max-width: 768px) {
                         .news-header {
                             flex-direction: column;
@@ -342,6 +478,32 @@ function setupAdminRoutes(app) {
                         document.getElementById('news-form').reset();
                     }
                     
+                    // Show edit news form
+                    function showEditNewsForm(newsId, title, content, category, status) {
+                        document.getElementById('edit-news-form').style.display = 'block';
+                        document.getElementById('edit-news-id').value = newsId;
+                        document.getElementById('edit-news-title').value = title;
+                        document.getElementById('edit-news-content').value = content;
+                        document.getElementById('edit-news-category').value = category;
+                        document.getElementById('edit-news-status').checked = status === 'active';
+                        updateToggleText('edit-news-status', status === 'active');
+                        document.getElementById('edit-news-title').focus();
+                    }
+                    
+                    // Hide edit news form
+                    function hideEditNewsForm() {
+                        document.getElementById('edit-news-form').style.display = 'none';
+                        document.getElementById('edit-news-form-element').reset();
+                    }
+                    
+                    // Update toggle text
+                    function updateToggleText(toggleId, isChecked) {
+                        const toggleText = document.querySelector('#' + toggleId + ' + .toggle-label .toggle-text');
+                        if (toggleText) {
+                            toggleText.textContent = isChecked ? 'Active' : 'Inactive';
+                        }
+                    }
+                    
                     // Create news
                     document.getElementById('news-form').addEventListener('submit', async function(e) {
                         e.preventDefault();
@@ -350,7 +512,8 @@ function setupAdminRoutes(app) {
                         const newsData = {
                             title: formData.get('title'),
                             content: formData.get('content'),
-                            status: formData.get('status')
+                            category: formData.get('category'),
+                            status: formData.get('status') ? 'active' : 'inactive'
                         };
                         
                         try {
@@ -391,12 +554,15 @@ function setupAdminRoutes(app) {
                                         '<div class="news-item">' +
                                         '<div class="news-header">' +
                                         '<div class="news-title">' + news.title + '</div>' +
-                                        '<div class="news-status ' + news.status + '">' + news.status + '</div>' +
+                                        '<div>' +
+                                        '<span class="news-category ' + news.category + '">' + getCategoryIcon(news.category) + ' ' + news.category + '</span>' +
+                                        '<span class="news-status ' + news.status + '">' + news.status + '</span>' +
+                                        '</div>' +
                                         '</div>' +
                                         '<div class="news-content">' + news.content + '</div>' +
                                         '<div class="news-actions-item">' +
-                                        '<button class="btn btn-sm btn-warning" onclick="editNews(\'' + news._id + '\')">Edit</button>' +
-                                        '<button class="btn btn-sm btn-danger" onclick="deleteNews(\'' + news._id + '\')">Delete</button>' +
+                                        '<button class="btn btn-sm btn-warning" onclick="editNews(\\'' + news._id + '\\', \\'' + news.title.replace(/'/g, "\\'") + '\\', \\'' + news.content.replace(/'/g, "\\'") + '\\', \\'' + news.category + '\\', \\'' + news.status + '\\')">Edit</button>' +
+                                        '<button class="btn btn-sm btn-danger" onclick="deleteNews(\\'' + news._id + '\\')">Delete</button>' +
                                         '<div class="news-date">' + new Date(news.createdAt).toLocaleDateString() + '</div>' +
                                         '</div>' +
                                         '</div>'
@@ -438,9 +604,19 @@ function setupAdminRoutes(app) {
                         }
                     }
                     
-                    // Edit news (placeholder)
-                    function editNews(newsId) {
-                        alert('Edit functionality will be implemented soon!');
+                    // Edit news
+                    function editNews(newsId, title, content, category, status) {
+                        showEditNewsForm(newsId, title, content, category, status);
+                    }
+                    
+                    // Get category icon
+                    function getCategoryIcon(category) {
+                        switch(category) {
+                            case 'Pengumuman': return '📢';
+                            case 'Update': return '🔄';
+                            case 'Penting': return '⚠️';
+                            default: return '📝';
+                        }
                     }
                     
                     // Delete all news
@@ -468,6 +644,52 @@ function setupAdminRoutes(app) {
                         }
                     }
                     
+                    // Edit news form submission
+                    document.getElementById('edit-news-form-element').addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const formData = new FormData(this);
+                        const newsId = formData.get('id');
+                        const newsData = {
+                            title: formData.get('title'),
+                            content: formData.get('content'),
+                            category: formData.get('category'),
+                            status: formData.get('status') ? 'active' : 'inactive'
+                        };
+                        
+                        try {
+                            const response = await fetch('/api/admin/news/' + newsId, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(newsData)
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                alert('News updated successfully!');
+                                hideEditNewsForm();
+                                loadNewsList();
+                            } else {
+                                alert('Error updating news: ' + result.message);
+                            }
+                        } catch (error) {
+                            console.error('Error updating news:', error);
+                            alert('Error updating news');
+                        }
+                    });
+                    
+                    // Toggle status change handlers
+                    document.getElementById('news-status').addEventListener('change', function() {
+                        updateToggleText('news-status', this.checked);
+                    });
+                    
+                    document.getElementById('edit-news-status').addEventListener('change', function() {
+                        updateToggleText('edit-news-status', this.checked);
+                    });
+                    
                     // Load news list when page loads
                     document.addEventListener('DOMContentLoaded', loadNewsList);
                 </script>
@@ -475,60 +697,9 @@ function setupAdminRoutes(app) {
             
             res.send(getBaseTemplate('News Management', content, 'admin'));
         } catch (error) {
-            console.error('Error loading news management:', error);
+            console.error('Error loading admin news page:', error);
             res.status(500).send('Internal Server Error');
         }
-    });
-
-    // Other admin routes (placeholder)
-    app.get('/admin/users', requireAuth, requireOwner, (req, res) => {
-        const content = `
-            <div class="card">
-                <h1>👥 User Management</h1>
-                <p>User management features will be implemented soon.</p>
-            </div>
-        `;
-        res.send(getBaseTemplate('User Management', content, 'admin'));
-    });
-
-    app.get('/admin/games', requireAuth, requireOwner, (req, res) => {
-        const content = `
-            <div class="card">
-                <h1>🎮 Game Management</h1>
-                <p>Game management features will be implemented soon.</p>
-            </div>
-        `;
-        res.send(getBaseTemplate('Game Management', content, 'admin'));
-    });
-
-    app.get('/admin/settings', requireAuth, requireOwner, (req, res) => {
-        const content = `
-            <div class="card">
-                <h1>⚙️ Bot Settings</h1>
-                <p>Bot settings features will be implemented soon.</p>
-            </div>
-        `;
-        res.send(getBaseTemplate('Bot Settings', content, 'admin'));
-    });
-
-    app.get('/admin/stats', requireAuth, requireOwner, (req, res) => {
-        const content = `
-            <div class="card">
-                <h1>📊 Statistics</h1>
-                <p>Statistics features will be implemented soon.</p>
-            </div>
-        `;
-        res.send(getBaseTemplate('Statistics', content, 'admin'));
-    });
-
-    app.get('/admin/tools', requireAuth, requireOwner, (req, res) => {
-        const content = `
-            <div class="card">
-                <h1>🔧 System Tools</h1>
-                <p>System tools features will be implemented soon.</p>
-            </div>
-        `;
-        res.send(getBaseTemplate('System Tools', content, 'admin'));
     });
 }
 
