@@ -1,7 +1,6 @@
 const config = require('../config/config');
 const { getUser } = require('../lib/database');
 const { formatJid } = require('../utils/helpers');
-const { getUserLevelInfo, getTierDisplayName } = require('../lib/levelSystem');
 
 async function execute(context) {
     const { sock, remoteJid, user, senderName, message, args } = context;
@@ -116,9 +115,6 @@ async function execute(context) {
         const { isOwner } = require('../utils/helpers');
         const isOwnerUser = isOwner(targetJid);
         
-        // Get user level information
-        const levelInfo = await getUserLevelInfo(targetJid);
-        
         // Format user data
         const username = targetUser.username || targetName || 'Unknown';
         const phoneNumber = targetJid.split('@')[0];
@@ -139,12 +135,6 @@ async function execute(context) {
 │ • Balance: ${balance}
 │ • Chips: ${chips}
 │ • Member since: ${memberSince}
-│ 
-│ 🎯 Level: ${levelInfo ? levelInfo.level : 1}
-│ 🏆 Tier: ${levelInfo ? levelInfo.tierName : 'Warrior'}
-│ ⚡ Experience: ${levelInfo ? levelInfo.experience : 0}
-│ 📈 Progress: ${levelInfo ? `${levelInfo.progressPercentage}%` : '0%'}
-│ 🎊 To Next Level: ${levelInfo ? levelInfo.experienceToNext : 100} EXP
 └──────────────────────`;
 
         // Send profile picture if available with mention

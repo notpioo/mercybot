@@ -1,7 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
 const { setupAuthRoutes, initializeAuthSystem: initAuth } = require('./auth-system');
-const { setupDashboardRoutes } = require('./dashboard/index');
+const { setupDashboardRoutes } = require('./dashboard-system');
 const pinConfig = require('./config/pin');
 
 const app = express();
@@ -33,21 +33,13 @@ app.use(session({
 app.get('/', (req, res) => {
     // Check if user is already logged in
     if (req.session.user) {
-        return res.redirect('/dashboard');
+        return res.redirect('/home');
     }
     const html = `<!DOCTYPE html>
 <html>
 <head>
     <title>NoMercy - Advanced WhatsApp Bot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="NoMercy - Advanced WhatsApp Bot Management System with Casino Games">
-    <meta name="theme-color" content="#8b5cf6">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NoMercy">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0idXJsKCNncmFkaWVudDBfbGluZWFyXzFfMSkiLz4KPHBhdGggZD0iTTE2IDhMMTMuNSAxNkwxOC41IDE2TDE4LjUgMjFMMTMuNSAyMUwxNiAyOUwxOC41IDIxTDIzLjUgMjFMMjEgMTNMMjMuNSAxM0wyMSA4TDE2IDhaIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMzIiIHkyPSIzMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzYzNjZmMSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -149,58 +141,6 @@ app.get('/', (req, res) => {
             <p>For owner access, use the "Owner Access" button</p>
         </div>
     </div>
-
-    <script>
-        // PWA Installation
-        let deferredPrompt;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show custom install button
-            const installBtn = document.createElement('button');
-            installBtn.className = 'btn btn-secret';
-            installBtn.innerHTML = '📱 Install App';
-            installBtn.style.marginTop = '10px';
-            installBtn.onclick = installPWA;
-            
-            document.querySelector('.container').appendChild(installBtn);
-        });
-
-        async function installPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log('PWA install outcome:', outcome);
-                deferredPrompt = null;
-            }
-        }
-
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
-
-        // Check if running as PWA
-        function isPWA() {
-            return window.matchMedia('(display-mode: standalone)').matches ||
-                   window.navigator.standalone === true;
-        }
-
-        if (isPWA()) {
-            console.log('Running as PWA!');
-            document.body.classList.add('pwa-mode');
-        }
-    </script>
 </body>
 </html>`;
     res.send(html);

@@ -1,9 +1,9 @@
-modules = ["nodejs-20", "web", "python-3.11"]
+modules = ["nodejs-20", "web"]
 run = "node index.js"
 
 [nix]
 channel = "stable-24_05"
-packages = ["ffmpeg", "pkg-config", "vips"]
+packages = ["ffmpeg"]
 
 [workflows]
 runButton = "Project"
@@ -27,7 +27,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node index.js"
+args = "npm install @whiskeysockets/baileys qrcode-terminal mongoose && node index.js"
 waitForPort = 3000
 
 [[workflows.workflow]]

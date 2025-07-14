@@ -83,7 +83,7 @@ function setupAuthRoutes(app, sock) {
     // Landing page
     app.get('/', (req, res) => {
         if (req.session.user) {
-            return res.redirect('/dashboard');
+            return res.redirect('/home');
         }
 
         res.send(`
@@ -191,7 +191,7 @@ function setupAuthRoutes(app, sock) {
     // Login page
     app.get('/login', (req, res) => {
         if (req.session.user) {
-            return res.redirect('/dashboard');
+            return res.redirect('/home');
         }
 
         res.send(`
@@ -536,7 +536,7 @@ function setupAuthRoutes(app, sock) {
                 const result = await response.json();
 
                 if (result.success) {
-                    window.location.href = '/dashboard';
+                    window.location.href = '/home';
                 } else {
                     alert(result.message || 'Kode verifikasi salah');
                     btn.textContent = 'Verifikasi & Masuk';
