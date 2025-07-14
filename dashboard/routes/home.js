@@ -2,6 +2,11 @@ const { requireAuth } = require('../middleware');
 const { getBaseTemplate } = require('../templates');
 
 function setupHomeRoutes(app) {
+    // Dashboard redirect to home
+    app.get('/dashboard', requireAuth, (req, res) => {
+        res.redirect('/home');
+    });
+
     // Home page
     app.get('/home', requireAuth, async (req, res) => {
         try {

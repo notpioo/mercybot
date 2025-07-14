@@ -27,7 +27,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install @whiskeysockets/baileys qrcode-terminal mongoose && node index.js"
+args = "node index.js"
 waitForPort = 3000
 
 [[workflows.workflow]]

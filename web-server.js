@@ -33,7 +33,7 @@ app.use(session({
 app.get('/', (req, res) => {
     // Check if user is already logged in
     if (req.session.user) {
-        return res.redirect('/home');
+        return res.redirect('/dashboard');
     }
     const html = `<!DOCTYPE html>
 <html>
