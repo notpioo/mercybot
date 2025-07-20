@@ -291,6 +291,7 @@ app.get('/owner-access', (req, res) => {
             <div id="status" class="status waiting">Waiting for QR code...</div>
             <div id="qr-container"></div>
             <button class="refresh-btn" onclick="checkQR()">Refresh QR Code</button>
+            <button class="refresh-btn" onclick="forceRestart()" style="background: #ff6b35;">🔄 Force Restart Bot</button>
             <button class="btn btn-secondary" onclick="showChangePinForm()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 12px;">Ubah PIN</button>
             <p><small>Last updated: <span id="timestamp">-</span></small></p>
             
@@ -365,6 +366,36 @@ app.get('/owner-access', (req, res) => {
         
         function hideError() {
             document.getElementById('pin-error').style.display = 'none';
+        }
+        
+        function forceRestart() {
+            if (confirm('Restart bot akan menghapus session dan membuat QR code baru. Lanjutkan?')) {
+                document.getElementById('status').textContent = 'Restarting bot...';
+                document.getElementById('status').className = 'status waiting';
+                document.getElementById('qr-container').innerHTML = '<p>⏳ Bot sedang di-restart...</p>';
+                
+                fetch('/force-restart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Wait a moment then start checking for new QR
+                        setTimeout(() => {
+                            checkQR();
+                        }, 5000);
+                    } else {
+                        alert('Gagal restart bot: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat restart bot');
+                });
+            }
         }
         
         function checkQR() {
@@ -472,21 +503,31 @@ app.get('/qr-data', (req, res) => {
     if (!currentQRCode) {
         return res.json({ 
             status: 'waiting',
-            message: 'Waiting for QR code...' 
+            message: 'Menunggu QR code baru...',
+            timestamp: new Date().toISOString()
         });
     }
 
     if (qrCodeExpired) {
         return res.json({ 
             status: 'expired',
-            message: 'QR code has expired. Please restart the bot.' 
+            message: 'QR code expired. Generating new QR code...',
+            timestamp: new Date().toISOString()
         });
     }
 
     res.json({ 
         status: 'ready',
         qr: currentQRCode,
-        message: 'Scan this QR code with WhatsApp'
+        message: 'Scan QR code ini dengan WhatsApp (versi terbaru)',
+        instructions: [
+            '1. Buka WhatsApp di HP',
+            '2. Tap Menu (3 titik) > Linked Devices',
+            '3. Tap "Link a Device"',
+            '4. Scan QR code ini'
+        ],
+        timestamp: new Date().toISOString(),
+        qrAge: lastQRUpdate ? Math.round((new Date() - lastQRUpdate) / 1000) : 0
     });
 });
 
@@ -537,6 +578,50 @@ app.post('/update-pin', (req, res) => {
     } catch (error) {
         console.error('Error updating PIN:', error);
         res.json({ success: false, message: 'Server error' });
+    }
+});
+
+// Force restart endpoint (for Railway deployment issues)
+app.post('/force-restart', (req, res) => {
+    try {
+        console.log('🔄 Force restart requested - clearing sessions...');
+        
+        // Clear sessions
+        const { clearAllSessions } = require('./scripts/clearSessions');
+        const cleared = clearAllSessions();
+        
+        if (cleared) {
+            // Reset QR code state
+            currentQRCode = null;
+            qrCodeExpired = false;
+            botConnected = false;
+            lastQRUpdate = null;
+            
+            console.log('✅ Sessions cleared, bot will restart with fresh QR code');
+            res.json({ 
+                success: true, 
+                message: 'Bot restarted successfully. New QR code will be generated.' 
+            });
+            
+            // Restart WhatsApp connection after a delay
+            setTimeout(() => {
+                const { startWhatsApp } = require('./lib/whatsapp');
+                startWhatsApp().catch(error => {
+                    console.error('❌ Error restarting WhatsApp:', error);
+                });
+            }, 3000);
+        } else {
+            res.json({ 
+                success: false, 
+                message: 'Failed to clear sessions' 
+            });
+        }
+    } catch (error) {
+        console.error('Error in force restart:', error);
+        res.json({ 
+            success: false, 
+            message: 'Server error during restart' 
+        });
     }
 });
 
