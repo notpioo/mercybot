@@ -829,8 +829,6 @@
                 this.minePositions = [];
                 this.revealedTiles = [];
                 this.currentMultiplier = 1.0;
-                this.gameStartTime = null;
-                this.gameId = null;
                 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -1060,13 +1058,9 @@
                 this.safeTilesFound = 0;
                 this.revealedTiles = [];
                 this.currentMultiplier = 1.0;
-                this.gameStartTime = Date.now();
                 
                 // Generate mine positions
                 this.generateMinePositions();
-                
-                // Create game record in database
-                this.createGameRecord();
                 
                 // Update UI
                 this.elements.placeBetBtn.style.display = 'none';
@@ -1219,9 +1213,6 @@
                 this.elements.gameStatus.textContent = `Cashed out! Won ${winAmount} chips!`;
                 this.elements.gameStatus.className = 'game-status status-won';
                 
-                // Complete game record with cashout
-                this.completeGameRecord('cashed_out', winAmount);
-                
                 this.endGame();
                 
                 // Save chips to backend
@@ -1237,17 +1228,11 @@
                     this.elements.userChips.textContent = this.userChips;
                     this.elements.gameStatus.textContent = `You won ${winAmount} chips! All safe tiles found!`;
                     this.elements.gameStatus.className = 'game-status status-won';
-                    
-                    // Complete game record with win
-                    this.completeGameRecord('won', winAmount);
                     this.saveChips(winAmount);
                 } else {
                     // Don't deduct chips again since we already deducted them in placeBet()
                     this.elements.gameStatus.textContent = `Game Over! You lost ${this.currentBet} chips!`;
                     this.elements.gameStatus.className = 'game-status status-lost';
-                    
-                    // Complete game record with loss
-                    this.completeGameRecord('lost', 0);
                     
                     // Reveal all mines
                     this.minePositions.forEach(pos => {
@@ -1273,65 +1258,6 @@
                 
                 // Reset bet amount
                 this.elements.betAmount.value = '';
-            }
-
-            async createGameRecord() {
-                try {
-                    const gameData = {
-                        gridSize: this.gridSize,
-                        minesCount: this.minesCount,
-                        betAmount: this.currentBet,
-                        gameType: 'mines'
-                    };
-                    
-                    const response = await fetch('/api/mines/create-game', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(gameData)
-                    });
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        this.gameId = result.gameId;
-                        console.log('Game record created:', this.gameId);
-                    }
-                } catch (error) {
-                    console.error('Error creating game record:', error);
-                }
-            }
-
-            async completeGameRecord(status, winAmount) {
-                if (!this.gameId) return;
-                
-                try {
-                    const duration = Date.now() - this.gameStartTime;
-                    const multiplier = this.currentMultiplier;
-                    
-                    const gameData = {
-                        gameId: this.gameId,
-                        status: status,
-                        winAmount: winAmount,
-                        multiplier: multiplier,
-                        safeTilesRevealed: this.safeTilesFound,
-                        duration: duration
-                    };
-                    
-                    const response = await fetch('/api/mines/complete-game', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(gameData)
-                    });
-                    
-                    if (response.ok) {
-                        console.log('Game record completed successfully');
-                    }
-                } catch (error) {
-                    console.error('Error completing game record:', error);
-                }
             }
 
             async saveChips(amount) {

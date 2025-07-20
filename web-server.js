@@ -812,206 +812,8 @@ app.get('/api/user-currency', async (req, res) => {
 });
 
 const path = require('path');
-const { 
-    createMinesGame, 
-    completeMinesGame, 
-    getUserRecentGames, 
-    getMinesStats, 
-    getMinesLeaderboard, 
-    getUserRank 
-} = require('./lib/minesModel');
-
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
-
-// API endpoints untuk Mines stats dan leaderboard
-// Get user mines statistics
-app.get('/api/mines/stats', async (req, res) => {
-    try {
-        // Ambil phone number dari session atau query
-        const userPhone = req.session?.user?.phone || req.query.phone;
-        
-        if (!userPhone) {
-            return res.json({ success: false, error: 'User not authenticated' });
-        }
-
-        // Format phone number untuk WhatsApp JID
-        let formattedPhone = userPhone.replace(/\D/g, '');
-        if (formattedPhone.startsWith('0')) {
-            formattedPhone = '62' + formattedPhone.substring(1);
-        } else if (!formattedPhone.startsWith('62')) {
-            formattedPhone = '62' + formattedPhone;
-        }
-        
-        const userJid = formattedPhone + '@s.whatsapp.net';
-        
-        // Ambil statistik user
-        const stats = await getMinesStats(userJid);
-        
-        if (!stats) {
-            return res.json({ 
-                success: true, 
-                data: {
-                    totalGames: 0,
-                    gamesWon: 0,
-                    gamesLost: 0,
-                    gamesCashedOut: 0,
-                    totalWagered: 0,
-                    totalWinnings: 0,
-                    netProfit: 0,
-                    biggestWin: 0,
-                    biggestLoss: 0,
-                    longestWinStreak: 0,
-                    longestLossStreak: 0,
-                    currentStreak: 0,
-                    streakType: 'none',
-                    averageMultiplier: 0,
-                    bestMultiplier: 0,
-                    totalPlayTime: 0,
-                    favoriteGridSize: 25,
-                    totalCellsRevealed: 0
-                }
-            });
-        }
-
-        res.json({ success: true, data: stats });
-    } catch (error) {
-        console.error('Error fetching mines stats:', error);
-        res.json({ success: false, error: 'Failed to fetch statistics' });
-    }
-});
-
-// Get user recent games
-app.get('/api/mines/recent-games', async (req, res) => {
-    try {
-        const userPhone = req.session?.user?.phone || req.query.phone;
-        
-        if (!userPhone) {
-            return res.json({ success: false, error: 'User not authenticated' });
-        }
-
-        let formattedPhone = userPhone.replace(/\D/g, '');
-        if (formattedPhone.startsWith('0')) {
-            formattedPhone = '62' + formattedPhone.substring(1);
-        } else if (!formattedPhone.startsWith('62')) {
-            formattedPhone = '62' + formattedPhone;
-        }
-        
-        const userJid = formattedPhone + '@s.whatsapp.net';
-        
-        // Ambil 20 game terakhir
-        const games = await getUserRecentGames(userJid, 20);
-        
-        res.json({ success: true, data: games });
-    } catch (error) {
-        console.error('Error fetching recent games:', error);
-        res.json({ success: false, error: 'Failed to fetch recent games' });
-    }
-});
-
-// Get mines leaderboard
-app.get('/api/mines/leaderboard', async (req, res) => {
-    try {
-        const limit = parseInt(req.query.limit) || 50;
-        const leaderboard = await getMinesLeaderboard(limit);
-        
-        res.json({ success: true, data: leaderboard });
-    } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-        res.json({ success: false, error: 'Failed to fetch leaderboard' });
-    }
-});
-
-// Get user rank in leaderboard
-app.get('/api/mines/rank', async (req, res) => {
-    try {
-        const userPhone = req.session?.user?.phone || req.query.phone;
-        
-        if (!userPhone) {
-            return res.json({ success: false, error: 'User not authenticated' });
-        }
-
-        let formattedPhone = userPhone.replace(/\D/g, '');
-        if (formattedPhone.startsWith('0')) {
-            formattedPhone = '62' + formattedPhone.substring(1);
-        } else if (!formattedPhone.startsWith('62')) {
-            formattedPhone = '62' + formattedPhone;
-        }
-        
-        const userJid = formattedPhone + '@s.whatsapp.net';
-        const rank = await getUserRank(userJid);
-        
-        res.json({ success: true, rank });
-    } catch (error) {
-        console.error('Error fetching user rank:', error);
-        res.json({ success: false, error: 'Failed to fetch rank' });
-    }
-});
-
-// Create new mines game (untuk integrasi dengan game)
-app.post('/api/mines/game/create', async (req, res) => {
-    try {
-        const { userPhone, userName, gridSize, mineCount, betAmount } = req.body;
-        
-        if (!userPhone || !userName || !gridSize || !mineCount || !betAmount) {
-            return res.json({ success: false, error: 'Missing required fields' });
-        }
-
-        let formattedPhone = userPhone.replace(/\D/g, '');
-        if (formattedPhone.startsWith('0')) {
-            formattedPhone = '62' + formattedPhone.substring(1);
-        } else if (!formattedPhone.startsWith('62')) {
-            formattedPhone = '62' + formattedPhone;
-        }
-        
-        const userJid = formattedPhone + '@s.whatsapp.net';
-        
-        const gameData = {
-            userJid,
-            userName,
-            gridSize,
-            mineCount,
-            betAmount
-        };
-        
-        const game = await createMinesGame(gameData);
-        
-        res.json({ success: true, gameId: game._id });
-    } catch (error) {
-        console.error('Error creating mines game:', error);
-        res.json({ success: false, error: 'Failed to create game' });
-    }
-});
-
-// Complete mines game (untuk integrasi dengan game)
-app.post('/api/mines/game/complete', async (req, res) => {
-    try {
-        const { gameId, finalMultiplier, winAmount, cellsRevealed, gameStatus, duration } = req.body;
-        
-        if (!gameId || !gameStatus) {
-            return res.json({ success: false, error: 'Missing required fields' });
-        }
-
-        const updates = {
-            finalMultiplier: finalMultiplier || 0,
-            winAmount: winAmount || 0,
-            cellsRevealed: cellsRevealed || 0,
-            gameStatus,
-            duration: duration || 0
-        };
-        
-        const game = await completeMinesGame(gameId, updates);
-        
-        if (!game) {
-            return res.json({ success: false, error: 'Game not found' });
-        }
-        
-        res.json({ success: true, game });
-    } catch (error) {
-        console.error('Error completing mines game:', error);
-        res.json({ success: false, error: 'Failed to complete game' });
-    }
-});
 
 // Serve mines game
     app.get('/games/mines', (req, res) => {
@@ -1019,13 +821,8 @@ app.post('/api/mines/game/complete', async (req, res) => {
     });
 
     // Serve mines statistics
-    app.get('/games/stats', (req, res) => {
+    app.get('/games/mines-stats', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', 'mines-stats.html'));
-    });
-
-    // Serve mines leaderboard
-    app.get('/games/leaderboard', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
     });
 
 // Initialize daily login after server start
@@ -1051,7 +848,6 @@ server.listen(PORT, '0.0.0.0', async () => {
 function initializeAuthSystem(socket) {
     if (socket) {
         console.log('🔐 Auth system initialized with WhatsApp socket');
-        const authSystem = require('./auth-system');
         authSystem.initializeAuthSystem(socket);
         // Setup auth routes with socket
         authSystem.setupAuthRoutes(app, socket);

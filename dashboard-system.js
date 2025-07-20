@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const config = require('./config/config');
 
 function setupDashboardRoutes(app, qrFunctions) {
@@ -1879,7 +1878,7 @@ function setupDashboardRoutes(app, qrFunctions) {
     });
 
     app.get('/games/stats', requireAuth, (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'mines-stats.html'));
+        res.sendFile(path.join(__dirname, 'public', 'stats.html'));
     });
 
     app.get('/games/leaderboard', requireAuth, (req, res) => {
@@ -1889,6 +1888,15 @@ function setupDashboardRoutes(app, qrFunctions) {
     // Update the existing mines route to redirect to the new path
     app.get('/mines', requireAuth, (req, res) => {
         res.redirect('/games/mines');
+    });
+                    <h3>🏆 Leaderboard</h3>
+                    <p>See top mines players.</p>
+                    <a href="#" class="btn btn-secondary">View Leaderboard</a>
+                </div>
+            </div>
+        `;
+        
+        res.send(getBaseTemplate('Mines Casino', content, 'list-mine'));
     });
 
     app.get('/list/tower', requireAuth, (req, res) => {
@@ -3987,241 +3995,6 @@ function setupDashboardRoutes(app, qrFunctions) {
         `;
         
         res.send(getBaseTemplate('Bot Settings', content, 'admin'));
-    });
-
-    // Mines Game API endpoints
-    app.post('/api/mines/create-game', requireAuth, async (req, res) => {
-        try {
-            const { gridSize, mineCount, betAmount } = req.body;
-            const { User } = require('./lib/database');
-            const { createMinesGame } = require('./lib/minesModel');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            // Get user from database
-            const user = await User.findOne({ jid: userJid });
-            if (!user) {
-                return res.json({ success: false, message: 'User not found' });
-            }
-            
-            // Check if user has enough chips
-            if (user.chips < betAmount) {
-                return res.json({ success: false, message: 'Insufficient chips' });
-            }
-            
-            // Create game data
-            const gameData = {
-                userJid: userJid,
-                userName: user.name || user.username || 'Player',
-                gridSize: parseInt(gridSize),
-                mineCount: parseInt(mineCount),
-                betAmount: parseInt(betAmount),
-                startTime: new Date(),
-                status: 'active'
-            };
-            
-            // Create game in database
-            const game = await createMinesGame(gameData);
-            
-            // Deduct bet amount from user chips
-            user.chips -= betAmount;
-            await user.save();
-            
-            res.json({ 
-                success: true, 
-                gameId: game._id,
-                remainingChips: user.chips,
-                message: 'Game created successfully' 
-            });
-            
-        } catch (error) {
-            console.error('Error creating mines game:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    app.post('/api/mines/complete-game', requireAuth, async (req, res) => {
-        try {
-            const { gameId, isWin, payout, cellsRevealed } = req.body;
-            const { User } = require('./lib/database');
-            const { completeMinesGame } = require('./lib/minesModel');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            // Get user from database
-            const user = await User.findOne({ jid: userJid });
-            if (!user) {
-                return res.json({ success: false, message: 'User not found' });
-            }
-            
-            // Complete game in database
-            const gameUpdates = {
-                endTime: new Date(),
-                status: isWin ? 'won' : 'lost',
-                payout: isWin ? parseInt(payout) : 0,
-                cellsRevealed: parseInt(cellsRevealed) || 0
-            };
-            
-            const game = await completeMinesGame(gameId, gameUpdates);
-            
-            if (!game) {
-                return res.json({ success: false, message: 'Game not found' });
-            }
-            
-            // Update user chips if won
-            if (isWin && payout > 0) {
-                user.chips += payout;
-                await user.save();
-            }
-            
-            res.json({ 
-                success: true, 
-                newChips: user.chips,
-                game: game,
-                message: isWin ? `You won ${payout} chips!` : 'Game over' 
-            });
-            
-        } catch (error) {
-            console.error('Error completing mines game:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    app.get('/api/mines/stats', requireAuth, async (req, res) => {
-        try {
-            const { getMinesStats } = require('./lib/minesModel');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const stats = await getMinesStats(userJid);
-            
-            if (stats) {
-                res.json({ success: true, stats });
-            } else {
-                res.json({ 
-                    success: true, 
-                    stats: {
-                        totalGames: 0,
-                        totalWins: 0,
-                        totalLosses: 0,
-                        winRate: 0,
-                        totalWagered: 0,
-                        totalWon: 0,
-                        netProfit: 0,
-                        bestWin: 0,
-                        currentStreak: 0,
-                        bestStreak: 0
-                    }
-                });
-            }
-            
-        } catch (error) {
-            console.error('Error fetching mines stats:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    app.get('/api/mines/leaderboard', requireAuth, async (req, res) => {
-        try {
-            const { getMinesLeaderboard } = require('./lib/minesModel');
-            const limit = req.query.limit || 50;
-            
-            const leaderboard = await getMinesLeaderboard(parseInt(limit));
-            
-            res.json({ success: true, leaderboard });
-            
-        } catch (error) {
-            console.error('Error fetching mines leaderboard:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    app.get('/api/mines/recent-games', requireAuth, async (req, res) => {
-        try {
-            const { getUserRecentGames } = require('./lib/minesModel');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const limit = req.query.limit || 10;
-            const games = await getUserRecentGames(userJid, parseInt(limit));
-            
-            res.json({ success: true, games });
-            
-        } catch (error) {
-            console.error('Error fetching recent games:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    app.get('/api/mines/user-rank', requireAuth, async (req, res) => {
-        try {
-            const { getUserRank } = require('./lib/minesModel');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const rank = await getUserRank(userJid);
-            
-            res.json({ success: true, rank: rank || null });
-            
-        } catch (error) {
-            console.error('Error fetching user rank:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
     });
 
     // Logout endpoint
