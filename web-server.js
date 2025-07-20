@@ -1051,7 +1051,6 @@ server.listen(PORT, '0.0.0.0', async () => {
 function initializeAuthSystem(socket) {
     if (socket) {
         console.log('🔐 Auth system initialized with WhatsApp socket');
-        whatsappSocket = socket; // Store socket reference globally
         const authSystem = require('./auth-system');
         authSystem.initializeAuthSystem(socket);
         // Setup auth routes with socket

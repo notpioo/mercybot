@@ -76,65 +76,11 @@ export const minesLeaderboard = pgTable('mines_leaderboard', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
-export const quizzes = pgTable('quizzes', {
-  id: serial('id').primaryKey(),
-  title: text('title').notNull(),
-  description: text('description'),
-  isActive: boolean('is_active').default(true),
-  createdBy: text('created_by').notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-  endsAt: timestamp('ends_at')
-});
-
-export const quizQuestions = pgTable('quiz_questions', {
-  id: serial('id').primaryKey(),
-  quizId: integer('quiz_id').references(() => quizzes.id),
-  question: text('question').notNull(),
-  optionA: text('option_a').notNull(),
-  optionB: text('option_b').notNull(),
-  optionC: text('option_c').notNull(),
-  optionD: text('option_d').notNull(),
-  correctAnswer: text('correct_answer').notNull(), // A, B, C, or D
-  points: integer('points').default(10),
-  balanceReward: integer('balance_reward').default(0),
-  chipsReward: integer('chips_reward').default(0),
-  questionOrder: integer('question_order').default(1)
-});
-
-export const quizAttempts = pgTable('quiz_attempts', {
-  id: serial('id').primaryKey(),
-  quizId: integer('quiz_id').references(() => quizzes.id),
-  userJid: text('user_jid').notNull(),
-  userName: text('user_name').notNull(),
-  totalScore: integer('total_score').default(0),
-  totalBalance: integer('total_balance').default(0),
-  totalChips: integer('total_chips').default(0),
-  answers: jsonb('answers'), // Store user answers
-  isCompleted: boolean('is_completed').default(false),
-  completedAt: timestamp('completed_at'),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
-export const quizLeaderboard = pgTable('quiz_leaderboard', {
-  id: serial('id').primaryKey(),
-  quizId: integer('quiz_id').references(() => quizzes.id),
-  userJid: text('user_jid').notNull(),
-  userName: text('user_name').notNull(),
-  score: integer('score').default(0),
-  rank: integer('rank').default(1),
-  balanceEarned: integer('balance_earned').default(0),
-  chipsEarned: integer('chips_earned').default(0),
-  completedAt: timestamp('completed_at').defaultNow()
-});
-
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   minesGames: many(minesGames),
   minesStats: many(minesStats),
-  minesLeaderboard: many(minesLeaderboard),
-  quizAttempts: many(quizAttempts),
-  quizLeaderboard: many(quizLeaderboard)
+  minesLeaderboard: many(minesLeaderboard)
 }));
 
 export const minesGamesRelations = relations(minesGames, ({ one }) => ({
@@ -158,33 +104,6 @@ export const minesLeaderboardRelations = relations(minesLeaderboard, ({ one }) =
   })
 }));
 
-export const quizzesRelations = relations(quizzes, ({ many }) => ({
-  questions: many(quizQuestions),
-  attempts: many(quizAttempts),
-  leaderboard: many(quizLeaderboard)
-}));
-
-export const quizQuestionsRelations = relations(quizQuestions, ({ one }) => ({
-  quiz: one(quizzes, {
-    fields: [quizQuestions.quizId],
-    references: [quizzes.id]
-  })
-}));
-
-export const quizAttemptsRelations = relations(quizAttempts, ({ one }) => ({
-  quiz: one(quizzes, {
-    fields: [quizAttempts.quizId],
-    references: [quizzes.id]
-  })
-}));
-
-export const quizLeaderboardRelations = relations(quizLeaderboard, ({ one }) => ({
-  quiz: one(quizzes, {
-    fields: [quizLeaderboard.quizId],
-    references: [quizzes.id]
-  })
-}));
-
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type MinesGame = typeof minesGames.$inferSelect;
@@ -193,11 +112,3 @@ export type MinesStats = typeof minesStats.$inferSelect;
 export type InsertMinesStats = typeof minesStats.$inferInsert;
 export type MinesLeaderboard = typeof minesLeaderboard.$inferSelect;
 export type InsertMinesLeaderboard = typeof minesLeaderboard.$inferInsert;
-export type Quiz = typeof quizzes.$inferSelect;
-export type InsertQuiz = typeof quizzes.$inferInsert;
-export type QuizQuestion = typeof quizQuestions.$inferSelect;
-export type InsertQuizQuestion = typeof quizQuestions.$inferInsert;
-export type QuizAttempt = typeof quizAttempts.$inferSelect;
-export type InsertQuizAttempt = typeof quizAttempts.$inferInsert;
-export type QuizLeaderboard = typeof quizLeaderboard.$inferSelect;
-export type InsertQuizLeaderboard = typeof quizLeaderboard.$inferInsert;

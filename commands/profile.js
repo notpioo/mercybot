@@ -111,17 +111,13 @@ async function execute(context) {
             profilePictureUrl = null;
         }
 
-        // Check if user is owner based on config
-        const { isOwner } = require('../utils/helpers');
-        const isOwnerUser = isOwner(targetJid);
-        
         // Format user data
         const username = targetUser.username || targetName || 'Unknown';
         const phoneNumber = targetJid.split('@')[0];
         const tag = `@${phoneNumber}`;
-        const status = isOwnerUser ? 'owner' : (targetUser.status || 'basic');
+        const status = targetUser.status || 'basic';
         const statusName = config.userSystem.statuses[status]?.name || 'Basic';
-        const limit = isOwnerUser ? '∞' : (targetUser.limit === 'unlimited' ? '∞' : targetUser.limit);
+        const limit = targetUser.limit === 'unlimited' ? '∞' : targetUser.limit;
         const balance = targetUser.balance || 0;
         const chips = targetUser.chips || 0;
         const memberSince = targetUser.createdAt ? targetUser.createdAt.toLocaleDateString('id-ID') : 'Unknown';
