@@ -193,25 +193,6 @@ Changelog:
 - July 09, 2025. Added maxWarnings field to group schema with default value of 3
 - July 09, 2025. Updated warn and maxwarn commands to use group-specific maxWarnings setting
 - July 09, 2025. Each group can now have different maxwarn values (1-10), stored in database
-- July 10, 2025. Successfully migrated project from Replit Agent to standard Replit environment
-- July 10, 2025. Fixed critical bug in daily reward system where users got wrong rewards
-- July 10, 2025. Daily rewards now correctly give rewards based on current day instead of previous day
-- July 10, 2025. Added resetdaily command for owners to reset user's daily login progress
-- July 10, 2025. Updated menu system to include daily login and reset daily commands
-- July 10, 2025. Fixed daily reward logic to properly handle Day 1 through Day 7 rewards
-- July 10, 2025. Successfully migrated project from Replit Agent to standard Replit environment
-- July 10, 2025. Fixed critical bug in daily reward system - Day 1 was giving Day 7 reward (premium instead of chips)
-- July 10, 2025. Corrected reward logic to give proper reward based on user's current day
-- July 10, 2025. Added resetdaily command for owner to reset user's daily login progress
-- July 10, 2025. Updated menu system to include daily login commands and reset functionality
-- July 10, 2025. Fixed critical daily login logic bug - users now properly start from Day 1 instead of jumping to Day 2
-- July 10, 2025. Implemented proper reward calculation based on day being claimed, not day after increment
-- July 10, 2025. Added web dashboard reset daily login feature for admin with proper phone number formatting
-- July 10, 2025. Enhanced daily login system with correct streak and day progression logic
-- July 10, 2025. Implemented Mines casino game with full web interface using chips currency
-- July 10, 2025. Added interactive Mines game with 4 grid sizes (25, 36, 49, 64), adjustable mine count, and real-time multiplier system
-- July 10, 2025. Created API endpoints for chips management (/api/user/chips GET and /api/user/update-chips POST)
-- July 10, 2025. Updated mines page navigation in dashboard to link to actual playable game at /games/mines
 ```
 
 ## User Preferences

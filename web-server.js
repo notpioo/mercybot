@@ -127,15 +127,15 @@ app.get('/', (req, res) => {
             <div class="feature">Premium User System</div>
             <div class="feature">Real-time Analytics</div>
         </div>
-
+        
         <button class="btn btn-primary" onclick="window.location.href='/login'">
             Enter Dashboard
         </button>
-
+        
         <button class="btn btn-secret" onclick="window.location.href='/owner-access'">
             Owner Access
         </button>
-
+        
         <div class="info">
             <p><strong>Bot Status:</strong> Online</p>
             <p>For owner access, use the "Owner Access" button</p>
@@ -267,7 +267,7 @@ app.get('/owner-access', (req, res) => {
 <body>
     <div class="container">
         <h1>🔐 Owner Access</h1>
-
+        
         <div id="pin-section">
             <div class="auth-form">
                 <input type="password" id="pin" placeholder="Masukkan PIN Owner" maxlength="20" />
@@ -291,7 +291,7 @@ app.get('/owner-access', (req, res) => {
             <button class="refresh-btn" onclick="checkQR()">Refresh QR Code</button>
             <button class="btn btn-secondary" onclick="showChangePinForm()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 12px;">Ubah PIN</button>
             <p><small>Last updated: <span id="timestamp">-</span></small></p>
-
+            
             <!-- Change PIN Form (hidden by default) -->
             <div id="change-pin-form" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                 <h4>Ubah PIN Owner</h4>
@@ -308,16 +308,16 @@ app.get('/owner-access', (req, res) => {
 
     <script>
         let qrInterval;
-
+        
         function authenticatePin() {
             const pin = document.getElementById('pin').value.trim();
             const errorDiv = document.getElementById('pin-error');
-
+            
             if (!pin) {
                 showError('Silakan masukkan PIN');
                 return;
             }
-
+            
             // Verify PIN with backend
             fetch('/verify-pin', {
                 method: 'POST',
@@ -344,7 +344,7 @@ app.get('/owner-access', (req, res) => {
                 showError('Terjadi kesalahan. Silakan coba lagi.');
             });
         }
-
+        
         function logout() {
             if (qrInterval) {
                 clearInterval(qrInterval);
@@ -354,17 +354,17 @@ app.get('/owner-access', (req, res) => {
             document.getElementById('pin').value = '';
             hideError();
         }
-
+        
         function showError(message) {
             const errorDiv = document.getElementById('pin-error');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
         }
-
+        
         function hideError() {
             document.getElementById('pin-error').style.display = 'none';
         }
-
+        
         function checkQR() {
             fetch('/qr-data')
                 .then(response => response.json())
@@ -398,29 +398,29 @@ app.get('/owner-access', (req, res) => {
                     document.getElementById('status').textContent = 'Error loading QR code';
                 });
         }
-
+        
         function showChangePinForm() {
             document.getElementById('change-pin-form').style.display = 'block';
         }
-
+        
         function hideChangePinForm() {
             document.getElementById('change-pin-form').style.display = 'none';
             document.getElementById('current-pin').value = '';
             document.getElementById('new-pin').value = '';
             document.getElementById('pin-update-message').textContent = '';
         }
-
+        
         function updatePin() {
             const currentPin = document.getElementById('current-pin').value.trim();
             const newPin = document.getElementById('new-pin').value.trim();
             const messageDiv = document.getElementById('pin-update-message');
-
+            
             if (!currentPin || !newPin) {
                 messageDiv.style.color = 'red';
                 messageDiv.textContent = 'Silakan isi semua field';
                 return;
             }
-
+            
             fetch('/update-pin', {
                 method: 'POST',
                 headers: {
@@ -445,7 +445,7 @@ app.get('/owner-access', (req, res) => {
                 messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
             });
         }
-
+        
         // Allow Enter key to authenticate
         document.getElementById('pin').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -466,7 +466,7 @@ app.get('/qr-data', (req, res) => {
             message: 'Bot is already connected to WhatsApp!'
         });
     }
-
+    
     if (!currentQRCode) {
         return res.json({ 
             status: 'waiting',
@@ -492,13 +492,13 @@ app.get('/qr-data', (req, res) => {
 app.post('/verify-pin', (req, res) => {
     try {
         const { pin } = req.body;
-
+        
         if (!pin) {
             return res.json({ success: false, message: 'PIN is required' });
         }
-
+        
         const isValid = pinConfig.verifyPin(pin);
-
+        
         if (isValid) {
             console.log('🔐 Successful PIN authentication');
             res.json({ success: true, message: 'PIN valid' });
@@ -516,19 +516,19 @@ app.post('/verify-pin', (req, res) => {
 app.post('/update-pin', (req, res) => {
     try {
         const { currentPin, newPin } = req.body;
-
+        
         if (!currentPin || !newPin) {
             return res.json({ success: false, message: 'Current PIN and new PIN are required' });
         }
-
+        
         if (!pinConfig.verifyPin(currentPin)) {
             return res.json({ success: false, message: 'Current PIN is incorrect' });
         }
-
+        
         if (newPin.length < 3) {
             return res.json({ success: false, message: 'New PIN must be at least 3 characters' });
         }
-
+        
         pinConfig.updatePin(newPin);
         console.log('🔐 PIN updated by owner');
         res.json({ success: true, message: 'PIN updated successfully' });
@@ -738,7 +738,7 @@ app.get('/api/user-currency', async (req, res) => {
 
         const { getUser, User } = require('./lib/database');
         let userPhone = req.session.user.phone;
-
+        
         // Format phone number properly
         if (!userPhone.startsWith('+')) {
             if (userPhone.startsWith('62')) {
@@ -749,23 +749,23 @@ app.get('/api/user-currency', async (req, res) => {
                 userPhone = '+' + userPhone;
             }
         }
-
+        
         // Create WhatsApp JID - remove + and add @s.whatsapp.net
         const phoneForJid = userPhone.replace('+', '');
         const userJid = phoneForJid + '@s.whatsapp.net';
-
+        
         console.log(`🔍 Looking for user: Phone=${userPhone}, JID=${userJid}`);
-
+        
         // Try multiple JID formats to find existing user
         let user = null;
-
+        
         const possibleJids = [
             userJid, // Current format: 6285709557572@s.whatsapp.net
             userPhone.replace('+62', '62') + '@s.whatsapp.net', // Alternative format
             userPhone, // Raw phone format: +6285709557572
             userPhone + '@s.whatsapp.net' // With + sign: +6285709557572@s.whatsapp.net
         ];
-
+        
         for (const jid of possibleJids) {
             user = await User.findOne({ jid: jid });
             if (user) {
@@ -811,20 +811,6 @@ app.get('/api/user-currency', async (req, res) => {
     }
 });
 
-const path = require('path');
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve mines game
-    app.get('/games/mines', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'mines.html'));
-    });
-
-    // Serve mines statistics
-    app.get('/games/mines-stats', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'mines-stats.html'));
-    });
-
 // Initialize daily login after server start
 async function initializeServer() {
     await initializeDailyLogin();
@@ -839,19 +825,11 @@ server.listen(PORT, '0.0.0.0', async () => {
     } else {
         console.log('📱 Dashboard available at: http://localhost:' + PORT);
     }
-
+    
     // Initialize additional systems
     await initializeServer();
 });
 
-// Initialize authentication system when socket is available
-function initializeAuthSystem(socket) {
-    if (socket) {
-        console.log('🔐 Auth system initialized with WhatsApp socket');
-        authSystem.initializeAuthSystem(socket);
-        // Setup auth routes with socket
-        authSystem.setupAuthRoutes(app, socket);
-    }
-}
+
 
 module.exports = { updateQRCode, expireQRCode, clearQRCode, initializeAuthSystem };

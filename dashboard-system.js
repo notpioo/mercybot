@@ -1843,60 +1843,32 @@ function setupDashboardRoutes(app, qrFunctions) {
     app.get('/list/mine', requireAuth, (req, res) => {
         const content = `
             <div class="card">
-                <h1>💎 Mines Casino</h1>
-                <p>Test your luck in the classic Mines game. Find gems while avoiding bombs!</p>
+                <h1>💎 Mine</h1>
+                <p>Mine for diamonds and precious gems.</p>
             </div>
             
             <div class="grid">
                 <div class="card">
-                    <h3>🎰 Play Mines</h3>
-                    <p>Start playing the Mines casino game.</p>
-                    <a href="/games/mines" class="btn">Play Now</a>
+                    <h3>⛏️ Start Mining</h3>
+                    <p>Begin your mining adventure.</p>
+                    <a href="#" class="btn">Start Mining</a>
                 </div>
                 
                 <div class="card">
-                    <h3>📊 Game Stats</h3>
-                    <p>View your mines game statistics.</p>
-                    <a href="/games/stats" class="btn btn-secondary">View Stats</a>
+                    <h3>💎 My Gems</h3>
+                    <p>View your collected gems.</p>
+                    <a href="#" class="btn btn-secondary">View Collection</a>
                 </div>
                 
                 <div class="card">
-                    <h3>🏆 Leaderboard</h3>
-                    <p>Compete with other players.</p>
-                    <a href="/games/leaderboard" class="btn btn-secondary">View Leaderboard</a>
-                </div>
-                
-                <div class="card"></div>
-        `;
-        
-        res.send(getBaseTemplate('Mine Casino', content, 'list-mine'));
-    });
-
-    // Game routes
-    app.get('/games/mines', requireAuth, (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'mines.html'));
-    });
-
-    app.get('/games/stats', requireAuth, (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'stats.html'));
-    });
-
-    app.get('/games/leaderboard', requireAuth, (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
-    });
-
-    // Update the existing mines route to redirect to the new path
-    app.get('/mines', requireAuth, (req, res) => {
-        res.redirect('/games/mines');
-    });
-                    <h3>🏆 Leaderboard</h3>
-                    <p>See top mines players.</p>
-                    <a href="#" class="btn btn-secondary">View Leaderboard</a>
+                    <h3>🏪 Gem Market</h3>
+                    <p>Trade gems for rewards.</p>
+                    <a href="#" class="btn btn-secondary">Visit Market</a>
                 </div>
             </div>
         `;
         
-        res.send(getBaseTemplate('Mines Casino', content, 'list-mine'));
+        res.send(getBaseTemplate('Mine', content, 'list-mine'));
     });
 
     app.get('/list/tower', requireAuth, (req, res) => {
@@ -3223,122 +3195,6 @@ function setupDashboardRoutes(app, qrFunctions) {
     });
 
     // Daily Login Admin API endpoints (Owner only)
-    
-    // Mines Game Routes
-    app.get('/games/mines', requireAuth, (req, res) => {
-        res.sendFile('mines.html', { root: './public' });
-    });
-    
-    // API endpoint to get user chips
-    app.get('/api/user/chips', requireAuth, async (req, res) => {
-        try {
-            const { User } = require('./lib/database');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const user = await User.findOne({ jid: userJid });
-            if (!user) {
-                return res.json({ success: false, message: 'User not found' });
-            }
-            
-            res.json({ 
-                success: true, 
-                chips: user.chips || 0,
-                balance: user.balance || 0 
-            });
-            
-        } catch (error) {
-            console.error('Error fetching user chips:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-    
-    // API endpoint to update user chips
-    app.post('/api/user/update-chips', requireAuth, async (req, res) => {
-        try {
-            const { amount } = req.body;
-            const { User } = require('./lib/database');
-            
-            // Get user's WhatsApp JID
-            let userPhone = req.session.user.phone;
-            if (!userPhone.startsWith('+')) {
-                if (userPhone.startsWith('62')) {
-                    userPhone = '+' + userPhone;
-                } else if (userPhone.startsWith('8')) {
-                    userPhone = '+62' + userPhone;
-                } else {
-                    userPhone = '+' + userPhone;
-                }
-            }
-            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
-            
-            const user = await User.findOne({ jid: userJid });
-            if (!user) {
-                return res.json({ success: false, message: 'User not found' });
-            }
-            
-            // Update chips
-            user.chips = (user.chips || 0) + amount;
-            if (user.chips < 0) user.chips = 0; // Prevent negative chips
-            
-            await user.save();
-            
-            res.json({ 
-                success: true, 
-                newChips: user.chips,
-                message: amount > 0 ? `Won ${amount} chips!` : `Lost ${Math.abs(amount)} chips!`
-            });
-            
-        } catch (error) {
-            console.error('Error updating user chips:', error);
-            res.json({ success: false, message: 'Server error' });
-        }
-    });
-
-    // Reset Daily Login API endpoint
-    app.post('/api/reset-daily-login', requireOwner, async (req, res) => {
-        try {
-            const { userJid } = req.body;
-            
-            if (!userJid) {
-                return res.json({ success: false, reason: 'missing_jid' });
-            }
-            
-            const { resetUserDailyLogin } = require('./lib/dailyLoginModel');
-            const { User } = require('./lib/database');
-            
-            // Check if user exists
-            const user = await User.findOne({ jid: userJid });
-            if (!user) {
-                return res.json({ success: false, reason: 'user_not_found' });
-            }
-            
-            // Reset user's daily login
-            await resetUserDailyLogin(userJid);
-            
-            res.json({ 
-                success: true, 
-                message: 'Daily login berhasil direset',
-                userJid: userJid 
-            });
-            
-        } catch (error) {
-            console.error('Error resetting daily login:', error);
-            res.json({ success: false, reason: 'server_error' });
-        }
-    });
-    
     app.get('/api/daily-login/config', requireOwner, async (req, res) => {
         try {
             const { DailyLoginConfig } = require('./lib/dailyLoginModel');
@@ -3677,25 +3533,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                     </div>
                 </div>
                 
-                <!-- Reset Daily Login Section -->
-                <div class="card">
-                    <h3>🔄 Reset Daily Login</h3>
-                    <p>Reset daily login progress untuk user tertentu. User yang direset akan kembali ke Day 1 dan bisa claim lagi.</p>
-                    
-                    <form id="resetDailyForm">
-                        <div class="form-group">
-                            <label>Nomor WhatsApp (tanpa +):</label>
-                            <input type="text" id="resetPhoneNumber" placeholder="contoh: 6285123456789" required />
-                            <small>Masukkan nomor lengkap dengan kode negara (62 untuk Indonesia)</small>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-danger">Reset Daily Login</button>
-                        </div>
-                    </form>
-                    
-                    <div id="resetResult" style="margin-top: 1rem; display: none;"></div>
-                </div>
-                
                 <style>
                     .reward-type-badge {
                         padding: 0.25rem 0.75rem;
@@ -3756,32 +3593,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                         font-size: 0.8rem;
                         margin-top: 0.25rem;
                         display: block;
-                    }
-                    
-                    .alert {
-                        padding: 12px 16px;
-                        border-radius: 8px;
-                        margin: 10px 0;
-                        font-size: 14px;
-                        border: 1px solid;
-                    }
-                    
-                    .alert-success {
-                        background-color: rgba(16, 185, 129, 0.1);
-                        border-color: #10b981;
-                        color: #10b981;
-                    }
-                    
-                    .alert-error {
-                        background-color: rgba(239, 68, 68, 0.1);
-                        border-color: #ef4444;
-                        color: #ef4444;
-                    }
-                    
-                    .alert-info {
-                        background-color: rgba(59, 130, 246, 0.1);
-                        border-color: #3b82f6;
-                        color: #3b82f6;
                     }
                 </style>
                 
@@ -3850,65 +3661,6 @@ function setupDashboardRoutes(app, qrFunctions) {
                             } else {
                                 alert('Error updating reward');
                             }
-                        });
-                    });
-                    
-                    // Reset Daily Login Form Handler
-                    document.getElementById('resetDailyForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        
-                        const phoneNumber = document.getElementById('resetPhoneNumber').value.trim();
-                        const resultDiv = document.getElementById('resetResult');
-                        
-                        if (!phoneNumber) {
-                            resultDiv.innerHTML = '<div class="alert alert-error">❌ Masukkan nomor WhatsApp!</div>';
-                            resultDiv.style.display = 'block';
-                            return;
-                        }
-                        
-                        // Show loading
-                        resultDiv.innerHTML = '<div class="alert alert-info">⏳ Memproses reset...</div>';
-                        resultDiv.style.display = 'block';
-                        
-                        // Format phone number to JID
-                        let formattedNumber = phoneNumber;
-                        if (!formattedNumber.startsWith('62')) {
-                            if (formattedNumber.startsWith('0')) {
-                                formattedNumber = '62' + formattedNumber.substring(1);
-                            } else if (formattedNumber.startsWith('8')) {
-                                formattedNumber = '62' + formattedNumber;
-                            }
-                        }
-                        const userJid = formattedNumber + '@s.whatsapp.net';
-                        
-                        fetch('/api/reset-daily-login', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ userJid: userJid })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                resultDiv.innerHTML = \`
-                                    <div class="alert alert-success">
-                                        ✅ Daily login berhasil direset untuk nomor \${phoneNumber}!<br>
-                                        User sekarang bisa claim dari Day 1 lagi.
-                                    </div>
-                                \`;
-                                document.getElementById('resetPhoneNumber').value = '';
-                            } else {
-                                let errorMsg = 'Terjadi kesalahan saat reset daily login';
-                                if (data.reason === 'user_not_found') {
-                                    errorMsg = 'User tidak ditemukan. Pastikan nomor benar dan user pernah menggunakan daily login.';
-                                }
-                                resultDiv.innerHTML = \`<div class="alert alert-error">❌ \${errorMsg}</div>\`;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            resultDiv.innerHTML = '<div class="alert alert-error">❌ Terjadi kesalahan koneksi</div>';
                         });
                     });
                 </script>

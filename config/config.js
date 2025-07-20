@@ -327,18 +327,6 @@ module.exports = {
             permission: "basic",
             useLimit: true,
         },
-        dailylogin: {
-            aliases: ["dailylogin", "daily"],
-            description: "Daily login to get rewards",
-            permission: "basic",
-            useLimit: false,
-        },
-        resetdaily: {
-            aliases: ["resetdaily"],
-            description: "Reset daily login for user",
-            permission: "owner",
-            useLimit: false,
-        },
     },
 
     // Messages
