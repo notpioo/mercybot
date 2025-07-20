@@ -2,6 +2,7 @@ const express = require('express');
 const { createServer } = require('http');
 const { setupAuthRoutes, initializeAuthSystem: initAuth } = require('./auth-system');
 const { setupDashboardRoutes } = require('./dashboard-system');
+const { setupAdminDashboardRoutes } = require('./admin-dashboard');
 const pinConfig = require('./config/pin');
 
 const app = express();
@@ -727,6 +728,9 @@ function initializeAuthSystem(sock) {
 
 // Set up dashboard routes with QR functions
 setupDashboardRoutes(app, { getCurrentQR });
+
+// Set up admin dashboard routes
+setupAdminDashboardRoutes(app);
 
 // API endpoint untuk mendapatkan currency user
 app.get('/api/user-currency', async (req, res) => {

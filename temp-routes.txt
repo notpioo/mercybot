@@ -1,0 +1,200 @@
+    // Home page
+    app.get('/home', requireAuth, async (req, res) => {
+        try {
+            const { getUserDailyLoginStatus } = require('./lib/dailyLoginModel');
+            
+            // Get user's WhatsApp JID
+            let userPhone = req.session.user.phone;
+            if (!userPhone.startsWith('+')) {
+                if (userPhone.startsWith('62')) {
+                    userPhone = '+' + userPhone;
+                } else if (userPhone.startsWith('8')) {
+                    userPhone = '+62' + userPhone;
+                } else {
+                    userPhone = '+' + userPhone;
+                }
+            }
+            const userJid = userPhone.replace('+', '') + '@s.whatsapp.net';
+            
+            // Get daily login status
+            const dailyLoginStatus = await getUserDailyLoginStatus(userJid);
+            
+            // Generate daily login section
+            let dailyLoginSection = '';
+            if (dailyLoginStatus) {
+                const rewardIcons = {
+                    'balance': '💰',
+                    'chips': '🎰',
+                    'premium': '⭐'
+                };
+                
+                const nextReward = dailyLoginStatus.nextReward;
+                const canClaim = dailyLoginStatus.canClaim;
+                
+                let rewardText = 'No reward';
+                if (nextReward) {
+                    if (nextReward.rewardType === 'premium') {
+                        rewardText = `${rewardIcons[nextReward.rewardType]} Premium ${nextReward.premiumDuration || 1} hari`;
+                    } else {
+                        rewardText = `${rewardIcons[nextReward.rewardType]} ${nextReward.rewardAmount} ${nextReward.rewardType}`;
+                    }
+                }
+                
+                dailyLoginSection = `
+                    <div class="daily-login-card">
+                        <div class="daily-login-header">
+                            <h3>🗓️ Daily Login</h3>
+                            <div class="streak-display">
+                                <span class="streak-number">${dailyLoginStatus.currentStreak}</span>
+                                <span class="streak-label">Streak</span>
+                            </div>
+                        </div>
+                        
+                        <div class="daily-login-content">
+                            <div class="reward-preview">
+                                <div class="next-reward">
+                                    <span class="reward-label">Day ${dailyLoginStatus.currentDay} Reward:</span>
+                                    <span class="reward-value">${rewardText}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="login-days">
+                                ${dailyLoginStatus.rewards.map(reward => {
+                                    const dayIcon = rewardIcons[reward.rewardType];
+                                    const isCurrentDay = reward.day === dailyLoginStatus.currentDay;
+                                    const isCompleted = reward.day < dailyLoginStatus.currentDay || 
+                                        (dailyLoginStatus.currentDay === 1 && reward.day <= 7 && dailyLoginStatus.currentStreak > 0);
+                                    
+                                    return `
+                                        <div class="day-item ${isCurrentDay ? 'current' : ''} ${isCompleted ? 'completed' : ''}">
+                                            <div class="day-number">Day ${reward.day}</div>
+                                            <div class="day-icon">${dayIcon}</div>
+                                            <div class="day-reward">
+                                                ${reward.rewardType === 'premium' ? 
+                                                    `${reward.premiumDuration || 1}d Premium` : 
+                                                    `${reward.rewardAmount} ${reward.rewardType}`}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="claim-section">
+                                ${canClaim ? `
+                                    <button class="claim-btn" onclick="claimDailyLogin()">
+                                        🎁 Claim Daily Reward
+                                    </button>
+                                ` : `
+                                    <div class="claim-status">
+                                        ${dailyLoginStatus.reason === 'already_claimed_today' ? 
+                                            '✅ Already claimed today! Come back tomorrow.' : 
+                                            '⏰ Come back tomorrow to claim your reward!'}
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const content = `
+                <div class="card">
+                    <h1>Welcome to NoMercy</h1>
+                    <p>Hello <strong>${req.session.user.phone}</strong>, welcome to the advanced WhatsApp bot management system.</p>
+                    <p>Manage your bot, track analytics, and control your WhatsApp automation from this powerful dashboard.</p>
+                </div>
+                
+                ${dailyLoginSection}
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>🤖 Bot Status</h3>
+                        <p>Your WhatsApp bot is currently active and processing messages.</p>
+                        <p style="color: #10b981; font-weight: 600;">✅ Online & Connected</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📊 Quick Stats</h3>
+                        <p>Monitor your bot's performance and user engagement.</p>
+                        <p style="color: #6366f1; font-weight: 600;">📈 All Systems Operational</p>
+                    </div>
+                    
+                    ${req.session.user.role === 'owner' ? `
+                    <div class="card">
+                        <h3>⚙️ Admin Panel</h3>
+                        <p>Access advanced bot management features.</p>
+                        <a href="/admin" class="btn">Open Admin Panel</a>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <style>
+                    .daily-login-card {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 20px;
+                        padding: 2rem;
+                        margin-bottom: 2rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .daily-login-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(10px);
+                    }
+                    
+                    .daily-login-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1.5rem;
+                        position: relative;
+                        z-index: 2;
+                    }
+                    
+                    .daily-login-header h3 {
+                        margin: 0;
+                        color: white;
+                        font-size: 1.5rem;
+                    }
+                    
+                    .streak-display {
+                        text-align: center;
+                        background: rgba(255, 255, 255, 0.2);
+                        padding: 1rem;
+                        border-radius: 15px;
+                        backdrop-filter: blur(10px);
+                    }
+                    
+                    .streak-number {
+                        display: block;
+                        font-size: 2rem;
+                        font-weight: 700;
+                        color: white;
+                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    }
+                    
+                    .streak-label {
+                        font-size: 0.9rem;
+                        color: rgba(255, 255, 255, 0.9);
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .daily-login-content {
+                        position: relative;
+                        z-index: 2;
+                    }
+                    
+                    .reward-preview {
+                        background: rgba(255, 255, 255, 0.1);
+                        padding: 1.5rem;
+                        border-radius: 15px;
+                        margin-bottom: 2rem;
