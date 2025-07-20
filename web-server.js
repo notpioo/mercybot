@@ -8,10 +8,11 @@ const pinConfig = require('./config/pin');
 const app = express();
 const server = createServer(app);
 
-// Global variables for QR code
+// Global variables for QR code and connection status
 let currentQRCode = null;
 let qrCodeExpired = false;
 let botConnected = false;
+let lastQRUpdate = null;
 
 // Middleware for JSON parsing and sessions
 app.use(express.json());
@@ -654,6 +655,7 @@ function updateQRCode(qr) {
     currentQRCode = qr;
     qrCodeExpired = false;
     botConnected = false;
+    lastQRUpdate = new Date();
     console.log('📱 QR Code updated and available at web interface');
 }
 
@@ -669,6 +671,15 @@ function clearQRCode() {
     qrCodeExpired = false;
     botConnected = true;
     console.log('✅ QR Code cleared (connected)');
+}
+
+function setConnectionStatus(connected) {
+    botConnected = connected;
+    if (connected) {
+        currentQRCode = null;
+        qrCodeExpired = false;
+    }
+    console.log('🔗 Connection status updated:', connected ? 'Connected' : 'Disconnected');
 }
 
 // Function to get current QR status (for admin panel)
@@ -836,4 +847,4 @@ server.listen(PORT, '0.0.0.0', async () => {
 
 
 
-module.exports = { updateQRCode, expireQRCode, clearQRCode, initializeAuthSystem };
+module.exports = { updateQRCode, expireQRCode, clearQRCode, setConnectionStatus, initializeAuthSystem };
