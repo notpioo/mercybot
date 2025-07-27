@@ -178,6 +178,9 @@ class SeanaBot {
 const bot = new SeanaBot();
 bot.initialize();
 
+// Also start the web server
+require('./server');
+
 // Handle process termination
 process.on('SIGINT', () => {
     console.log('\n👋 Shutting down Seana Bot...');
