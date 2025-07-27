@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Kode - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <div class="lightning-bolt">⚡</div>
+            </div>
+            
+            <h1 class="login-title">Verifikasi Kode</h1>
+            <p class="login-subtitle">Masukkan kode 6 digit yang dikirim ke <%= phone %></p>
+            
+            <% if (typeof error !== 'undefined') { %>
+                <div class="error-message"><%= error %></div>
+            <% } %>
+            
+            <% if (typeof message !== 'undefined') { %>
+                <div class="success-message"><%= message %></div>
+            <% } %>
+            
+            <% if (typeof codeSent !== 'undefined') { %>
+                <% if (codeSent) { %>
+                    <div class="success-message">✅ Kode verifikasi telah dikirim ke WhatsApp Anda!</div>
+                <% } else { %>
+                    <div class="error-message">⚠️ Bot tidak terhubung. Kode verifikasi di-log ke console.</div>
+                <% } %>
+            <% } %>
+            
+            <form action="/verify-code" method="POST" class="login-form">
+                <input type="hidden" name="phone" value="<%= phone %>">
+                
+                <div class="input-group">
+                    <label for="code">Kode Verifikasi:</label>
+                    <input 
+                        type="text" 
+                        id="code" 
+                        name="code" 
+                        placeholder="123456" 
+                        required
+                        pattern="[0-9]{6}"
+                        maxlength="6"
+                        class="code-input"
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    Verifikasi
+                </button>
+            </form>
+            
+            <div class="resend-section">
+                <form action="/resend-code" method="POST" style="margin-top: 20px;">
+                    <input type="hidden" name="phone" value="<%= phone %>">
+                    <button type="submit" class="btn btn-secondary btn-full">
+                        🔄 Kirim Ulang Kode
+                    </button>
+                </form>
+                
+                <div class="back-link">
+                    <a href="/login">← Kembali ke Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

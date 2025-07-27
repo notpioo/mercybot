@@ -1,9 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[deploy]
-start_command = "node index.js"
-
-[[services]]
-name = "web"
-port = 3000

@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoMercy Login</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <div class="lightning-bolt">⚡</div>
+            </div>
+            
+            <h1 class="login-title">NoMercy Login</h1>
+            <p class="login-subtitle">Enter your WhatsApp number</p>
+            
+            <% if (typeof error !== 'undefined') { %>
+                <div class="error-message"><%= error %></div>
+            <% } %>
+            
+            <form action="/verify-phone" method="POST" class="login-form">
+                <div class="input-group">
+                    <label for="phone">Nomor WhatsApp:</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="08123456789" 
+                        required
+                        pattern="[0-9]+"
+                        maxlength="15"
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    Kirim Kode Verifikasi
+                </button>
+                
+                <p class="info-text">
+                    Kode verifikasi akan dikirim melalui bot WhatsApp
+                </p>
+            </form>
+            
+            <div class="back-link">
+                <a href="/">← Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

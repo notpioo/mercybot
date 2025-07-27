@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Access - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <div class="lightning-bolt">⚡</div>
+            </div>
+            
+            <h1 class="login-title">Owner Access</h1>
+            <p class="login-subtitle">Enter owner password</p>
+            
+            <% if (typeof error !== 'undefined') { %>
+                <div class="error-message"><%= error %></div>
+            <% } %>
+            
+            <form action="/owner-auth" method="POST" class="login-form">
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter owner password" 
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    Access Dashboard
+                </button>
+            </form>
+            
+            <div class="back-link">
+                <a href="/">← Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

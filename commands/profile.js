@@ -1,162 +1,120 @@
 const config = require('../config/config');
-const { getUser } = require('../lib/database');
-const { formatJid } = require('../utils/helpers');
+const { getUser } = require('../utils/userUtils');
 
-async function execute(context) {
-    const { sock, remoteJid, user, senderName, message, args } = context;
-    
+const profileCommand = async (sock, from, sender, args, message) => {
     try {
-        let targetUser = user;
-        let targetName = senderName;
-        let targetJid = user.jid;
-        
-        // Check and update premium status if expired for own profile
-        if (targetUser.status === 'premium' && targetUser.premiumUntil && new Date() > targetUser.premiumUntil) {
-            const { User } = require('../lib/database');
-            await User.updateOne(
-                { jid: targetJid },
-                { 
-                    $set: { 
-                        status: 'basic',
-                        premiumUntil: null,
-                        limit: config.userSystem.defaultLimit
-                    }
-                }
-            );
-            targetUser.status = 'basic';
-            targetUser.premiumUntil = null;
-            targetUser.limit = config.userSystem.defaultLimit;
+        // Get user data
+        const user = await getUser(sender);
+        if (!user) {
+            await sock.sendMessage(from, { 
+                text: config.messages.databaseError 
+            });
+            return false;
         }
-
-        // Check if user mentioned someone or provided phone number
-        if (message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length > 0) {
-            const mentionedJid = message.message.extendedTextMessage.contextInfo.mentionedJid[0];
-            targetUser = await getUser(mentionedJid);
-            targetJid = mentionedJid;
-            
-            // Check and update premium status if expired
-            if (targetUser.status === 'premium' && targetUser.premiumUntil && new Date() > targetUser.premiumUntil) {
-                const { User } = require('../lib/database');
-                await User.updateOne(
-                    { jid: targetJid },
-                    { 
-                        $set: { 
-                            status: 'basic',
-                            premiumUntil: null,
-                            limit: config.userSystem.defaultLimit
-                        }
-                    }
-                );
-                targetUser.status = 'basic';
-                targetUser.premiumUntil = null;
-                targetUser.limit = config.userSystem.defaultLimit;
-            }
-            
-            // Get mentioned user's name from WhatsApp
+        
+        // Check if user has enough limits
+        if (user.limit < 1) {
+            await sock.sendMessage(from, { 
+                text: config.messages.insufficientLimit 
+            });
+            return false;
+        }
+        
+        // Get WhatsApp profile name from multiple sources
+        let whatsappName = 'User';
+        
+        // Try to get name from message pushName first
+        if (message && message.pushName) {
+            whatsappName = message.pushName;
+        } else {
+            // Try other methods
             try {
-                const contactInfo = await sock.onWhatsApp(mentionedJid);
-                if (contactInfo && contactInfo[0]?.name) {
-                    targetName = contactInfo[0].name;
-                } else {
-                    targetName = targetUser.name || 'Unknown';
+                // Try getting contact info
+                const contactInfo = await sock.onWhatsApp(sender);
+                if (contactInfo && contactInfo[0] && contactInfo[0].notify) {
+                    whatsappName = contactInfo[0].notify;
                 }
             } catch (error) {
-                targetName = targetUser.name || 'Unknown';
+                console.log('Could not fetch WhatsApp name from onWhatsApp');
             }
-        } else if (args.length > 0) {
-            // Check if user provided phone number
-            const phoneNumber = args[0].replace(/\D/g, '');
-            if (phoneNumber.length >= 10) {
-                targetJid = formatJid(phoneNumber);
-                targetUser = await getUser(targetJid);
-                
-                // Check and update premium status if expired
-                if (targetUser.status === 'premium' && targetUser.premiumUntil && new Date() > targetUser.premiumUntil) {
-                    const { User } = require('../lib/database');
-                    await User.updateOne(
-                        { jid: targetJid },
-                        { 
-                            $set: { 
-                                status: 'basic',
-                                premiumUntil: null,
-                                limit: config.userSystem.defaultLimit
-                            }
-                        }
-                    );
-                    targetUser.status = 'basic';
-                    targetUser.premiumUntil = null;
-                    targetUser.limit = config.userSystem.defaultLimit;
-                }
-                
-                // Get user's name from WhatsApp
+            
+            // If still no name, try getting from chat
+            if (whatsappName === 'User') {
                 try {
-                    const contactInfo = await sock.onWhatsApp(targetJid);
-                    if (contactInfo && contactInfo[0]?.name) {
-                        targetName = contactInfo[0].name;
-                    } else {
-                        targetName = targetUser.name || 'Unknown';
+                    const chat = await sock.chatRead(from);
+                    if (chat && chat.name) {
+                        whatsappName = chat.name;
                     }
                 } catch (error) {
-                    targetName = targetUser.name || 'Unknown';
+                    console.log('Could not fetch name from chat');
                 }
             }
         }
-
-        // Get target user's profile picture
-        let profilePictureUrl = null;
-        try {
-            profilePictureUrl = await sock.profilePictureUrl(targetJid, 'image');
-        } catch (error) {
-            // If no profile picture, use default
-            profilePictureUrl = null;
+        
+        console.log(`📝 Using WhatsApp name: ${whatsappName} for user: ${sender}`);
+        
+        // Deduct limit silently (no notification)
+        user.deductLimit(1);
+        user.updateActivity();
+        await user.save();
+        
+        // Format limit display based on user status
+        let limitDisplay = '';
+        if (user.hasUnlimitedLimits()) {
+            limitDisplay = '∞ (unlimited)';
+        } else {
+            limitDisplay = `${user.limit}/${user.totalLimit}`;
         }
-
-        // Format user data
-        const username = targetUser.username || targetName || 'Unknown';
-        const phoneNumber = targetJid.split('@')[0];
-        const tag = `@${phoneNumber}`;
-        const status = targetUser.status || 'basic';
-        const statusName = config.userSystem.statuses[status]?.name || 'Basic';
-        const limit = targetUser.limit === 'unlimited' ? '∞' : targetUser.limit;
-        const balance = targetUser.balance || 0;
-        const chips = targetUser.chips || 0;
-        const memberSince = targetUser.createdAt ? targetUser.createdAt.toLocaleDateString('id-ID') : 'Unknown';
-
-        // Create profile text
-        const profileText = `┌─「 User Info 」
-│ • Username: ${username}
-│ • Tag: ${tag}
-│ • Status: ${statusName}
-│ • Limit: ${limit}
-│ • Balance: ${balance}
-│ • Chips: ${chips}
-│ • Member since: ${memberSince}
-└──────────────────────`;
-
-        // Send profile picture if available with mention
-        if (profilePictureUrl) {
-            await sock.sendMessage(remoteJid, {
-                image: { url: profilePictureUrl },
+        
+        // Format profile message
+        const profileText = config.messages.profileMessage
+            .replace('{username}', whatsappName)
+            .replace('{tag}', `@${sender.split('@')[0]}`)
+            .replace('{status}', user.status.toUpperCase())
+            .replace('{limitDisplay}', limitDisplay)
+            .replace('{balance}', user.balance)
+            .replace('{chips}', user.chips)
+            .replace('{memberSince}', user.getFormattedMemberSince());
+        
+        // Get profile picture
+        let profilePicUrl = null;
+        try {
+            profilePicUrl = await sock.profilePictureUrl(sender, 'image');
+        } catch (error) {
+            console.log('Could not fetch profile picture');
+        }
+        
+        // Send profile info with picture if available
+        if (profilePicUrl) {
+            await sock.sendMessage(from, {
+                image: { url: profilePicUrl },
                 caption: profileText,
-                mentions: [targetJid]
+                mentions: [sender]
             });
         } else {
-            await sock.sendMessage(remoteJid, {
+            // Send without image if profile picture is not available
+            await sock.sendMessage(from, { 
                 text: profileText,
-                mentions: [targetJid]
+                mentions: [sender]
             });
         }
-
-        console.log('👤 Profile sent successfully');
         
+        return true;
     } catch (error) {
-        console.error('❌ Failed to send profile:', error);
-        await sock.sendMessage(remoteJid, {
-            text: config.messages.error
+        console.error('❌ Error in profile command:', error.message);
+        await sock.sendMessage(from, { 
+            text: config.messages.databaseError 
         });
+        return false;
     }
-}
+};
 
 module.exports = {
-    execute
+    name: 'profile',
+    description: 'View your user profile and statistics',
+    usage: '.profile',
+    category: 'user',
+    requiresLimit: true,
+    limitCost: 1,
+    execute: profileCommand
 };

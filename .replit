@@ -1,12 +1,10 @@
 modules = ["nodejs-20"]
-run = "node index.js"
 
 [nix]
-channel = "stable-24_05"
-packages = ["ffmpeg"]
+channel = "stable-25_05"
 
 [workflows]
-runButton = "Project"
+runButton = "Bot + Web Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -17,33 +15,36 @@ author = "agent"
 task = "workflow.run"
 args = "WhatsApp Bot"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "whatsapp-bot-setup"
-
 [[workflows.workflow]]
 name = "WhatsApp Bot"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install @whiskeysockets/baileys qrcode-terminal mongoose && node index.js"
-waitForPort = 3000
+args = "npm install @whiskeysockets/baileys qrcode-terminal @hapi/boom mongoose && node index.js"
 
 [[workflows.workflow]]
-name = "whatsapp-bot-setup"
-author = "agent"
+name = "Start Web Server"
+author = 45610059
+mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install @whiskeysockets/baileys qrcode-terminal mongoose"
+args = "node server.js"
+
+[[workflows.workflow]]
+name = "Bot + Web Server"
+author = 45610059
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server.js"
 
 [[ports]]
-localPort = 3000
-externalPort = 80
-
-[deployment]
-run = ["sh", "-c", "node index.js"]
-
-[agent]
-expertMode = true
+localPort = 5000
+externalPort = 8080

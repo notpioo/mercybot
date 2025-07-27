@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="lightning-bolt">⚡</div>
+                </div>
+                <h1>NoMercy Dashboard</h1>
+            </div>
+            
+            <div class="header-right">
+                <span class="user-info">
+                    <% if (isOwner) { %>
+                        👑 Owner
+                    <% } else { %>
+                        📱 <%= phone %>
+                    <% } %>
+                </span>
+                <form action="/logout" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-small">Logout</button>
+                </form>
+            </div>
+        </header>
+        
+        <main class="dashboard-main">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Bot Status</h3>
+                    <div class="status-indicator">
+                        <span class="status-dot active"></span>
+                        <span>WhatsApp Connected</span>
+                    </div>
+                    <p>Bot sedang aktif dan siap menerima pesan</p>
+                </div>
+                
+                <% if (userData) { %>
+                <div class="card">
+                    <h3>User Profile</h3>
+                    <div class="user-stats">
+                        <div class="stat">
+                            <span class="stat-label">Status:</span>
+                            <span class="stat-value"><%= userData.status %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Limit:</span>
+                            <span class="stat-value"><%= userData.limit %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Balance:</span>
+                            <span class="stat-value"><%= userData.balance %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Commands Used:</span>
+                            <span class="stat-value"><%= userData.commandsUsed %></span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-small">Broadcast Message</button>
+                        <button class="btn btn-secondary btn-small">View Logs</button>
+                        <button class="btn btn-secondary btn-small">Settings</button>
+                    </div>
+                </div>
+                
+                <% if (isOwner) { %>
+                <div class="card">
+                    <h3>Owner Controls</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-small">Manage Users</button>
+                        <button class="btn btn-secondary btn-small">Bot Settings</button>
+                        <button class="btn btn-danger btn-small">Restart Bot</button>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

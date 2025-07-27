@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="qr-card">
+            <div class="logo">
+                <div class="lightning-bolt">⚡</div>
+            </div>
+            
+            <h1 class="qr-title">WhatsApp QR Scanner</h1>
+            <p class="qr-subtitle" id="subtitle">Checking bot status...</p>
+            
+            <div class="qr-container" id="qr-container">
+                <div class="qr-placeholder" id="qr-placeholder">
+                    <div class="qr-loading">
+                        <div class="spinner"></div>
+                        <p id="status-text">Mengecek status bot...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-instructions" id="qr-instructions" style="display: none;">
+                <h3>Cara scan QR Code:</h3>
+                <ol>
+                    <li>Buka WhatsApp di ponsel Anda</li>
+                    <li>Tap Menu atau Settings lalu pilih Linked Devices</li>
+                    <li>Tap Link a Device</li>
+                    <li>Arahkan ponsel ke QR code ini</li>
+                </ol>
+            </div>
+            
+            <div id="success-message" style="display: none;">
+                <div class="success-message">
+                    <h3>✅ Bot WhatsApp Sudah Terhubung!</h3>
+                    <p>Bot sudah aktif dan siap menerima pesan WhatsApp.</p>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="window.location.href='/dashboard'">
+                    Go to Dashboard
+                </button>
+                <button class="btn btn-primary" id="refresh-btn" onclick="forceRefresh()" style="display: none;">
+                    Refresh Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let refreshInterval = null;
+        let isConnected = false;
+
+        async function checkBotStatus() {
+            try {
+                console.log('🔄 Checking bot status...');
+                const response = await fetch('/api/bot-status');
+                const data = await response.json();
+                
+                const subtitle = document.getElementById('subtitle');
+                const qrContainer = document.getElementById('qr-container');
+                const qrInstructions = document.getElementById('qr-instructions');
+                const successMessage = document.getElementById('success-message');
+                const refreshBtn = document.getElementById('refresh-btn');
+                
+                if (data.connected) {
+                    console.log('✅ Bot is connected!');
+                    // Bot sudah terhubung
+                    isConnected = true;
+                    subtitle.textContent = 'Bot WhatsApp sudah terhubung!';
+                    qrContainer.style.display = 'none';
+                    qrInstructions.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    refreshBtn.style.display = 'inline-block';
+                    
+                    // Stop auto refresh when connected
+                    if (refreshInterval) {
+                        clearInterval(refreshInterval);
+                        refreshInterval = null;
+                        console.log('⏹️ Stopped auto-refresh');
+                    }
+                } else {
+                    console.log('⚠️ Bot not connected, fetching QR...');
+                    // Bot belum terhubung, tampilkan QR
+                    isConnected = false;
+                    subtitle.textContent = 'Scan QR code dengan WhatsApp untuk menghubungkan bot';
+                    qrContainer.style.display = 'block';
+                    qrInstructions.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    refreshBtn.style.display = 'inline-block';
+                    
+                    // Fetch QR code
+                    await fetchQRCode();
+                }
+            } catch (error) {
+                console.error('❌ Error checking bot status:', error);
+                document.getElementById('status-text').textContent = 'Error mengecek status bot. Mencoba lagi...';
+            }
+        }
+
+        async function fetchQRCode() {
+            try {
+                console.log('📱 Fetching QR code...');
+                const response = await fetch('/api/qr-code');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const qrPlaceholder = document.getElementById('qr-placeholder');
+                
+                if (data.success && data.qrCode) {
+                    console.log('✅ QR Code received and displaying');
+                    // Display QR code
+                    qrPlaceholder.innerHTML = `
+                        <img src="${data.qrCode}" alt="WhatsApp QR Code" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                    `;
+                    
+                    // Show instructions when QR is displayed
+                    document.getElementById('qr-instructions').style.display = 'block';
+                } else {
+                    console.log('⏳ QR code not ready yet');
+                    // Show loading state
+                    qrPlaceholder.innerHTML = `
+                        <div class="qr-loading">
+                            <div class="spinner"></div>
+                            <p>Generating QR Code...</p>
+                            <small>Bot sedang menyiapkan QR code...</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Error fetching QR code:', error);
+                const qrPlaceholder = document.getElementById('qr-placeholder');
+                qrPlaceholder.innerHTML = `
+                    <div class="qr-loading">
+                        <p style="color: #ef4444;">Error loading QR code</p>
+                        <small>Mencoba lagi dalam beberapa detik...</small>
+                    </div>
+                `;
+            }
+        }
+
+        function forceRefresh() {
+            console.log('🔄 Force refresh triggered');
+            checkBotStatus();
+        }
+
+        function startAutoRefresh() {
+            // Clear any existing interval
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            // Start new interval
+            refreshInterval = setInterval(async () => {
+                if (!isConnected) {
+                    console.log('🔄 Auto-refresh: checking status...');
+                    await checkBotStatus();
+                } else {
+                    console.log('✅ Bot connected, stopping auto-refresh');
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+            }, 3000);
+            
+            console.log('⏰ Auto-refresh started (every 3 seconds)');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page loaded, initializing...');
+            
+            // Check status immediately
+            checkBotStatus();
+            
+            // Start auto-refresh only if not connected
+            setTimeout(() => {
+                if (!isConnected) {
+                    startAutoRefresh();
+                }
+            }, 1000);
+        });
+
+        // Stop interval when page is unloaded
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                console.log('🛑 Page unloading, stopped auto-refresh');
+            }
+        });
+    </script>
+</body>
+</html>
