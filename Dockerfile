@@ -1,5 +1,5 @@
-# Use Node.js 18 alpine image for smaller size
-FROM node:18-alpine
+# Use Node.js 20 alpine image for @whiskeysockets/baileys compatibility
+FROM node:20-alpine
 
 # Install required system dependencies for sharp and other native modules
 RUN apk add --no-cache \
@@ -20,8 +20,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (use --omit=dev instead of --only=production)
+RUN npm ci --omit=dev
 
 # Copy application files
 COPY . .

@@ -15,8 +15,11 @@ Siapkan environment variables berikut di Railway:
 ```bash
 NODE_ENV=production
 PORT=5000
+NODE_VERSION=20
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/seanabot
 ```
+
+**PENTING**: Pastikan menggunakan Node.js 20+ karena @whiskeysockets/baileys memerlukan Node.js 20+
 
 #### 2. Deploy via Railway Dashboard
 1. Login ke Railway dashboard
@@ -102,20 +105,37 @@ docker-compose up -d seana-bot
 
 #### Troubleshooting Common Issues
 
-1. **Bot tidak bisa connect ke WhatsApp**
+1. **Docker Build Error: Node.js Version**
+   ```
+   Error: This package requires Node.js 20+ to run reliably
+   ```
+   **Solution**: Pastikan menggunakan Node.js 20+ di Dockerfile dan set NODE_VERSION=20 di environment variables
+
+2. **npm ci --only=production deprecated warning**
+   ```
+   npm warn config only Use `--omit=dev` to omit dev dependencies
+   ```
+   **Solution**: Gunakan `npm ci --omit=dev` instead of `--only=production`
+
+3. **Bot tidak bisa connect ke WhatsApp**
    - Check apakah QR code ter-generate
    - Pastikan tidak ada instance bot lain yang running
    - Restart service
 
-2. **Database connection failed**
+4. **Database connection failed**
    - Verify MONGODB_URI environment variable
    - Check database server status
    - Verify network connectivity
 
-3. **Memory/CPU issues**
+5. **Memory/CPU issues**
    - Monitor resource usage di Railway dashboard
    - Scale up instance jika perlu
    - Check untuk memory leaks
+
+6. **Baileys Engine Requirements Error**
+   - Pastikan NODE_VERSION environment variable set ke "20"
+   - Rebuild dengan Dockerfile yang sudah diupdate
+   - Gunakan Dockerfile.multistage untuk optimized build
 
 ### Scaling
 

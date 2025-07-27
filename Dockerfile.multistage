@@ -1,0 +1,69 @@
+# Multi-stage Dockerfile for optimized Railway deployment
+# Stage 1: Build dependencies
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache \
+    build-base \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    giflib-dev \
+    librsvg-dev \
+    python3 \
+    make \
+    g++
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
+
+# Stage 2: Production image
+FROM node:20-alpine AS production
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    cairo \
+    jpeg \
+    pango \
+    giflib \
+    librsvg \
+    ffmpeg \
+    curl
+
+# Create app user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S seanabot -u 1001
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy built application
+COPY --chown=seanabot:nodejs . .
+
+# Create auth directory with proper permissions
+RUN mkdir -p auth_info_baileys && \
+    chown -R seanabot:nodejs auth_info_baileys && \
+    chmod 755 auth_info_baileys
+
+# Switch to non-root user
+USER seanabot
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/api/bot-status || exit 1
+
+# Start the application
+CMD ["node", "index.js"]
