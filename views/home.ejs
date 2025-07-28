@@ -41,13 +41,229 @@
             font-weight: 600;
         }
 
+        .member-badge {
+            display: inline-block;
+            background: #6366f1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            transition: transform 0.2s ease;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-1px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-icon {
+            font-size: 1.25rem;
+            color: #6366f1;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .stat-sublabel {
+            color: #a0a0a0;
+            font-size: 0.75rem;
+        }
+
+        .streak-card {
+            position: relative;
+        }
+
+        .view-more-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            border: 1px solid #6366f1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.25rem;
+            align-self: flex-start;
+        }
+
+        .view-more-btn:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        /* Announcement Section */
+        .announcement-section {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .announcement-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .view-all-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            border: 1px solid #6366f1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .view-all-btn:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        .announcement-item {
+            background: rgba(55, 55, 55, 0.8);
+            border-radius: 10px;
+            padding: 0.875rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .announcement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .announcement-icon {
+            background: #6366f1;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .announcement-content {
+            flex: 1;
+        }
+
+        .announcement-item-title {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-badge {
+            background: #6366f1;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            font-weight: 600;
+        }
+
+        .announcement-description {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .announcement-meta {
+            color: #666;
+            font-size: 0.75rem;
+        }
+
         @media (max-width: 768px) {
             .home-layout {
                 padding: 0.75rem;
+                padding-bottom: 120px; /* Extra space for mobile navigation */
             }
 
             .welcome-section {
-                padding: 1.25rem;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.875rem;
+                min-height: 85px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .announcement-section {
+                padding: 1rem;
+                margin-bottom: 1rem; /* Extra margin for last section */
             }
         }
     </style>
@@ -60,20 +276,104 @@
         <div class="home-layout">
             <!-- Welcome Section -->
             <section class="welcome-section">
-                <h1 class="welcome-title">Welcome to NoMercy</h1>
+                <h1 class="welcome-title">Selamat Datang di NoMercy</h1>
                 <p class="welcome-subtitle">
-                    Hello <span class="user-phone"><%= user ? user.userId.replace('@s.whatsapp.net', '') : '+6285709557572' %></span>, welcome to the advanced WhatsApp bot dashboard.
-                </p>
-                <p class="welcome-subtitle">
-                    Manage your bot, track analytics, and control your bot's features from this dashboard.
+                    Member ID: <%= user ? user.userId.replace('@s.whatsapp.net', '') : '6285709557572' %>
+                    <span class="member-badge">Member Aktif</span>
                 </p>
             </section>
 
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">📋</span>
+                        <div class="stat-label">Total Misi</div>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-sublabel">Misi Selesai</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🏆</span>
+                        <div class="stat-label">Poin Squad</div>
+                    </div>
+                    <div class="stat-value">1,250</div>
+                    <div class="stat-sublabel">Poin</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">📊</span>
+                        <div class="stat-label">Peringkat</div>
+                    </div>
+                    <div class="stat-value">#5</div>
+                    <div class="stat-sublabel">Dari 100 Squad</div>
+                </div>
+                
+                <div class="stat-card streak-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🔥</span>
+                        <div class="stat-label">Status</div>
+                    </div>
+                    <div class="stat-value">Aktif</div>
+                    <div class="stat-sublabel">7 Hari berturut-turut</div>
+                    <button class="view-more-btn" onclick="window.location.href='/quest'">
+                        Lihat Selengkapnya
+                    </button>
+                </div>
+            </section>
+
+            <!-- Announcement Section -->
+            <section class="announcement-section">
+                <div class="announcement-header">
+                    <h2 class="announcement-title">Pengumuman Squad</h2>
+                    <a href="/news" class="view-all-btn">Lihat Semua</a>
+                </div>
+                
+                <div class="announcement-list">
+                    <% if (announcements && announcements.length > 0) { %>
+                        <% announcements.forEach((announcement, index) => { %>
+                            <div class="announcement-item">
+                                <div class="announcement-icon"><%= announcement.icon %></div>
+                                <div class="announcement-content">
+                                    <div class="announcement-item-title">
+                                        <%= announcement.title %>
+                                        <% if (index === 0) { %><span class="new-badge">Baru</span><% } %>
+                                    </div>
+                                    <div class="announcement-description">
+                                        <%= announcement.content.length > 100 ? announcement.content.substring(0, 100) + '...' : announcement.content %>
+                                    </div>
+                                    <div class="announcement-meta">
+                                        <%= new Date(announcement.created_at).toLocaleDateString('id-ID', { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        }) %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="announcement-item">
+                            <div class="announcement-icon">📢</div>
+                            <div class="announcement-content">
+                                <div class="announcement-item-title">Tidak ada pengumuman</div>
+                                <div class="announcement-description">
+                                    Belum ada pengumuman terbaru saat ini.
+                                </div>
+                                <div class="announcement-meta">-</div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
             
         </div>
     </main>
 
     <!-- Mobile bottom padding -->
-    <div class="mobile-bottom-padding"></div>
+    <div class="mobile-bottom-padding" style="height: 100px;"></div>
 </body>
 </html>

@@ -12,7 +12,7 @@
         <!-- Main Navigation -->
         <div class="nav-menu">
             <a href="/" class="nav-link <%= currentPage === 'home' ? 'active' : '' %>">Home</a>
-            <a href="/news" class="nav-link <%= currentPage === 'news' ? 'active' : '' %>">News</a>
+            <a href="/social" class="nav-link <%= currentPage === 'social' ? 'active' : '' %>">Social</a>
             <a href="/profile" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">Profile</a>
             
             <!-- List Dropdown -->
@@ -24,17 +24,13 @@
                     <div class="dropdown-grid">
                         <!-- Main Section -->
                         <div class="dropdown-section">
-                            <div class="dropdown-label">🎯 Main</div>
+                            <div class="dropdown-label">Main</div>
                             <div class="dropdown-items">
-                                <a href="/profile" class="dropdown-item">
-                                    <span class="dropdown-item-icon">🏆</span>
-                                    <span>Leaderboard</span>
-                                </a>
                                 <a href="/shop" class="dropdown-item">
                                     <span class="dropdown-item-icon">🛒</span>
                                     <span>Shop</span>
                                 </a>
-                                <a href="/quest" class="dropdown-item">
+                                <a href="/quiz" class="dropdown-item">
                                     <span class="dropdown-item-icon">❓</span>
                                     <span>Quiz</span>
                                 </a>
@@ -47,27 +43,31 @@
                         
                         <!-- Squad Section -->
                         <div class="dropdown-section">
-                            <div class="dropdown-label">👥 Squad</div>
+                            <div class="dropdown-label">Squad</div>
                             <div class="dropdown-items">
+                                <a href="/quest" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🎯</span>
+                                    <span>Quest</span>
+                                </a>
                                 <a href="/member" class="dropdown-item">
                                     <span class="dropdown-item-icon">👤</span>
-                                    <span>Members</span>
+                                    <span>Member</span>
                                 </a>
                                 <a href="/tournament" class="dropdown-item">
                                     <span class="dropdown-item-icon">🏆</span>
                                     <span>Tournament</span>
                                 </a>
-                                <a href="/profile" class="dropdown-item">
-                                    <span class="dropdown-item-icon">⚔️</span>
-                                    <span>Division</span>
-                                </a>
                             </div>
                         </div>
                         
-                        <!-- Casino Section -->
+                        <!-- Games Section -->
                         <div class="dropdown-section">
-                            <div class="dropdown-label">🎰 Casino</div>
+                            <div class="dropdown-label">Games</div>
                             <div class="dropdown-items">
+                                <a href="/leaderboard" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🏅</span>
+                                    <span>Leaderboard</span>
+                                </a>
                                 <a href="/mine" class="dropdown-item">
                                     <span class="dropdown-item-icon">💎</span>
                                     <span>Mine</span>
@@ -86,7 +86,7 @@
                         <!-- Owner Section (only show if user is owner) -->
                         <% if (user && user.status === 'owner') { %>
                         <div class="dropdown-section">
-                            <div class="dropdown-label">⚙️ Owner</div>
+                            <div class="dropdown-label">Owner</div>
                             <div class="dropdown-items">
                                 <a href="/dashboard-owner" class="dropdown-item">
                                     <span class="dropdown-item-icon">⚙️</span>
@@ -148,9 +148,9 @@
             <span class="nav-icon">🏠</span>
             <span class="nav-text">Home</span>
         </a>
-        <a href="/news" class="nav-item <%= currentPage === 'news' ? 'active' : '' %>">
-            <span class="nav-icon">📰</span>
-            <span class="nav-text">News</span>
+        <a href="/social" class="nav-item <%= currentPage === 'social' ? 'active' : '' %>">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">Social</span>
         </a>
         <a href="/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
             <span class="nav-icon">👤</span>
@@ -176,15 +176,11 @@
         <!-- Main Section -->
         <div class="sheet-section">
             <div class="section-label">Main</div>
-            <a href="/profile" class="sheet-item">
-                <span class="item-icon">🏆</span>
-                <span class="item-text">Leaderboard</span>
-            </a>
             <a href="/shop" class="sheet-item">
                 <span class="item-icon">🛒</span>
                 <span class="item-text">Shop</span>
             </a>
-            <a href="/quest" class="sheet-item">
+            <a href="/quiz" class="sheet-item">
                 <span class="item-icon">❓</span>
                 <span class="item-text">Quiz</span>
             </a>
@@ -197,23 +193,27 @@
         <!-- Squad Section -->
         <div class="sheet-section">
             <div class="section-label">Squad</div>
+            <a href="/quest" class="sheet-item">
+                <span class="item-icon">🎯</span>
+                <span class="item-text">Quest</span>
+            </a>
             <a href="/member" class="sheet-item">
                 <span class="item-icon">👤</span>
-                <span class="item-text">Members</span>
+                <span class="item-text">Member</span>
             </a>
             <a href="/tournament" class="sheet-item">
                 <span class="item-icon">🏆</span>
                 <span class="item-text">Tournament</span>
             </a>
-            <a href="/profile" class="sheet-item">
-                <span class="item-icon">⚔️</span>
-                <span class="item-text">Division</span>
-            </a>
         </div>
         
-        <!-- Casino Section -->
+        <!-- Games Section -->
         <div class="sheet-section">
-            <div class="section-label">Casino</div>
+            <div class="section-label">Games</div>
+            <a href="/leaderboard" class="sheet-item">
+                <span class="item-icon">🏅</span>
+                <span class="item-text">Leaderboard</span>
+            </a>
             <a href="/mine" class="sheet-item">
                 <span class="item-icon">💎</span>
                 <span class="item-text">Mine</span>

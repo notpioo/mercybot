@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Owner - NoMercy</title>
+    <link rel="stylesheet" href="/navigation.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .dashboard-layout {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .quick-actions-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+
+        .quick-action-card {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quick-action-card:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .action-subtitle {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            margin-top: 0.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .quick-actions-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                padding: 1rem;
+                padding-bottom: 120px; /* Extra space for mobile navigation */
+            }
+
+            .welcome-section {
+                padding: 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .quick-action-card {
+                padding: 1rem;
+                min-height: 100px;
+            }
+
+            .action-icon {
+                font-size: 1.5rem;
+            }
+
+            .action-title {
+                font-size: 0.8rem;
+            }
+
+            .action-subtitle {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-action-card {
+                padding: 0.875rem;
+                min-height: 90px;
+            }
+
+            .action-icon {
+                font-size: 1.25rem;
+            }
+
+            .action-title {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Desktop Navigation Show */
+        @media (min-width: 769px) {
+            .desktop-nav {
+                display: flex;
+            }
+            .mobile-nav {
+                display: none;
+            }
+        }
+
+        /* Mobile Navigation Show */
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+            .mobile-nav {
+                display: block;
+            }
+        }
+
+        /* Mobile bottom padding */
+        .mobile-bottom-padding {
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'dashboard-owner', user: user }) %>
+
+    <main class="dashboard-layout">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Dashboard Owner</h1>
+            <p class="welcome-subtitle">Kelola semua aspek NoMercy dari satu tempat</p>
+        </div>
+
+        <!-- Quick Actions Section -->
+        <div class="quick-actions-section">
+            <h2 class="section-title">Quick Actions</h2>
+            <div class="quick-actions-grid">
+                <a href="/owner/user-manager" class="quick-action-card">
+                    <div class="action-icon">👥</div>
+                    <div class="action-title">User Manager</div>
+                    <div class="action-subtitle">Kelola pengguna</div>
+                </a>
+
+                <a href="/owner/daily-login-manager" class="quick-action-card">
+                    <div class="action-icon">📅</div>
+                    <div class="action-title">Daily Login Manager</div>
+                    <div class="action-subtitle">Atur hadiah harian</div>
+                </a>
+
+                <a href="/owner/news-manager" class="quick-action-card">
+                    <div class="action-icon">📰</div>
+                    <div class="action-title">News Manager</div>
+                    <div class="action-subtitle">Kelola berita</div>
+                </a>
+
+                <a href="/owner/social-manager" class="quick-action-card">
+                    <div class="action-icon">💬</div>
+                    <div class="action-title">Social Manager</div>
+                    <div class="action-subtitle">Kelola sosial</div>
+                </a>
+
+                <a href="/owner/shop-manager" class="quick-action-card">
+                    <div class="action-icon">🛒</div>
+                    <div class="action-title">Shop Manager</div>
+                    <div class="action-subtitle">Kelola toko</div>
+                </a>
+
+                <a href="/owner/quiz-manager" class="quick-action-card">
+                    <div class="action-icon">❓</div>
+                    <div class="action-title">Quiz Manager</div>
+                    <div class="action-subtitle">Kelola kuis</div>
+                </a>
+
+                <a href="/owner/redeem-manager" class="quick-action-card">
+                    <div class="action-icon">🎁</div>
+                    <div class="action-title">Redeem Manager</div>
+                    <div class="action-subtitle">Kelola redeem</div>
+                </a>
+
+                <a href="/owner/quest-manager" class="quick-action-card">
+                    <div class="action-icon">🎯</div>
+                    <div class="action-title">Quest Manager</div>
+                    <div class="action-subtitle">Kelola quest</div>
+                </a>
+
+                <a href="/owner/member-squad-manager" class="quick-action-card">
+                    <div class="action-icon">👤</div>
+                    <div class="action-title">Member Squad Manager</div>
+                    <div class="action-subtitle">Kelola anggota</div>
+                </a>
+
+                <a href="/owner/tournament-manager" class="quick-action-card">
+                    <div class="action-icon">🏆</div>
+                    <div class="action-title">Tournament Manager</div>
+                    <div class="action-subtitle">Kelola turnamen</div>
+                </a>
+
+                <a href="/owner/games-manager" class="quick-action-card">
+                    <div class="action-icon">🎮</div>
+                    <div class="action-title">Games Manager</div>
+                    <div class="action-subtitle">Kelola permainan</div>
+                </a>
+
+                <a href="/owner/system-settings" class="quick-action-card">
+                    <div class="action-icon">⚙️</div>
+                    <div class="action-title">System Settings</div>
+                    <div class="action-subtitle">Pengaturan sistem</div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
+</body>
+</html>

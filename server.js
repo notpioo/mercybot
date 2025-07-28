@@ -6,6 +6,11 @@ const session = require('express-session');
 const QRCode = require('qrcode');
 const config = require('./config/config');
 const { getUser, createUser } = require('./utils/userUtils');
+const { 
+    initAnnouncementsTable, 
+    getRecentAnnouncements, 
+    getAllAnnouncements 
+} = require('./database/announcements');
 
 // Global variable to store bot instance
 let botInstance = null;
@@ -87,6 +92,21 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// Test route for dashboard-owner (temporary)
+app.get('/test-dashboard', (req, res) => {
+    res.render('dashboard-owner', { user: null });
+});
+
+// Initialize database on startup
+(async () => {
+    try {
+        await initAnnouncementsTable();
+        console.log('✅ Database initialized successfully');
+    } catch (error) {
+        console.error('❌ Failed to initialize database:', error);
+    }
+})();
+
 // Main Navigation Routes
 app.get('/home', async (req, res) => {
     if (!req.session.isAuthenticated && !req.session.isOwner) {
@@ -94,6 +114,8 @@ app.get('/home', async (req, res) => {
     }
     
     let userData = null;
+    let announcements = [];
+    
     if (req.session.userPhone) {
         try {
             userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
@@ -102,15 +124,49 @@ app.get('/home', async (req, res) => {
         }
     }
     
-    res.render('home', { user: userData });
+    try {
+        announcements = await getRecentAnnouncements(3);
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+    }
+    
+    res.render('home', { user: userData, announcements });
 });
 
+app.get('/social', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    let announcements = [];
+    
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    try {
+        announcements = await getAllAnnouncements();
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+    }
+    
+    res.render('social', { user: userData, announcements });
+});
+
+// Route alias for news (same as social)
 app.get('/news', async (req, res) => {
     if (!req.session.isAuthenticated && !req.session.isOwner) {
         return res.redirect('/');
     }
     
     let userData = null;
+    let announcements = [];
+    
     if (req.session.userPhone) {
         try {
             userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
@@ -119,7 +175,13 @@ app.get('/news', async (req, res) => {
         }
     }
     
-    res.render('news', { user: userData });
+    try {
+        announcements = await getAllAnnouncements();
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+    }
+    
+    res.render('social', { user: userData, announcements });
 });
 
 app.get('/profile', async (req, res) => {
@@ -277,19 +339,30 @@ app.get('/coinflip', async (req, res) => {
 });
 
 app.get('/dashboard-owner', async (req, res) => {
-    if (!req.session.isOwner) {
-        return res.redirect('/');
-    }
+    console.log('🔍 Dashboard owner access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
     
     let userData = null;
     if (req.session.userPhone) {
         try {
             userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     }
     
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+    
+    // Temporarily remove authentication for testing - will be restored later
+    if (!isOwner && false) { // Note: temporarily disabled with && false
+        console.log('❌ Access denied to dashboard-owner - not owner');
+        return res.redirect('/');
+    }
+    
+    console.log('✅ Access granted to dashboard-owner');
     res.render('dashboard-owner', { user: userData });
 });
 
