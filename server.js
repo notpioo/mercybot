@@ -798,7 +798,6 @@ app.delete('/api/news/delete', async (req, res) => {
 
 // File upload middleware
 const multer = require('multer');
-const path = require('path');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
