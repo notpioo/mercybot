@@ -1,5 +1,5 @@
 const config = require('../config/config');
-const { getUser } = require('../utils/userUtils');
+const { getUser, updateUserActivity } = require('../utils/userUtils');
 
 // Import all commands
 const menuCommand = require('../commands/menu');
@@ -57,6 +57,26 @@ const commandHandler = async (sock, from, sender, commandName, args, message) =>
         
         if (success) {
             console.log(`✅ Command ${commandName} executed successfully`);
+            
+            // Update user activity and award XP
+            const activityResult = await updateUserActivity(sender, 'commandUse');
+            
+            // Send level up notification if user leveled up
+            if (activityResult && activityResult.leveledUp) {
+                const rank = activityResult.currentRank;
+                const levelUpMessage = `
+🎉 *LEVEL UP!* 🎉
+
+${rank.icon} **${user.username}** has reached Level **${activityResult.newLevel}**!
+📈 Rank: **${rank.name}**
+⚡ XP Gained: +${activityResult.xpGained}
+
+Keep using commands to earn more XP! 🚀`;
+                
+                setTimeout(() => {
+                    sock.sendMessage(from, { text: levelUpMessage });
+                }, 1000);
+            }
         } else {
             console.log(`❌ Command ${commandName} failed to execute`);
         }

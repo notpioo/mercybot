@@ -167,6 +167,84 @@ const isUserAdmin = async (userId) => {
 };
 
 /**
+ * Add XP to user and handle level up
+ * @param {string} userId - WhatsApp user ID
+ * @param {number} amount - XP amount to add
+ * @returns {Object|null} Level up info or null
+ */
+const addUserXp = async (userId, amount = 10) => {
+    try {
+        const user = await User.findByUserId(userId);
+        if (!user) return null;
+        
+        const oldLevel = user.level;
+        user.addXp(amount);
+        await user.save();
+        
+        // Check if user leveled up
+        if (user.level > oldLevel) {
+            console.log(`🆙 User ${userId} leveled up! ${oldLevel} → ${user.level}`);
+            return {
+                leveledUp: true,
+                oldLevel,
+                newLevel: user.level,
+                currentRank: user.getCurrentRank()
+            };
+        }
+        
+        return { leveledUp: false };
+    } catch (error) {
+        console.error('❌ Error adding XP:', error.message);
+        return null;
+    }
+};
+
+/**
+ * Update user activity and award XP
+ * @param {string} userId - WhatsApp user ID
+ * @param {string} action - Action type (commandUse, dailyLogin, etc.)
+ * @returns {Object|null} Activity update result
+ */
+const updateUserActivity = async (userId, action = 'commandUse') => {
+    try {
+        const user = await User.findByUserId(userId);
+        if (!user) return null;
+        
+        const oldLevel = user.level;
+        
+        // Update activity
+        user.lastActive = new Date();
+        user.commandsUsed += 1;
+        
+        // Award XP based on action
+        const xpReward = config.levelSystem.rewards[action] || 10;
+        user.addXp(xpReward);
+        
+        await user.save();
+        
+        // Check if user leveled up
+        if (user.level > oldLevel) {
+            console.log(`🆙 User ${userId} leveled up! ${oldLevel} → ${user.level}`);
+            return {
+                leveledUp: true,
+                oldLevel,
+                newLevel: user.level,
+                currentRank: user.getCurrentRank(),
+                xpGained: xpReward
+            };
+        }
+        
+        return { 
+            leveledUp: false, 
+            xpGained: xpReward 
+        };
+    } catch (error) {
+        console.error('❌ Error updating user activity:', error.message);
+        return null;
+    }
+};
+
+/**
  * Get user statistics
  * @returns {Object} User statistics
  */
@@ -201,5 +279,7 @@ module.exports = {
     deductUserLimit,
     isUserOwner,
     isUserAdmin,
-    getUserStats
+    getUserStats,
+    addUserXp,
+    updateUserActivity
 };

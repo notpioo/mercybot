@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -13,245 +14,602 @@
     <%- include('partials/navigation', { currentPage: 'profile', user: user }) %>
 
     <main class="main-content">
-        <div class="container">
-            <!-- Header -->
-            <section class="page-header">
-                <h1 class="page-title">👤 Profile Saya</h1>
-                <p class="page-subtitle">Kelola informasi dan statistik akun Anda</p>
-            </section>
+        <div class="profile-container">
+            <!-- Profile Header Section -->
+            <div class="profile-hero">
+                <div class="profile-main-info">
+                    <div class="avatar-section">
+                        <div class="avatar-wrapper">
+                            <% if (user && user.profilePicture) { %>
+                                <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-avatar">
+                            <% } else { %>
+                                <div class="profile-avatar default-avatar">
+                                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white"/>
+                                        <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="white"/>
+                                    </svg>
+                                </div>
+                            <% } %>
+                        </div>
 
-            <!-- Profile Content -->
-            <div class="profile-grid">
-                <!-- User Info Card -->
-                <div class="profile-card">
-                    <div class="profile-avatar">
-                        <span class="avatar-icon">👤</span>
-                    </div>
-                    <h2 class="profile-name"><%= user ? user.username || 'User' : 'User' %></h2>
-                    <p class="profile-status">
-                        <%= user ? (user.status === 'owner' ? '👑 Owner' : user.status === 'premium' ? '💎 Premium' : '👤 Basic User') : '👤 Basic User' %>
-                    </p>
-                </div>
+                        <div class="profile-identity">
+                            <h1 class="username"><%= user ? user.username || 'User7572' : 'User7572' %></h1>
+                            <p class="user-id">ID: <%= user ? user.userId.split('@')[0] : '6285709557572' %></p>
 
-                <!-- Stats Card -->
-                <div class="stats-card">
-                    <h3>📊 Statistik</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value"><%= user ? user.limit : '0' %></span>
-                            <span class="stat-label">Limit</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">💰 <%= user ? user.balance : '0' %></span>
-                            <span class="stat-label">Balance</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">💎 <%= user ? user.chips : '0' %></span>
-                            <span class="stat-label">Chips</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value"><%= user ? user.commandsUsed : '0' %></span>
-                            <span class="stat-label">Commands Used</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Activity Card -->
-                <div class="activity-card">
-                    <h3>⚡ Activity</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <span class="activity-icon">📅</span>
-                            <div class="activity-info">
-                                <p class="activity-title">Member Since</p>
-                                <p class="activity-date"><%= user && user.createdAt ? new Date(user.createdAt).toLocaleDateString('id-ID') : 'Today' %></p>
+                            <div class="user-badges">
+                                <% if (user) { %>
+                                    <% if (user.status === 'owner') { %>
+                                        <span class="status-badge owner-badge">Owner</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } else if (user.status === 'premium') { %>
+                                        <span class="status-badge premium-badge">Premium</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } else { %>
+                                        <span class="status-badge basic-badge">Basic</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } %>
+                                <% } else { %>
+                                    <span class="status-badge owner-badge">Owner</span>
+                                    <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                <% } %>
                             </div>
                         </div>
-                        <div class="activity-item">
-                            <span class="activity-icon">🔥</span>
-                            <div class="activity-info">
-                                <p class="activity-title">Last Active</p>
-                                <p class="activity-date"><%= user && user.lastActivity ? new Date(user.lastActivity).toLocaleDateString('id-ID') : 'Today' %></p>
+
+                        <div class="settings-dropdown">
+                            <div class="settings-icon" onclick="toggleDropdown()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.2579 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.01127 9.77251C4.28054 9.5799 4.48571 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
                             </div>
-                        </div>
-                        <div class="activity-item">
-                            <span class="activity-icon">⭐</span>
-                            <div class="activity-info">
-                                <p class="activity-title">Current Level</p>
-                                <p class="activity-date">Level 1 - Warrior</p>
+                            <div class="dropdown-menu" id="settingsDropdown">
+                                <form action="/logout" method="POST" style="margin: 0;">
+                                    <button type="submit" class="dropdown-item logout-btn">
+                                        <span class="dropdown-icon">🚪</span>
+                                        Logout
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Quick Actions Card -->
-                <div class="actions-card">
-                    <h3>🚀 Quick Actions</h3>
-                    <div class="action-buttons">
-                        <a href="/shop" class="btn btn-primary">💰 Shop</a>
-                        <a href="/quest" class="btn btn-secondary">⚔️ Quests</a>
-                        <a href="/redeem" class="btn btn-secondary">🎁 Redeem</a>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Level Progress Card -->
+                <div class="stat-card level-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <h3>Level & Peringkat</h3>
+                    </div>
+
+                    <div class="level-showcase">
+                        <div class="level-number-large">1</div>
+                        <div class="rank-display">
+                            <div class="rank-name">⭐ Luminary</div>
+                        </div>
+                    </div>
+
+                    <%
+                        let xp = user ? user.xp || 0 : 0;
+                        let totalXp = user ? user.totalXp || 0 : 0;
+                        let level = user ? user.level || 1 : 1;
+                        let xpRequired = Math.floor(100 + (level * 50) + (Math.pow(level, 1.5) * 25));
+                    %>
+
+                    <div class="xp-progress-section">
+                        <div class="xp-info">
+                            <span class="current-xp"><%= xp %> XP</span>
+                            <span class="required-xp"><%= xpRequired %> XP</span>
+                        </div>
+                        <div class="total-xp-obtained">
+                            Total XP Diperoleh: <%= totalXp %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Card -->
+                <div class="stat-card statistics-card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <h3>Statistik Cepat</h3>
+                    </div>
+
+                    <div class="stats-grid-inner">
+                        <div class="stat-item">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Balance</div>
+                                <div class="stat-value"><%= user ? user.balance : '50' %></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Chips</div>
+                                <div class="stat-value"><%= user ? user.chips || '0' : '0' %></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">∞</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Limit</div>
+                                <div class="stat-value">
+                                    <% if (user && (user.status === 'owner' || user.status === 'premium')) { %>
+                                        ∞
+                                    <% } else { %>
+                                        <%= user ? user.limit : '50' %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Status</div>
+                                <div class="stat-value status-text <%= user ? user.status : 'owner' %>">
+                                    <%= user ? (user.status === 'owner' ? 'Owner' : user.status === 'premium' ? 'Premium' : 'Basic') : 'Owner' %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Tabs -->
+            <div class="activity-section">
+                <div class="activity-tabs">
+                    <button class="tab-button active">Aktivitas Terbaru</button>
+                    <button class="tab-button">Prestasi</button>
+                    <button class="tab-button">Lencana</button>
+                </div>
+
+                <div class="activity-content">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <p>Belum ada aktivitas untuk ditampilkan</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Mobile bottom padding -->
-    <div class="mobile-bottom-padding"></div>
-
     <style>
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .profile-card, .stats-card, .activity-card, .actions-card {
-            background: rgba(40, 40, 40, 0.95);
-            border-radius: 20px;
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            min-height: 100vh;
         }
 
-        .profile-card {
-            text-align: center;
+        /* Profile Hero Section */
+        .profile-hero {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .avatar-wrapper {
+            flex-shrink: 0;
         }
 
         .profile-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.1);
         }
 
-        .avatar-icon {
+        .default-avatar {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-identity {
+            flex: 1;
+        }
+
+        .username {
             font-size: 2rem;
-            color: white;
-        }
-
-        .profile-name {
+            font-weight: 700;
             color: #ffffff;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
-        .profile-status {
-            color: #a0a0a0;
+        .user-id {
+            color: #9ca3af;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .user-badges {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge, .rank-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .owner-badge {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .premium-badge {
+            background: #8b5cf6;
+            color: #fff;
+        }
+
+        .basic-badge {
+            background: #6b7280;
+            color: #fff;
+        }
+
+        .luminary-badge {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border-color: #fbbf24;
+        }
+
+        .settings-dropdown {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .settings-icon {
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .settings-icon:hover {
+            color: #ffffff;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(40, 40, 40, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            min-width: 120px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ff6b6b;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ff6b6b;
+        }
+
+        .dropdown-icon {
             font-size: 1rem;
         }
 
-        .stats-card h3, .activity-card h3, .actions-card h3 {
-            color: #ffffff;
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
+        .logout-btn {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
         }
 
+        .logout-btn:focus {
+            outline: none;
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .card-header h3 {
+            color: #ffffff;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Level Card */
+        .level-showcase {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .level-number-large {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .rank-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .xp-progress-section {
+            text-align: center;
+        }
+
+        .xp-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .current-xp {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .required-xp {
+            color: #9ca3af;
+        }
+
+        .total-xp-obtained {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        /* Statistics Card */
+        .stats-grid-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
 
         .stat-item {
-            text-align: center;
-            background: rgba(30, 30, 30, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
         }
 
-        .stat-value {
-            display: block;
-            color: #6366f1;
+        .stat-icon {
             font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+            width: 32px;
+            text-align: center;
+        }
+
+        .stat-info {
+            flex: 1;
         }
 
         .stat-label {
-            color: #a0a0a0;
-            font-size: 0.875rem;
-        }
-
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: rgba(30, 30, 30, 0.8);
-            padding: 1rem;
-            border-radius: 12px;
-        }
-
-        .activity-icon {
-            font-size: 1.5rem;
-        }
-
-        .activity-title {
-            color: #ffffff;
-            font-weight: 600;
+            color: #9ca3af;
+            font-size: 0.75rem;
             margin-bottom: 0.25rem;
         }
 
-        .activity-date {
-            color: #a0a0a0;
+        .stat-value {
+            color: #ffffff;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .status-text.owner {
+            color: #fbbf24;
+        }
+
+        .status-text.premium {
+            color: #8b5cf6;
+        }
+
+        .status-text.basic {
+            color: #6b7280;
+        }
+
+        /* Activity Section */
+        .activity-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .activity-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #ffffff;
+            border-bottom-color: #8b5cf6;
+        }
+
+        .tab-button:hover {
+            color: #ffffff;
+        }
+
+        .activity-content {
+            padding: 2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #9ca3af;
             font-size: 0.875rem;
         }
 
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 1rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: rgba(55, 65, 81, 0.8);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .profile-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
+            .profile-container {
+                padding: 1rem;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-grid-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .avatar-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .settings-dropdown {
+                position: static;
+                margin-top: 1rem;
+            }
+
+            .username {
+                font-size: 1.5rem;
+            }
+
+            .level-number-large {
+                font-size: 3rem;
+            }
+
+            .activity-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 1;
+                min-width: 120px;
             }
         }
     </style>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('settingsDropdown');
+            const settingsIcon = document.querySelector('.settings-icon');
+            
+            if (!settingsIcon.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

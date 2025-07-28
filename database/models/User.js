@@ -63,6 +63,31 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     
+    // Level System
+    level: {
+        type: Number,
+        default: 1,
+        min: 1
+    },
+    
+    xp: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    
+    totalXp: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    
+    // Profile customization
+    profilePicture: {
+        type: String,
+        default: null
+    },
+    
     // Timestamps
     memberSince: {
         type: Date,
@@ -121,6 +146,61 @@ userSchema.methods.getFormattedMemberSince = function() {
         month: 'long',
         day: 'numeric'
     });
+};
+
+// Level System Methods
+userSchema.methods.addXp = function(amount) {
+    this.xp += amount;
+    this.totalXp += amount;
+    
+    // Check for level up
+    const xpRequired = config.levelSystem.xpPerLevel(this.level);
+    if (this.xp >= xpRequired) {
+        this.levelUp();
+    }
+};
+
+userSchema.methods.levelUp = function() {
+    const xpRequired = config.levelSystem.xpPerLevel(this.level);
+    this.xp -= xpRequired;
+    this.level += 1;
+    
+    // Check if enough XP for multiple level ups
+    const nextXpRequired = config.levelSystem.xpPerLevel(this.level);
+    if (this.xp >= nextXpRequired) {
+        this.levelUp(); // Recursive level up
+    }
+};
+
+userSchema.methods.getCurrentRank = function() {
+    const ranks = config.levelSystem.ranks;
+    for (const rank of ranks) {
+        if (this.level >= rank.minLevel && this.level <= rank.maxLevel) {
+            return rank;
+        }
+    }
+    return ranks[ranks.length - 1]; // Return highest rank if level exceeds all
+};
+
+userSchema.methods.getXpProgress = function() {
+    const currentLevelXp = config.levelSystem.xpPerLevel(this.level);
+    const progressPercentage = Math.floor((this.xp / currentLevelXp) * 100);
+    return {
+        current: this.xp,
+        required: currentLevelXp,
+        percentage: Math.min(progressPercentage, 100)
+    };
+};
+
+userSchema.methods.getNextRank = function() {
+    const currentRank = this.getCurrentRank();
+    const ranks = config.levelSystem.ranks;
+    const currentRankIndex = ranks.findIndex(rank => rank.name === currentRank.name);
+    
+    if (currentRankIndex < ranks.length - 1) {
+        return ranks[currentRankIndex + 1];
+    }
+    return null; // Already at highest rank
 };
 
 // Static methods
