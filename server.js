@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const QRCode = require('qrcode');
 const config = require('./config/config');
-const { getUser, createUser } = require('./utils/userUtils');
+const { getUser, createUser, updateUser } = require('./utils/userUtils');
 const { 
     initAnnouncementsTable, 
     getRecentAnnouncements, 
@@ -962,13 +962,88 @@ app.delete('/api/posts/delete', async (req, res) => {
                 success: false, 
                 message: 'Failed to delete post' 
             });
-```text
         }
     } catch (error) {
         console.error('Error deleting post:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Failed to delete post: ' + error.message 
+        });
+    }
+});
+
+// Profile Update API
+app.post('/api/profile/update', upload.single('profilePhoto'), async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { username } = req.body;
+        const userPhone = req.session.userPhone;
+
+        if (!userPhone) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User session not found' 
+            });
+        }
+
+        // Check if at least one field is provided
+        if ((!username || username.trim().length === 0) && !req.file) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please provide either a username or profile photo to update' 
+            });
+        }
+
+        const userId = userPhone + '@s.whatsapp.net';
+        
+        // Prepare update data
+        const updateData = {};
+
+        // Handle username update (only if provided and not empty)
+        if (username && username.trim().length > 0) {
+            updateData.username = username.trim();
+        }
+
+        // Handle profile photo upload
+        if (req.file) {
+            const photoUrl = `/uploads/${req.file.filename}`;
+            updateData.profilePhoto = photoUrl;
+            console.log(`📷 Profile photo uploaded: ${photoUrl}`);
+        }
+
+        // Update user in database
+        const updatedUser = await updateUser(userId, updateData);
+        
+        if (!updatedUser) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        console.log(`✅ Profile updated for user: ${userId}`);
+        console.log(`📝 New username: ${updateData.username}`);
+        if (updateData.profilePhoto) {
+            console.log(`📷 New profile photo: ${updateData.profilePhoto}`);
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Profile updated successfully',
+            user: {
+                username: updatedUser.username,
+                profilePhoto: updatedUser.profilePhoto
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error updating profile:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update profile: ' + error.message 
         });
     }
 });

@@ -35,8 +35,8 @@ module.exports = {
     
     // Level System Configuration
     levelSystem: {
-        // XP required per level (medium grinding)
-        xpPerLevel: (level) => Math.floor(100 + (level * 50) + (level ** 1.5 * 25)),
+        // XP required per level (easy grinding - reduced requirements)
+        xpPerLevel: (level) => Math.floor(50 + (level * 25) + (level ** 1.2 * 15)),
         
         // Rank Configuration
         ranks: [
@@ -46,9 +46,6 @@ module.exports = {
             { name: 'Guardian', minLevel: 51, maxLevel: 75, color: '#8b5cf6', icon: '🛡️' },
             { name: 'Mastermind', minLevel: 76, maxLevel: 100, color: '#f59e0b', icon: '🧠' },
             { name: 'Zenith', minLevel: 101, maxLevel: 129, color: '#ef4444', icon: '⚡' },
-            { name: 'Celestial', minLevel: 130, maxLevel: 999, color: '#ec4899', icon: '🛡️' },
-            { name: 'Mastermind', minLevel: 76, maxLevel: 100, color: '#ef4444', icon: '🧠' },
-            { name: 'Zenith', minLevel: 101, maxLevel: 129, color: '#f59e0b', icon: '⚡' },
             { name: 'Celestial', minLevel: 130, maxLevel: 999, color: '#ec4899', icon: '👑' }
         ],
         

@@ -20,8 +20,8 @@
                 <div class="profile-main-info">
                     <div class="avatar-section">
                         <div class="avatar-wrapper">
-                            <% if (user && user.profilePicture) { %>
-                                <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-avatar">
+                            <% if (user && user.profilePhoto) { %>
+                                <img src="<%= user.profilePhoto %>" alt="Profile Photo" class="profile-avatar">
                             <% } else { %>
                                 <div class="profile-avatar default-avatar">
                                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,18 +55,24 @@
                             </div>
                         </div>
 
-                        <div class="settings-dropdown">
-                            <div class="settings-icon" onclick="toggleDropdown()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.2579 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.01127 9.77251C4.28054 9.5799 4.48571 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                        <div class="profile-menu-wrapper">
+                            <div class="profile-menu-trigger" onclick="toggleProfileMenu()">
+                                <div class="menu-dots">
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                </div>
                             </div>
-                            <div class="dropdown-menu" id="settingsDropdown">
+                            <div class="profile-dropdown-menu" id="profileDropdown">
+                                <div class="dropdown-item" onclick="openEditProfileModal()">
+                                    <span class="dropdown-icon">✏️</span>
+                                    <span>Edit Profile</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
                                 <form action="/logout" method="POST" style="margin: 0;">
                                     <button type="submit" class="dropdown-item logout-btn">
                                         <span class="dropdown-icon">🚪</span>
-                                        Logout
+                                        <span>Logout</span>
                                     </button>
                                 </form>
                             </div>
@@ -84,19 +90,45 @@
                         <h3>Level & Peringkat</h3>
                     </div>
 
-                    <div class="level-showcase">
-                        <div class="level-number-large">1</div>
-                        <div class="rank-display">
-                            <div class="rank-name">⭐ Luminary</div>
-                        </div>
-                    </div>
-
                     <%
                         let xp = user ? user.xp || 0 : 0;
                         let totalXp = user ? user.totalXp || 0 : 0;
                         let level = user ? user.level || 1 : 1;
-                        let xpRequired = Math.floor(100 + (level * 50) + (Math.pow(level, 1.5) * 25));
+                        let xpRequired = Math.floor(50 + (level * 25) + (level ** 1.2 * 15));
+
+                        // Get current rank dynamically
+                        let currentRank = null;
+                        if (user) {
+                            const ranks = [
+                                { name: 'Luminary', minLevel: 1, maxLevel: 15, color: '#fbbf24', icon: '⭐' },
+                                { name: 'Sage', minLevel: 16, maxLevel: 30, color: '#10b981', icon: '🌟' },
+                                { name: 'Visionary', minLevel: 31, maxLevel: 50, color: '#3b82f6', icon: '🔮' },
+                                { name: 'Guardian', minLevel: 51, maxLevel: 75, color: '#8b5cf6', icon: '🛡️' },
+                                { name: 'Mastermind', minLevel: 76, maxLevel: 100, color: '#f59e0b', icon: '🧠' },
+                                { name: 'Zenith', minLevel: 101, maxLevel: 129, color: '#ef4444', icon: '⚡' },
+                                { name: 'Celestial', minLevel: 130, maxLevel: 999, color: '#ec4899', icon: '👑' }
+                            ];
+                            
+                            for (const rank of ranks) {
+                                if (level >= rank.minLevel && level <= rank.maxLevel) {
+                                    currentRank = rank;
+                                    break;
+                                }
+                            }
+                            if (!currentRank) {
+                                currentRank = ranks[ranks.length - 1]; // Default to highest rank
+                            }
+                        } else {
+                            currentRank = { name: 'Luminary', icon: '⭐' };
+                        }
                     %>
+
+                    <div class="level-showcase">
+                        <div class="level-number-large"><%= level %></div>
+                        <div class="rank-display">
+                            <div class="rank-name"><%= currentRank.icon %> <%= currentRank.name %></div>
+                        </div>
+                    </div>
 
                     <div class="xp-progress-section">
                         <div class="xp-info">
@@ -189,6 +221,7 @@
             margin: 0 auto;
             padding: 2rem;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Profile Hero Section */
@@ -199,6 +232,9 @@
             margin-bottom: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .avatar-section {
@@ -206,6 +242,8 @@
             align-items: center;
             gap: 1.5rem;
             position: relative;
+            width: 100%;
+            overflow: hidden;
         }
 
         .avatar-wrapper {
@@ -236,6 +274,8 @@
 
         .profile-identity {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .username {
@@ -243,6 +283,8 @@
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 0.25rem;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .user-id {
@@ -250,12 +292,15 @@
             font-size: 1rem;
             margin-bottom: 1rem;
             font-family: 'Courier New', monospace;
+            word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         .user-badges {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .status-badge, .rank-badge {
@@ -287,70 +332,127 @@
             border-color: #fbbf24;
         }
 
-        .settings-dropdown {
+        .profile-menu-wrapper {
             position: absolute;
-            top: 0;
-            right: 0;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
         }
 
-        .settings-icon {
-            color: #9ca3af;
+        .profile-menu-trigger {
             cursor: pointer;
-            transition: color 0.3s ease;
+            padding: 0.75rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: 48px;
+            height: 48px;
+            transition: all 0.3s ease;
         }
 
-        .settings-icon:hover {
-            color: #ffffff;
+        .profile-menu-trigger:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: scale(1.05);
         }
 
-        .dropdown-menu {
+        .profile-menu-trigger:active {
+            transform: scale(0.95);
+        }
+
+        .menu-dots {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: #9ca3af;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .profile-menu-trigger:hover .dot {
+            background: #a78bfa;
+        }
+
+        .profile-dropdown-menu {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 0.75rem);
             right: 0;
-            background: rgba(40, 40, 40, 0.98);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            min-width: 120px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(20, 20, 20, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            min-width: 200px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05);
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 100;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000;
+            padding: 1rem;
+            backdrop-filter: blur(30px);
         }
 
-        .dropdown-menu.show {
+        .profile-dropdown-menu.show {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            color: #ffffff;
+            gap: 0.875rem;
+            color: #e5e5e5;
             text-decoration: none;
-            padding: 0.75rem;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            font-size: 0.875rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
         }
 
         .dropdown-item:hover {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ff6b6b;
+            background: rgba(139, 92, 246, 0.15);
+            color: #ffffff;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .dropdown-item:last-child {
+            margin-bottom: 0;
         }
 
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ff6b6b;
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: #ff6b6b !important;
+            transform: translateX(4px) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
         }
 
         .dropdown-icon {
-            font-size: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
         }
 
         .logout-btn {
@@ -361,6 +463,7 @@
             cursor: pointer;
             font-family: inherit;
             font-size: inherit;
+            color: inherit;
         }
 
         .logout-btn:focus {
@@ -373,6 +476,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-bottom: 2rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .stat-card {
@@ -571,9 +676,11 @@
                 gap: 1rem;
             }
 
-            .settings-dropdown {
+            .profile-menu-wrapper {
                 position: static;
                 margin-top: 1rem;
+                display: flex;
+                justify-content: center;
             }
 
             .username {
@@ -593,21 +700,488 @@
                 min-width: 120px;
             }
         }
-    </style>
 
-    <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('settingsDropdown');
-            dropdown.classList.toggle('show');
+        /* Edit Profile Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('settingsDropdown');
-            const settingsIcon = document.querySelector('.settings-icon');
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid #8b5cf6;
+            border-radius: 8px;
+            color: #8b5cf6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .file-input-label:hover {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-save {
+            background: #8b5cf6;
+            color: #ffffff;
+        }
+
+        .btn-save:hover {
+            background: #7c3aed;
+        }
+
+        .btn-save:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .file-preview {
+            margin-top: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 0.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1rem;
+            }
+
+            .profile-hero {
+                padding: 1.5rem;
+                position: relative;
+            }
+
+            .avatar-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .username {
+                font-size: 1.5rem;
+            }
+
+            .user-id {
+                font-size: 0.875rem;
+                word-break: break-all;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-grid-inner {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .profile-menu-wrapper {
+                top: 0.75rem;
+                right: 0.75rem;
+            }
+
+            .profile-menu-trigger {
+                width: 44px;
+                height: 44px;
+                padding: 0.625rem;
+            }
+
+            .profile-dropdown-menu {
+                min-width: 180px;
+                right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
+                padding: 0.5rem;
+            }
+
+            .profile-hero {
+                padding: 1rem;
+            }
+
+            .username {
+                font-size: 1.25rem;
+            }
+
+            .stats-grid-inner {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .user-badges {
+                justify-content: center;
+            }
+
+            .status-badge, .rank-badge {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+    </style>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Profile</h3>
+                <button class="close-btn" onclick="closeEditProfileModal()">&times;</button>
+            </div>
             
-            if (!settingsIcon.contains(event.target)) {
+            <form id="editProfileForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label" for="editUsername">Username (Optional)</label>
+                    <input type="text" id="editUsername" name="username" class="form-input" 
+                           value="<%= user ? user.username : '' %>" placeholder="Enter new username or leave blank to keep current">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editProfilePhoto">Profile Photo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editProfilePhoto" name="profilePhoto" 
+                               class="file-input" accept="image/*" onchange="previewImage(this)">
+                        <label for="editProfilePhoto" class="file-input-label">
+                            📷 Choose Photo
+                        </label>
+                    </div>
+                    <div class="file-preview" id="filePreview"></div>
+                    <img id="imagePreview" class="preview-image" style="display: none;">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let isProfileMenuOpen = false;
+
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const trigger = document.querySelector('.profile-menu-trigger');
+            
+            if (dropdown && trigger) {
+                isProfileMenuOpen = !isProfileMenuOpen;
+                
+                if (isProfileMenuOpen) {
+                    dropdown.classList.add('show');
+                    trigger.style.background = 'rgba(139, 92, 246, 0.3)';
+                    trigger.style.borderColor = 'rgba(139, 92, 246, 0.6)';
+                    console.log('Profile menu opened');
+                } else {
+                    dropdown.classList.remove('show');
+                    trigger.style.background = 'rgba(30, 30, 30, 0.8)';
+                    trigger.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    console.log('Profile menu closed');
+                }
+            } else {
+                console.error('Profile menu elements not found');
+            }
+        }
+
+        function closeProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const trigger = document.querySelector('.profile-menu-trigger');
+            
+            if (dropdown && trigger) {
+                isProfileMenuOpen = false;
                 dropdown.classList.remove('show');
+                trigger.style.background = 'rgba(30, 30, 30, 0.8)';
+                trigger.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }
+        }
+
+        // Initialize profile menu functionality when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing profile menu...');
+            
+            const trigger = document.querySelector('.profile-menu-trigger');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            console.log('Menu trigger found:', !!trigger);
+            console.log('Dropdown found:', !!dropdown);
+            
+            if (trigger && dropdown) {
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    const menuWrapper = document.querySelector('.profile-menu-wrapper');
+                    if (menuWrapper && !menuWrapper.contains(event.target)) {
+                        console.log('Clicked outside profile menu, closing...');
+                        closeProfileMenu();
+                    }
+                });
+                
+                // Prevent dropdown from closing when clicking inside it
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                console.log('Profile menu functionality initialized successfully');
+            } else {
+                console.error('Failed to initialize profile menu - elements not found');
+            }
+        });
+
+        function openEditProfileModal() {
+            console.log('Opening edit profile modal...');
+            const modal = document.getElementById('editProfileModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('Modal opened');
+            } else {
+                console.error('Modal not found');
+            }
+            
+            // Close dropdown
+            closeProfileMenu();
+        }
+
+        function closeEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            modal.classList.remove('show');
+            
+            // Reset form
+            document.getElementById('editProfileForm').reset();
+            document.getElementById('filePreview').innerHTML = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            
+            // Reset username field to current value
+            const currentUsername = '<%= user ? user.username : "" %>';
+            document.getElementById('editUsername').value = currentUsername;
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const filePreview = document.getElementById('filePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    filePreview.innerHTML = 'Selected: ' + input.files[0].name;
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                filePreview.innerHTML = '';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const username = document.getElementById('editUsername').value;
+            const photoFile = document.getElementById('editProfilePhoto').files[0];
+            
+            formData.append('username', username);
+            if (photoFile) {
+                formData.append('profilePhoto', photoFile);
+            }
+            
+            const saveBtn = document.querySelector('.btn-save');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            
+            try {
+                const response = await fetch('/api/profile/update', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    alert('Profile updated successfully!');
+                    
+                    // Reload page to show updated profile
+                    window.location.reload();
+                } else {
+                    alert('Error updating profile: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('editProfileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditProfileModal();
             }
         });
     </script>

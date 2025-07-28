@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
         default: ''
     },
     
+    profilePhoto: {
+        type: String,
+        default: null
+    },
+    
     // User Status and Permissions
     status: {
         type: String,
