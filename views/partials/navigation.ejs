@@ -1,0 +1,263 @@
+<!-- Desktop Navigation -->
+<nav class="desktop-nav">
+    <div class="nav-container">
+        <!-- Logo and Brand -->
+        <div class="nav-brand">
+            <div class="logo">
+                <span class="lightning-bolt">⚡</span>
+                <span class="brand-name">NoMercy</span>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="nav-menu">
+            <a href="/" class="nav-link <%= currentPage === 'home' ? 'active' : '' %>">Home</a>
+            <a href="/news" class="nav-link <%= currentPage === 'news' ? 'active' : '' %>">News</a>
+            <a href="/profile" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">Profile</a>
+            
+            <!-- List Dropdown -->
+            <div class="dropdown">
+                <button class="nav-link dropdown-toggle <%= currentPage === 'list' ? 'active' : '' %>" type="button">
+                    List <i class="chevron-down">▼</i>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-grid">
+                        <!-- Main Section -->
+                        <div class="dropdown-section">
+                            <div class="dropdown-label">🎯 Main</div>
+                            <div class="dropdown-items">
+                                <a href="/profile" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🏆</span>
+                                    <span>Leaderboard</span>
+                                </a>
+                                <a href="/shop" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🛒</span>
+                                    <span>Shop</span>
+                                </a>
+                                <a href="/quest" class="dropdown-item">
+                                    <span class="dropdown-item-icon">❓</span>
+                                    <span>Quiz</span>
+                                </a>
+                                <a href="/redeem" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🎁</span>
+                                    <span>Redeem</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Squad Section -->
+                        <div class="dropdown-section">
+                            <div class="dropdown-label">👥 Squad</div>
+                            <div class="dropdown-items">
+                                <a href="/member" class="dropdown-item">
+                                    <span class="dropdown-item-icon">👤</span>
+                                    <span>Members</span>
+                                </a>
+                                <a href="/tournament" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🏆</span>
+                                    <span>Tournament</span>
+                                </a>
+                                <a href="/profile" class="dropdown-item">
+                                    <span class="dropdown-item-icon">⚔️</span>
+                                    <span>Division</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Casino Section -->
+                        <div class="dropdown-section">
+                            <div class="dropdown-label">🎰 Casino</div>
+                            <div class="dropdown-items">
+                                <a href="/mine" class="dropdown-item">
+                                    <span class="dropdown-item-icon">💎</span>
+                                    <span>Mine</span>
+                                </a>
+                                <a href="/tower" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🗼</span>
+                                    <span>Tower</span>
+                                </a>
+                                <a href="/coinflip" class="dropdown-item">
+                                    <span class="dropdown-item-icon">🪙</span>
+                                    <span>Coinflip</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Owner Section (only show if user is owner) -->
+                        <% if (user && user.status === 'owner') { %>
+                        <div class="dropdown-section">
+                            <div class="dropdown-label">⚙️ Owner</div>
+                            <div class="dropdown-items">
+                                <a href="/dashboard-owner" class="dropdown-item">
+                                    <span class="dropdown-item-icon">⚙️</span>
+                                    <span>Dashboard Owner</span>
+                                </a>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currency Display -->
+        <div class="nav-currency">
+            <div class="currency-item">
+                <span class="currency-icon">💰</span>
+                <span class="currency-value"><%= user ? user.balance : '0' %></span>
+            </div>
+            <div class="currency-item">
+                <span class="currency-icon">💎</span>
+                <span class="currency-value"><%= user ? user.chips : '0' %></span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Navigation -->
+<div class="mobile-nav">
+    <!-- Top Navigation -->
+    <div class="mobile-top-nav">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-brand">
+                <span class="lightning-bolt">⚡</span>
+                <span class="brand-name">NoMercy</span>
+            </div>
+            
+            <!-- Squad Name -->
+            <div class="squad-name">Squad Infinity</div>
+            
+            <!-- Currency Display -->
+            <div class="nav-currency">
+                <div class="currency-item">
+                    <span class="currency-icon">💰</span>
+                    <span class="currency-value"><%= user ? user.balance : '0' %></span>
+                </div>
+                <div class="currency-item">
+                    <span class="currency-icon">💎</span>
+                    <span class="currency-value"><%= user ? user.chips : '0' %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="mobile-bottom-nav">
+        <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </a>
+        <a href="/news" class="nav-item <%= currentPage === 'news' ? 'active' : '' %>">
+            <span class="nav-icon">📰</span>
+            <span class="nav-text">News</span>
+        </a>
+        <a href="/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Profile</span>
+        </a>
+        <button class="nav-item list-trigger" onclick="openListSheet()">
+            <span class="nav-icon">📋</span>
+            <span class="nav-text">List</span>
+        </button>
+    </div>
+</div>
+
+<!-- Mobile List Bottom Sheet -->
+<div class="bottom-sheet-overlay" onclick="closeListSheet()"></div>
+<div class="bottom-sheet" id="listSheet">
+    <div class="sheet-header">
+        <div class="sheet-handle"></div>
+        <h3>Menu List</h3>
+        <button class="sheet-close" onclick="closeListSheet()">✕</button>
+    </div>
+    
+    <div class="sheet-content">
+        <!-- Main Section -->
+        <div class="sheet-section">
+            <div class="section-label">Main</div>
+            <a href="/profile" class="sheet-item">
+                <span class="item-icon">🏆</span>
+                <span class="item-text">Leaderboard</span>
+            </a>
+            <a href="/shop" class="sheet-item">
+                <span class="item-icon">🛒</span>
+                <span class="item-text">Shop</span>
+            </a>
+            <a href="/quest" class="sheet-item">
+                <span class="item-icon">❓</span>
+                <span class="item-text">Quiz</span>
+            </a>
+            <a href="/redeem" class="sheet-item">
+                <span class="item-icon">🎁</span>
+                <span class="item-text">Redeem</span>
+            </a>
+        </div>
+        
+        <!-- Squad Section -->
+        <div class="sheet-section">
+            <div class="section-label">Squad</div>
+            <a href="/member" class="sheet-item">
+                <span class="item-icon">👤</span>
+                <span class="item-text">Members</span>
+            </a>
+            <a href="/tournament" class="sheet-item">
+                <span class="item-icon">🏆</span>
+                <span class="item-text">Tournament</span>
+            </a>
+            <a href="/profile" class="sheet-item">
+                <span class="item-icon">⚔️</span>
+                <span class="item-text">Division</span>
+            </a>
+        </div>
+        
+        <!-- Casino Section -->
+        <div class="sheet-section">
+            <div class="section-label">Casino</div>
+            <a href="/mine" class="sheet-item">
+                <span class="item-icon">💎</span>
+                <span class="item-text">Mine</span>
+            </a>
+            <a href="/tower" class="sheet-item">
+                <span class="item-icon">🗼</span>
+                <span class="item-text">Tower</span>
+            </a>
+            <a href="/coinflip" class="sheet-item">
+                <span class="item-icon">🪙</span>
+                <span class="item-text">Coinflip</span>
+            </a>
+        </div>
+        
+        <!-- Owner Section -->
+        <% if (user && user.status === 'owner') { %>
+        <div class="sheet-section">
+            <div class="section-label">Owner</div>
+            <a href="/dashboard-owner" class="sheet-item">
+                <span class="item-icon">⚙️</span>
+                <span class="item-text">Dashboard Owner</span>
+            </a>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+function openListSheet() {
+    document.querySelector('.bottom-sheet-overlay').classList.add('active');
+    document.getElementById('listSheet').classList.add('active');
+    document.body.classList.add('sheet-open');
+}
+
+function closeListSheet() {
+    document.querySelector('.bottom-sheet-overlay').classList.remove('active');
+    document.getElementById('listSheet').classList.remove('active');
+    document.body.classList.remove('sheet-open');
+}
+
+// Close sheet on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeListSheet();
+    }
+});
+</script>

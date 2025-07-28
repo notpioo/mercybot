@@ -6,31 +6,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - NoMercy</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+    <style>
+        /* Dashboard specific styles */
+        .dashboard-container {
+            padding-top: 70px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
+        }
+        
+        .dashboard-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .status-dot.active {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .user-stats {
+            display: grid;
+            gap: 0.75rem;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+        }
+        
+        .stat-label {
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(55, 65, 81, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding-top: 60px;
+            }
+            
+            .dashboard-main {
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'dashboard', user: userData }) %>
+    
     <div class="dashboard-container">
-        <header class="dashboard-header">
-            <div class="header-left">
-                <div class="logo">
-                    <div class="lightning-bolt">⚡</div>
-                </div>
-                <h1>NoMercy Dashboard</h1>
-            </div>
-            
-            <div class="header-right">
-                <span class="user-info">
-                    <% if (isOwner) { %>
-                        👑 Owner
-                    <% } else { %>
-                        📱 <%= phone %>
-                    <% } %>
-                </span>
-                <form action="/logout" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-small">Logout</button>
-                </form>
-            </div>
-        </header>
-        
         <main class="dashboard-main">
             <div class="dashboard-grid">
                 <div class="card">
@@ -52,11 +169,15 @@
                         </div>
                         <div class="stat">
                             <span class="stat-label">Limit:</span>
-                            <span class="stat-value"><%= userData.limit %></span>
+                            <span class="stat-value"><%= userData.status === 'owner' || userData.status === 'premium' ? '∞ unlimited' : userData.limit %></span>
                         </div>
                         <div class="stat">
                             <span class="stat-label">Balance:</span>
                             <span class="stat-value"><%= userData.balance %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Chips:</span>
+                            <span class="stat-value">💎 <%= userData.chips %></span>
                         </div>
                         <div class="stat">
                             <span class="stat-label">Commands Used:</span>
@@ -69,9 +190,9 @@
                 <div class="card">
                     <h3>Quick Actions</h3>
                     <div class="action-buttons">
-                        <button class="btn btn-primary btn-small">Broadcast Message</button>
-                        <button class="btn btn-secondary btn-small">View Logs</button>
-                        <button class="btn btn-secondary btn-small">Settings</button>
+                        <a href="/profile" class="btn btn-primary">View Profile</a>
+                        <a href="/shop" class="btn btn-secondary">Shop</a>
+                        <a href="/quest" class="btn btn-secondary">Quests</a>
                     </div>
                 </div>
                 
@@ -79,14 +200,17 @@
                 <div class="card">
                     <h3>Owner Controls</h3>
                     <div class="action-buttons">
-                        <button class="btn btn-primary btn-small">Manage Users</button>
-                        <button class="btn btn-secondary btn-small">Bot Settings</button>
-                        <button class="btn btn-danger btn-small">Restart Bot</button>
+                        <a href="/dashboard-owner" class="btn btn-primary">Owner Dashboard</a>
+                        <button class="btn btn-secondary">Bot Settings</button>
+                        <button class="btn btn-danger">Restart Bot</button>
                     </div>
                 </div>
                 <% } %>
             </div>
         </main>
     </div>
+    
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
 </body>
 </html>

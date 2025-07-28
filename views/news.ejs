@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'news', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <section class="page-header">
+                <h1 class="page-title">📰 Berita & Pengumuman</h1>
+                <p class="page-subtitle">Ikuti perkembangan terbaru dari NoMercy Bot</p>
+            </section>
+
+            <!-- Featured News -->
+            <section class="featured-news">
+                <article class="featured-card">
+                    <div class="news-header">
+                        <span class="news-tag featured">⚡ Featured</span>
+                        <span class="news-date">July 14, 2025</span>
+                    </div>
+                    <h2 class="news-title">Level System Update - 9 Tier Baru!</h2>
+                    <p class="news-content">
+                        Sistem level telah diperbarui dengan 9 tier baru yang lebih menantang: 
+                        <strong>Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Honor, dan Immortal</strong>. 
+                        
+                        <br><br>Setiap tier memiliki keuntungan dan privilege khusus. Kumpulkan EXP dengan menggunakan command bot dan naik level untuk membuka fitur-fitur eksklusif!
+                        
+                        <br><br>📈 <strong>Cara mendapatkan EXP:</strong>
+                        <br>• Menggunakan command bot
+                        <br>• Menyelesaikan quest harian
+                        <br>• Berpartisipasi dalam tournament
+                        <br>• Aktivitas premium lainnya
+                    </p>
+                    <div class="news-author">By: +6285709557572</div>
+                </article>
+            </section>
+
+            <!-- News List -->
+            <section class="news-list">
+                <div class="news-grid">
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">🎮 Games</span>
+                            <span class="news-date">July 14, 2025</span>
+                        </div>
+                        <h3 class="news-title">Game Mines Casino Tersedia!</h3>
+                        <p class="news-excerpt">
+                            Game Mines casino kini telah tersedia! Mainkan permainan seru ini dan menangkan chips. 
+                            Game ini menggunakan sistem grid dengan bomb tersembunyi. 
+                            Akses melalui menu Games di dashboard atau ketik .mine di WhatsApp.
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                    
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">🏆 Tournament</span>
+                            <span class="news-date">July 14, 2025</span>
+                        </div>
+                        <h3 class="news-title">Tournament Mingguan Dimulai!</h3>
+                        <p class="news-excerpt">
+                            Bergabunglah dalam tournament mingguan untuk memenangkan hadiah menarik! 
+                            Kompetisi ini terbuka untuk semua member squad. 
+                            Daftar sekarang melalui menu Tournament.
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                    
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">💎 Shop</span>
+                            <span class="news-date">July 13, 2025</span>
+                        </div>
+                        <h3 class="news-title">Item Baru di Shop!</h3>
+                        <p class="news-excerpt">
+                            Berbagai item baru telah ditambahkan ke shop termasuk booster EXP, 
+                            premium status upgrade, dan berbagai aksesori eksklusif. 
+                            Gunakan chips untuk membeli item favorit Anda.
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                    
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">🎁 Redeem</span>
+                            <span class="news-date">July 13, 2025</span>
+                        </div>
+                        <h3 class="news-title">Kode Redeem Spesial</h3>
+                        <p class="news-excerpt">
+                            Tukarkan kode redeem spesial untuk mendapatkan bonus chips dan item eksklusif. 
+                            Kode redeem dibagikan secara berkala melalui pengumuman resmi. 
+                            Jangan lewatkan kesempatan terbatas ini!
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                    
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">⚔️ Quest</span>
+                            <span class="news-date">July 12, 2025</span>
+                        </div>
+                        <h3 class="news-title">Quest System Diperkenalkan</h3>
+                        <p class="news-excerpt">
+                            Sistem quest harian kini tersedia! Selesaikan misi-misi menarik untuk 
+                            mendapatkan reward berupa EXP, chips, dan item khusus. 
+                            Quest direset setiap 24 jam dengan tantangan yang berbeda.
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                    
+                    <article class="news-card">
+                        <div class="news-header">
+                            <span class="news-tag">🎉 Welcome</span>
+                            <span class="news-date">July 10, 2025</span>
+                        </div>
+                        <h3 class="news-title">Selamat Datang di NoMercy Bot!</h3>
+                        <p class="news-excerpt">
+                            Bot WhatsApp canggih dengan berbagai fitur menarik seperti games, level system, 
+                            quest, tournament, dan banyak lagi. Nikmati pengalaman chatting yang lebih seru 
+                            dengan sistem yang komprehensif dan user-friendly.
+                        </p>
+                        <div class="news-author">By: +6285709557572</div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
+</body>
+</html>

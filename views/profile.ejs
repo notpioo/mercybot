@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'profile', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <section class="page-header">
+                <h1 class="page-title">👤 Profile Saya</h1>
+                <p class="page-subtitle">Kelola informasi dan statistik akun Anda</p>
+            </section>
+
+            <!-- Profile Content -->
+            <div class="profile-grid">
+                <!-- User Info Card -->
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <span class="avatar-icon">👤</span>
+                    </div>
+                    <h2 class="profile-name"><%= user ? user.username || 'User' : 'User' %></h2>
+                    <p class="profile-status">
+                        <%= user ? (user.status === 'owner' ? '👑 Owner' : user.status === 'premium' ? '💎 Premium' : '👤 Basic User') : '👤 Basic User' %>
+                    </p>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="stats-card">
+                    <h3>📊 Statistik</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value"><%= user ? user.limit : '0' %></span>
+                            <span class="stat-label">Limit</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">💰 <%= user ? user.balance : '0' %></span>
+                            <span class="stat-label">Balance</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">💎 <%= user ? user.chips : '0' %></span>
+                            <span class="stat-label">Chips</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value"><%= user ? user.commandsUsed : '0' %></span>
+                            <span class="stat-label">Commands Used</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Card -->
+                <div class="activity-card">
+                    <h3>⚡ Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <span class="activity-icon">📅</span>
+                            <div class="activity-info">
+                                <p class="activity-title">Member Since</p>
+                                <p class="activity-date"><%= user && user.createdAt ? new Date(user.createdAt).toLocaleDateString('id-ID') : 'Today' %></p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">🔥</span>
+                            <div class="activity-info">
+                                <p class="activity-title">Last Active</p>
+                                <p class="activity-date"><%= user && user.lastActivity ? new Date(user.lastActivity).toLocaleDateString('id-ID') : 'Today' %></p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">⭐</span>
+                            <div class="activity-info">
+                                <p class="activity-title">Current Level</p>
+                                <p class="activity-date">Level 1 - Warrior</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="actions-card">
+                    <h3>🚀 Quick Actions</h3>
+                    <div class="action-buttons">
+                        <a href="/shop" class="btn btn-primary">💰 Shop</a>
+                        <a href="/quest" class="btn btn-secondary">⚔️ Quests</a>
+                        <a href="/redeem" class="btn btn-secondary">🎁 Redeem</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .profile-card, .stats-card, .activity-card, .actions-card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-card {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .avatar-icon {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .profile-name {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-status {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .stats-card h3, .activity-card h3, .actions-card h3 {
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            display: block;
+            color: #6366f1;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .activity-icon {
+            font-size: 1.5rem;
+        }
+
+        .activity-title {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-date {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(55, 65, 81, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

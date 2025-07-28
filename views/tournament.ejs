@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'list', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="page-header">
+                <h1 class="page-title">🏆 Tournament</h1>
+                <p class="page-subtitle">Kompetisi mingguan untuk semua member squad</p>
+            </section>
+
+            <div class="tournament-hero">
+                <div class="tournament-banner">
+                    <h2>🔥 Weekly Championship</h2>
+                    <p>Kompetisi mingguan dengan total hadiah 10,000 chips</p>
+                    <div class="tournament-timer">
+                        <div class="timer-item">
+                            <span class="timer-value">2</span>
+                            <span class="timer-label">Hari</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value">14</span>
+                            <span class="timer-label">Jam</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value">35</span>
+                            <span class="timer-label">Menit</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Daftar Tournament</button>
+                </div>
+            </div>
+
+            <div class="tournament-content">
+                <div class="leaderboard-section">
+                    <h3>🥇 Leaderboard</h3>
+                    <div class="leaderboard">
+                        <div class="leaderboard-item rank-1">
+                            <div class="rank">🥇</div>
+                            <div class="player-info">
+                                <h4>Champion Player</h4>
+                                <p>2,450 Points</p>
+                            </div>
+                            <div class="prize">5,000 💎</div>
+                        </div>
+                        
+                        <div class="leaderboard-item rank-2">
+                            <div class="rank">🥈</div>
+                            <div class="player-info">
+                                <h4>Runner Up</h4>
+                                <p>2,100 Points</p>
+                            </div>
+                            <div class="prize">3,000 💎</div>
+                        </div>
+                        
+                        <div class="leaderboard-item rank-3">
+                            <div class="rank">🥉</div>
+                            <div class="player-info">
+                                <h4>Third Place</h4>
+                                <p>1,850 Points</p>
+                            </div>
+                            <div class="prize">2,000 💎</div>
+                        </div>
+                        
+                        <div class="leaderboard-item">
+                            <div class="rank">4</div>
+                            <div class="player-info">
+                                <h4>Player 4</h4>
+                                <p>1,620 Points</p>
+                            </div>
+                            <div class="prize">500 💎</div>
+                        </div>
+                        
+                        <div class="leaderboard-item">
+                            <div class="rank">5</div>
+                            <div class="player-info">
+                                <h4>Player 5</h4>
+                                <p>1,420 Points</p>
+                            </div>
+                            <div class="prize">300 💎</div>
+                        </div>
+                        
+                        <div class="leaderboard-item current-user">
+                            <div class="rank">12</div>
+                            <div class="player-info">
+                                <h4>You</h4>
+                                <p>890 Points</p>
+                            </div>
+                            <div class="prize">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tournament-rules">
+                    <h3>📋 Rules & Prizes</h3>
+                    <div class="rules-content">
+                        <div class="rule-item">
+                            <h4>🎯 How to Earn Points</h4>
+                            <ul>
+                                <li>Win casino games: +10 points per win</li>
+                                <li>Complete daily quests: +50 points</li>
+                                <li>Invite new members: +100 points</li>
+                                <li>Use bot commands: +5 points</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="rule-item">
+                            <h4>🏆 Prize Distribution</h4>
+                            <ul>
+                                <li>🥇 1st Place: 5,000 chips</li>
+                                <li>🥈 2nd Place: 3,000 chips</li>
+                                <li>🥉 3rd Place: 2,000 chips</li>
+                                <li>4th-10th Place: 500 chips each</li>
+                                <li>11th-20th Place: 200 chips each</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="rule-item">
+                            <h4>⚖️ Tournament Rules</h4>
+                            <ul>
+                                <li>Tournament runs weekly (Monday - Sunday)</li>
+                                <li>All members can participate for free</li>
+                                <li>No limit on point earning</li>
+                                <li>Fair play required - cheating results in disqualification</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .tournament-hero {
+            margin: 2rem 0;
+        }
+
+        .tournament-banner {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tournament-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23smallGrid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .tournament-banner > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tournament-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tournament-banner p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .tournament-timer {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .timer-item {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1rem;
+            min-width: 80px;
+        }
+
+        .timer-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .timer-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .tournament-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .leaderboard-section, .tournament-rules {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-section h3, .tournament-rules h3 {
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .leaderboard {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .leaderboard-item {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item.rank-1 {
+            border-color: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .leaderboard-item.rank-2 {
+            border-color: rgba(156, 163, 175, 0.3);
+            background: rgba(156, 163, 175, 0.1);
+        }
+
+        .leaderboard-item.rank-3 {
+            border-color: rgba(205, 133, 63, 0.3);
+            background: rgba(205, 133, 63, 0.1);
+        }
+
+        .leaderboard-item.current-user {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .rank {
+            font-size: 1.25rem;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+            color: #6366f1;
+        }
+
+        .rank-1 .rank, .rank-2 .rank, .rank-3 .rank {
+            font-size: 1.5rem;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-info h4 {
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .player-info p {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        .prize {
+            color: #6366f1;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .rules-content {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .rule-item h4 {
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .rule-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .rule-item li {
+            color: #d1d5db;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.875rem;
+        }
+
+        .rule-item li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .tournament-banner {
+                padding: 2rem 1rem;
+            }
+
+            .tournament-banner h2 {
+                font-size: 1.5rem;
+            }
+
+            .tournament-timer {
+                gap: 0.5rem;
+            }
+
+            .timer-item {
+                min-width: 60px;
+                padding: 0.75rem 0.5rem;
+            }
+
+            .timer-value {
+                font-size: 1.25rem;
+            }
+
+            .tournament-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .leaderboard-section, .tournament-rules {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</body>
+</html>

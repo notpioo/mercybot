@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'list', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="page-header">
+                <h1 class="page-title">🎁 Redeem Code</h1>
+                <p class="page-subtitle">Tukarkan kode redeem untuk mendapat reward menarik</p>
+            </section>
+
+            <div class="redeem-section">
+                <div class="redeem-form-card">
+                    <h3>Masukkan Kode Redeem</h3>
+                    <form class="redeem-form">
+                        <input type="text" placeholder="Masukkan kode redeem..." class="redeem-input">
+                        <button type="submit" class="btn btn-primary">Tukar Kode</button>
+                    </form>
+                </div>
+
+                <div class="active-codes">
+                    <h3>🔥 Kode Aktif</h3>
+                    <div class="codes-grid">
+                        <div class="code-item">
+                            <div class="code-header">
+                                <span class="code-tag">💎 Premium</span>
+                                <span class="code-date">Berlaku hingga 31 Juli</span>
+                            </div>
+                            <h4>PREMIUM500</h4>
+                            <p>500 Chips + 1 hari Premium Status</p>
+                        </div>
+                        
+                        <div class="code-item">
+                            <div class="code-header">
+                                <span class="code-tag">⚡ Booster</span>
+                                <span class="code-date">Berlaku hingga 30 Juli</span>
+                            </div>
+                            <h4>BOOST2024</h4>
+                            <p>EXP Booster 24 jam + 200 Chips</p>
+                        </div>
+                        
+                        <div class="code-item">
+                            <div class="code-header">
+                                <span class="code-tag">🎉 Special</span>
+                                <span class="code-date">Limited Time</span>
+                            </div>
+                            <h4>WELCOME100</h4>
+                            <p>100 Chips untuk member baru</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .redeem-section {
+            display: grid;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .redeem-form-card, .active-codes {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .redeem-form-card h3, .active-codes h3 {
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .redeem-form {
+            display: flex;
+            gap: 1rem;
+            flex-direction: column;
+        }
+
+        .redeem-input {
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 30, 0.8);
+            color: #ffffff;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        .redeem-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .code-item {
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .code-tag {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .code-date {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        .code-item h4 {
+            color: #6366f1;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: monospace;
+        }
+
+        .code-item p {
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 768px) {
+            .redeem-form {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .redeem-input {
+                flex: 1;
+            }
+
+            .btn {
+                min-width: 150px;
+            }
+        }
+    </style>
+</body>
+</html>

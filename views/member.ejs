@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'list', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="page-header">
+                <h1 class="page-title">👥 Squad Members</h1>
+                <p class="page-subtitle">Daftar anggota squad NoMercy</p>
+            </section>
+
+            <div class="member-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-info">
+                        <span class="stat-value">1</span>
+                        <span class="stat-label">Owner</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-info">
+                        <span class="stat-value">5</span>
+                        <span class="stat-label">Premium</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-info">
+                        <span class="stat-value">127</span>
+                        <span class="stat-label">Basic</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-info">
+                        <span class="stat-value">89</span>
+                        <span class="stat-label">Active Today</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member-filters">
+                <button class="filter-btn active" data-filter="all">Semua</button>
+                <button class="filter-btn" data-filter="owner">Owner</button>
+                <button class="filter-btn" data-filter="premium">Premium</button>
+                <button class="filter-btn" data-filter="basic">Basic</button>
+                <button class="filter-btn" data-filter="online">Online</button>
+            </div>
+
+            <div class="members-list">
+                <div class="member-card" data-status="owner">
+                    <div class="member-avatar">👑</div>
+                    <div class="member-info">
+                        <h3>Admin NoMercy</h3>
+                        <p class="member-phone">+6285709557572</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 10</span>
+                            <span class="stat">5,420 EXP</span>
+                            <span class="stat">∞ Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge owner">👑 Owner</span>
+                        <span class="online-indicator active"></span>
+                    </div>
+                </div>
+
+                <div class="member-card" data-status="premium">
+                    <div class="member-avatar">💎</div>
+                    <div class="member-info">
+                        <h3>Premium User 1</h3>
+                        <p class="member-phone">+628xxxxxxxxx</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 8</span>
+                            <span class="stat">3,210 EXP</span>
+                            <span class="stat">1,550 Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge premium">💎 Premium</span>
+                        <span class="online-indicator active"></span>
+                    </div>
+                </div>
+
+                <div class="member-card" data-status="premium">
+                    <div class="member-avatar">💎</div>
+                    <div class="member-info">
+                        <h3>Premium User 2</h3>
+                        <p class="member-phone">+628xxxxxxxxx</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 6</span>
+                            <span class="stat">2,890 EXP</span>
+                            <span class="stat">890 Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge premium">💎 Premium</span>
+                        <span class="online-indicator"></span>
+                    </div>
+                </div>
+
+                <div class="member-card" data-status="basic">
+                    <div class="member-avatar">👤</div>
+                    <div class="member-info">
+                        <h3>Basic User 1</h3>
+                        <p class="member-phone">+628xxxxxxxxx</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 3</span>
+                            <span class="stat">1,250 EXP</span>
+                            <span class="stat">340 Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge basic">👤 Basic</span>
+                        <span class="online-indicator active"></span>
+                    </div>
+                </div>
+
+                <div class="member-card" data-status="basic">
+                    <div class="member-avatar">👤</div>
+                    <div class="member-info">
+                        <h3>Basic User 2</h3>
+                        <p class="member-phone">+628xxxxxxxxx</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 2</span>
+                            <span class="stat">850 EXP</span>
+                            <span class="stat">120 Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge basic">👤 Basic</span>
+                        <span class="online-indicator"></span>
+                    </div>
+                </div>
+
+                <div class="member-card" data-status="basic">
+                    <div class="member-avatar">👤</div>
+                    <div class="member-info">
+                        <h3>Basic User 3</h3>
+                        <p class="member-phone">+628xxxxxxxxx</p>
+                        <div class="member-stats-inline">
+                            <span class="stat">Level 1</span>
+                            <span class="stat">420 EXP</span>
+                            <span class="stat">80 Chips</span>
+                        </div>
+                    </div>
+                    <div class="member-status">
+                        <span class="status-badge basic">👤 Basic</span>
+                        <span class="online-indicator active"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .member-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-value {
+            display: block;
+            color: #6366f1;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .member-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(40, 40, 40, 0.8);
+            color: #a0a0a0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+
+        .members-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .member-card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-info h3 {
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .member-phone {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .member-stats-inline {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .member-stats-inline .stat {
+            color: #6366f1;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .member-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.owner {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-badge.premium {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .status-badge.basic {
+            background: rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+        }
+
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6b7280;
+        }
+
+        .online-indicator.active {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .member-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .member-status {
+                align-items: center;
+            }
+
+            .member-stats-inline {
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <script>
+        // Member filtering
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                const members = document.querySelectorAll('.member-card');
+                
+                members.forEach(member => {
+                    if (filter === 'all') {
+                        member.style.display = 'flex';
+                    } else if (filter === 'online') {
+                        const isOnline = member.querySelector('.online-indicator.active');
+                        member.style.display = isOnline ? 'flex' : 'none';
+                    } else {
+                        const status = member.dataset.status;
+                        member.style.display = status === filter ? 'flex' : 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

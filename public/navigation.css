@@ -1,0 +1,461 @@
+/* Navigation Styles */
+
+/* Desktop Navigation */
+.desktop-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 2rem;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 70px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lightning-bolt {
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #a0a0a0;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    border-radius: 1px;
+}
+
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.chevron-down {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown:hover .chevron-down {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    min-width: 600px;
+    background: rgba(40, 40, 40, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    margin-top: 0.5rem;
+    padding: 1rem;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.dropdown-section {
+    padding: 0;
+}
+
+.dropdown-section:not(:last-child) {
+    border-bottom: none;
+}
+
+.dropdown-label {
+    color: #6366f1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 0 0.75rem 0;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #a0a0a0;
+    text-decoration: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.1);
+    transform: translateX(4px);
+}
+
+.dropdown-item-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Currency Display */
+.nav-currency {
+    display: flex;
+    gap: 1rem;
+}
+
+.currency-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(40, 40, 40, 0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.currency-icon {
+    font-size: 1rem;
+}
+
+.currency-value {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+}
+
+.mobile-top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 1rem;
+}
+
+.mobile-top-nav .nav-container {
+    height: 60px;
+    justify-content: space-between;
+}
+
+.squad-name {
+    color: #a0a0a0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    padding: 0.5rem 0;
+}
+
+.mobile-bottom-nav .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: #a0a0a0;
+    text-decoration: none;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-bottom-nav .nav-item:hover,
+.mobile-bottom-nav .nav-item.active {
+    color: #6366f1;
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+}
+
+.nav-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Bottom Sheet */
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.bottom-sheet-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1999;
+    background: rgba(30, 30, 30, 0.98);
+    backdrop-filter: blur(10px);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 70vh;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.bottom-sheet.active {
+    transform: translateY(0);
+}
+
+.sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.sheet-handle {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.sheet-header h3 {
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.sheet-close {
+    background: none;
+    border: none;
+    color: #a0a0a0;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.sheet-close:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sheet-content {
+    padding: 1rem;
+    max-height: calc(70vh - 80px);
+    overflow-y: auto;
+}
+
+.sheet-section {
+    margin-bottom: 1.5rem;
+}
+
+.sheet-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-label {
+    color: #6366f1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+}
+
+.sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #a0a0a0;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.sheet-item:hover {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.item-icon {
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
+}
+
+.item-text {
+    font-weight: 500;
+}
+
+/* Body modifications when sheet is open */
+body.sheet-open {
+    overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+    
+    .mobile-nav {
+        display: block;
+    }
+    
+    .mobile-top-nav .nav-currency {
+        gap: 0.5rem;
+    }
+    
+    .mobile-top-nav .currency-item {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .squad-name {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-top-nav .nav-container {
+        padding: 0 0.5rem;
+    }
+    
+    .mobile-top-nav .currency-item {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .currency-value {
+        font-size: 0.8rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .nav-menu {
+        gap: 1.5rem;
+    }
+}

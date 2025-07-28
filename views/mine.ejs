@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mine Game - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'list', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="page-header">
+                <h1 class="page-title">⛏️ Mine Game</h1>
+                <p class="page-subtitle">Game casino dengan grid dan bomb tersembunyi</p>
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount"><%= user ? user.balance : '0' %> Balance</span>
+                    <span class="balance-separator">|</span>
+                    <span class="balance-icon">💎</span>
+                    <span class="balance-amount"><%= user ? user.chips : '0' %> Chips</span>
+                </div>
+            </section>
+
+            <div class="game-container">
+                <div class="game-controls">
+                    <div class="bet-section">
+                        <label>Bet Amount:</label>
+                        <input type="number" id="betAmount" value="10" min="1" max="<%= user ? user.chips : 0 %>">
+                        <span>💎</span>
+                    </div>
+                    <div class="mines-section">
+                        <label>Mines:</label>
+                        <select id="minesCount">
+                            <option value="3">3 Mines</option>
+                            <option value="5">5 Mines</option>
+                            <option value="10">10 Mines</option>
+                        </select>
+                    </div>
+                    <button id="startGame" class="btn btn-primary">Start Game</button>
+                    <button id="cashOut" class="btn btn-success" disabled>Cash Out</button>
+                </div>
+
+                <div class="game-info">
+                    <div class="info-item">
+                        <span class="info-label">Current Multiplier:</span>
+                        <span id="currentMultiplier">1.00x</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Potential Win:</span>
+                        <span id="potentialWin">0 💎</span>
+                    </div>
+                </div>
+
+                <div class="game-grid" id="gameGrid">
+                    <!-- Grid akan dibuat dengan JavaScript -->
+                </div>
+
+                <div class="game-stats">
+                    <h3>📊 Game Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">Games Played</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">Games Won</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">0%</span>
+                            <span class="stat-label">Win Rate</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">0 💎</span>
+                            <span class="stat-label">Total Winnings</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .game-container {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .bet-section, .mines-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .bet-section label, .mines-section label {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .bet-section input, .mines-section select {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 30, 0.8);
+            color: #ffffff;
+            border-radius: 8px;
+            min-width: 120px;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .info-label {
+            display: block;
+            color: #a0a0a0;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item span:last-child {
+            color: #6366f1;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin: 2rem 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .grid-cell:hover:not(.revealed) {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+        }
+
+        .grid-cell.revealed {
+            cursor: not-allowed;
+        }
+
+        .grid-cell.gem {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .grid-cell.bomb {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .game-stats {
+            margin-top: 2rem;
+        }
+
+        .game-stats h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            color: #6366f1;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .game-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .game-info {
+                flex-direction: column;
+            }
+
+            .game-grid {
+                max-width: 300px;
+            }
+        }
+    </style>
+
+    <script>
+        // Simple Mine Game Logic (Placeholder)
+        let gameActive = false;
+        let currentBet = 0;
+        let revealedCells = 0;
+        let totalCells = 25;
+        let minePositions = [];
+
+        function initializeGrid() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', () => revealCell(i));
+                grid.appendChild(cell);
+            }
+        }
+
+        function startGame() {
+            const betInput = document.getElementById('betAmount');
+            const minesSelect = document.getElementById('minesCount');
+            
+            currentBet = parseInt(betInput.value);
+            const mineCount = parseInt(minesSelect.value);
+            
+            if (currentBet <= 0) {
+                alert('Please enter a valid bet amount');
+                return;
+            }
+            
+            gameActive = true;
+            revealedCells = 0;
+            minePositions = generateMinePositions(mineCount);
+            
+            initializeGrid();
+            updateUI();
+            
+            document.getElementById('startGame').disabled = true;
+            document.getElementById('cashOut').disabled = false;
+        }
+
+        function generateMinePositions(count) {
+            const positions = [];
+            while (positions.length < count) {
+                const pos = Math.floor(Math.random() * totalCells);
+                if (!positions.includes(pos)) {
+                    positions.push(pos);
+                }
+            }
+            return positions;
+        }
+
+        function revealCell(index) {
+            if (!gameActive) return;
+            
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (cell.classList.contains('revealed')) return;
+            
+            cell.classList.add('revealed');
+            
+            if (minePositions.includes(index)) {
+                // Hit a mine - game over
+                cell.textContent = '💣';
+                cell.classList.add('bomb');
+                gameOver(false);
+            } else {
+                // Found a gem
+                cell.textContent = '💎';
+                cell.classList.add('gem');
+                revealedCells++;
+                updateUI();
+            }
+        }
+
+        function cashOut() {
+            if (!gameActive) return;
+            gameOver(true);
+        }
+
+        function gameOver(won) {
+            gameActive = false;
+            
+            // Reveal all mines
+            minePositions.forEach(pos => {
+                const cell = document.querySelector(`[data-index="${pos}"]`);
+                if (!cell.classList.contains('revealed')) {
+                    cell.textContent = '💣';
+                    cell.classList.add('bomb', 'revealed');
+                }
+            });
+            
+            if (won) {
+                const multiplier = 1 + (revealedCells * 0.2);
+                const winnings = Math.floor(currentBet * multiplier);
+                alert(`Congratulations! You won ${winnings} chips!`);
+            } else {
+                alert('Game Over! You hit a mine.');
+            }
+            
+            document.getElementById('startGame').disabled = false;
+            document.getElementById('cashOut').disabled = true;
+            updateUI();
+        }
+
+        function updateUI() {
+            const multiplier = gameActive ? (1 + (revealedCells * 0.2)).toFixed(2) : '1.00';
+            const potentialWin = gameActive ? Math.floor(currentBet * multiplier) : 0;
+            
+            document.getElementById('currentMultiplier').textContent = multiplier + 'x';
+            document.getElementById('potentialWin').textContent = potentialWin + ' 💎';
+        }
+
+        // Initialize
+        document.getElementById('startGame').addEventListener('click', startGame);
+        document.getElementById('cashOut').addEventListener('click', cashOut);
+        initializeGrid();
+    </script>
+</body>
+</html>

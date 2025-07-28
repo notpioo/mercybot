@@ -80,7 +80,217 @@ const verificationCodes = new Map();
 
 // Routes
 app.get('/', (req, res) => {
+    if (req.session.isAuthenticated || req.session.isOwner) {
+        // If user is authenticated, redirect to home dashboard
+        return res.redirect('/home');
+    }
     res.render('index');
+});
+
+// Main Navigation Routes
+app.get('/home', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('home', { user: userData });
+});
+
+app.get('/news', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('news', { user: userData });
+});
+
+app.get('/profile', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('profile', { user: userData });
+});
+
+// List Menu Routes
+app.get('/shop', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('shop', { user: userData });
+});
+
+app.get('/redeem', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('redeem', { user: userData });
+});
+
+app.get('/member', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('member', { user: userData });
+});
+
+app.get('/quest', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('quest', { user: userData });
+});
+
+app.get('/tournament', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('tournament', { user: userData });
+});
+
+app.get('/mine', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('mine', { user: userData });
+});
+
+app.get('/tower', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('tower', { user: userData });
+});
+
+app.get('/coinflip', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('coinflip', { user: userData });
+});
+
+app.get('/dashboard-owner', async (req, res) => {
+    if (!req.session.isOwner) {
+        return res.redirect('/');
+    }
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    res.render('dashboard-owner', { user: userData });
 });
 
 app.get('/login', (req, res) => {
@@ -166,7 +376,7 @@ app.post('/verify-code', async (req, res) => {
         // Create or get user from database
         try {
             await createUser(phone + '@s.whatsapp.net', {});
-            res.redirect('/dashboard');
+            res.redirect('/home');
         } catch (error) {
             console.error('Error creating user:', error);
             res.render('login', { error: 'Terjadi kesalahan. Silakan coba lagi.' });
@@ -182,29 +392,8 @@ app.post('/verify-code', async (req, res) => {
 });
 
 app.get('/dashboard', async (req, res) => {
-    if (!req.session.isAuthenticated && !req.session.isOwner) {
-        return res.redirect('/login');
-    }
-    
-    try {
-        let userData = null;
-        if (req.session.userPhone) {
-            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
-        }
-        
-        res.render('dashboard', { 
-            isOwner: req.session.isOwner,
-            userData: userData,
-            phone: req.session.userPhone
-        });
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        res.render('dashboard', { 
-            isOwner: req.session.isOwner,
-            userData: null,
-            phone: req.session.userPhone
-        });
-    }
+    // Redirect dashboard to home page
+    res.redirect('/home');
 });
 
 app.post('/resend-code', async (req, res) => {

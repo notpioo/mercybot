@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <style>
+        .home-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .welcome-section {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+        }
+
+        .user-phone {
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .home-layout {
+                padding: 0.75rem;
+            }
+
+            .welcome-section {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'home', user: user }) %>
+
+    <main class="main-content">
+        <div class="home-layout">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <h1 class="welcome-title">Welcome to NoMercy</h1>
+                <p class="welcome-subtitle">
+                    Hello <span class="user-phone"><%= user ? user.userId.replace('@s.whatsapp.net', '') : '+6285709557572' %></span>, welcome to the advanced WhatsApp bot dashboard.
+                </p>
+                <p class="welcome-subtitle">
+                    Manage your bot, track analytics, and control your bot's features from this dashboard.
+                </p>
+            </section>
+
+            
+        </div>
+    </main>
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
+</body>
+</html>

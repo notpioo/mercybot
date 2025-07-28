@@ -1,0 +1,436 @@
+/* Dashboard and Page Styles */
+
+/* Main Content Layout */
+.main-content {
+    padding-top: 70px; /* Desktop nav height */
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Page Headers */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ffffff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #a0a0a0;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 1.5rem;
+}
+
+.welcome-card {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.welcome-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.welcome-subtitle {
+    color: #a0a0a0;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* User Info Section */
+.user-info-section {
+    margin-bottom: 1.5rem;
+}
+
+.user-info-card {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.section-title {
+    color: #6366f1;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.user-info-card h3 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .user-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(30, 30, 30, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stat-label {
+    color: #a0a0a0;
+    font-weight: 500;
+}
+
+.stat-value {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.status-owner {
+    color: #fbbf24 !important;
+}
+
+.status-premium {
+    color: #8b5cf6 !important;
+}
+
+.status-basic {
+    color: #6b7280 !important;
+}
+
+/* News Section */
+.news-section {
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.view-all {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.view-all:hover {
+    color: #8b5cf6;
+}
+
+/* News Grid */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.news-card {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.news-tag {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.news-tag.featured {
+    background: linear-gradient(45deg, #fbbf24, #f59e0b);
+}
+
+.news-date {
+    color: #a0a0a0;
+    font-size: 0.85rem;
+}
+
+.news-title {
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.news-excerpt, .news-content {
+    color: #d1d5db;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.news-author {
+    color: #6366f1;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Featured News */
+.featured-news {
+    margin-bottom: 3rem;
+}
+
+.featured-card {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.featured-card .news-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-bottom: 2rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.action-card {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.action-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.action-card h3 {
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.action-card p {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+}
+
+/* Mobile Bottom Padding */
+.mobile-bottom-padding {
+    height: 80px; /* Bottom nav height on mobile */
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 60px; /* Mobile top nav height */
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+    
+    .welcome-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .welcome-title {
+        font-size: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .user-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .featured-card {
+        padding: 1.5rem;
+    }
+    
+    .featured-card .news-title {
+        font-size: 1.375rem;
+    }
+    
+    .mobile-bottom-padding {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+    }
+    
+    .welcome-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .welcome-title {
+        font-size: 1.75rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-card {
+        padding: 1.5rem;
+    }
+    
+    .news-card {
+        padding: 1.25rem;
+    }
+    
+    .featured-card {
+        padding: 1.25rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* Balance Display */
+.balance-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(40, 40, 40, 0.95);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.balance-separator {
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0 0.5rem;
+}
+
+.balance-icon {
+    font-size: 1.25rem;
+}
+
+.balance-amount {
+    color: #6366f1;
+    font-weight: 700;
+    font-size: 1.125rem;
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'list', user: user }) %>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <section class="page-header">
+                <h1 class="page-title">🛒 Shop</h1>
+                <p class="page-subtitle">Beli item dan upgrade dengan chips Anda</p>
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount"><%= user ? user.balance : '0' %> Balance</span>
+                    <span class="balance-separator">|</span>
+                    <span class="balance-icon">💎</span>
+                    <span class="balance-amount"><%= user ? user.chips : '0' %> Chips</span>
+                </div>
+            </section>
+
+            <!-- Shop Categories -->
+            <div class="shop-categories">
+                <button class="category-btn active" data-category="all">Semua</button>
+                <button class="category-btn" data-category="premium">Premium</button>
+                <button class="category-btn" data-category="booster">Booster</button>
+                <button class="category-btn" data-category="cosmetic">Cosmetic</button>
+            </div>
+
+            <!-- Shop Items -->
+            <div class="shop-grid">
+                <!-- Premium Items -->
+                <div class="shop-item" data-category="premium">
+                    <div class="item-image">💎</div>
+                    <h3 class="item-name">Premium Status</h3>
+                    <p class="item-description">Upgrade ke status premium dengan benefit unlimited limit</p>
+                    <div class="item-price">
+                        <span class="price-amount">10,000</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <!-- Booster Items -->
+                <div class="shop-item" data-category="booster">
+                    <div class="item-image">🚀</div>
+                    <h3 class="item-name">EXP Booster</h3>
+                    <p class="item-description">Double EXP untuk 24 jam</p>
+                    <div class="item-price">
+                        <span class="price-amount">500</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <div class="shop-item" data-category="booster">
+                    <div class="item-image">⚡</div>
+                    <h3 class="item-name">Limit Booster</h3>
+                    <p class="item-description">+50 Limit untuk menggunakan command</p>
+                    <div class="item-price">
+                        <span class="price-amount">300</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <div class="shop-item" data-category="booster">
+                    <div class="item-image">💰</div>
+                    <h3 class="item-name">Chip Multiplier</h3>
+                    <p class="item-description">2x chip earnings dari games selama 12 jam</p>
+                    <div class="item-price">
+                        <span class="price-amount">800</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <!-- Cosmetic Items -->
+                <div class="shop-item" data-category="cosmetic">
+                    <div class="item-image">👑</div>
+                    <h3 class="item-name">Golden Crown</h3>
+                    <p class="item-description">Crown emas eksklusif untuk profile</p>
+                    <div class="item-price">
+                        <span class="price-amount">2,000</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <div class="shop-item" data-category="cosmetic">
+                    <div class="item-image">🌟</div>
+                    <h3 class="item-name">VIP Badge</h3>
+                    <p class="item-description">Badge VIP eksklusif untuk menunjukkan status</p>
+                    <div class="item-price">
+                        <span class="price-amount">1,500</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+
+                <div class="shop-item" data-category="cosmetic">
+                    <div class="item-image">🎨</div>
+                    <h3 class="item-name">Custom Theme</h3>
+                    <p class="item-description">Theme khusus untuk dashboard personal</p>
+                    <div class="item-price">
+                        <span class="price-amount">1,200</span>
+                        <span class="price-currency">💎</span>
+                    </div>
+                    <button class="btn btn-primary">Beli Sekarang</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding"></div>
+
+    <style>
+        .balance-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: rgba(40, 40, 40, 0.95);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+
+        .balance-icon {
+            font-size: 1.25rem;
+        }
+
+        .balance-amount {
+            color: #6366f1;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .shop-categories {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(40, 40, 40, 0.8);
+            color: #a0a0a0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn.active,
+        .category-btn:hover {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .shop-item {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .item-image {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-name {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-description {
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-amount {
+            color: #6366f1;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .price-currency {
+            font-size: 1.25rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .shop-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .shop-categories {
+                gap: 0.5rem;
+            }
+
+            .category-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Category filtering
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const category = btn.dataset.category;
+                const items = document.querySelectorAll('.shop-item');
+                
+                items.forEach(item => {
+                    if (category === 'all' || item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
