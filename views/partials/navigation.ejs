@@ -83,8 +83,8 @@
                             </div>
                         </div>
                         
-                        <!-- Owner Section (only show if user is owner) -->
-                        <% if (user && user.status === 'owner') { %>
+                        <!-- Owner Section (only show if user is owner or session is owner) -->
+                        <% if ((user && user.status === 'owner') || typeof isOwner !== 'undefined') { %>
                         <div class="dropdown-section">
                             <div class="dropdown-label">Owner</div>
                             <div class="dropdown-items">
@@ -229,7 +229,7 @@
         </div>
         
         <!-- Owner Section -->
-        <% if (user && user.status === 'owner') { %>
+        <% if ((user && user.status === 'owner') || typeof isOwner !== 'undefined') { %>
         <div class="sheet-section">
             <div class="section-label">Owner</div>
             <a href="/dashboard-owner" class="sheet-item">

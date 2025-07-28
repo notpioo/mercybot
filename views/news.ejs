@@ -3,139 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News - NoMercy</title>
+    <title>Pengumuman & Berita - NoMercy</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/navigation.css">
-    <link rel="stylesheet" href="/dashboard.css">
+    <style>
+        .news-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .news-header {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .news-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-subtitle {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .news-item {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .news-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .news-icon {
+            background: #6366f1;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .news-item-content {
+            flex: 1;
+        }
+
+        .news-item-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-badge {
+            background: #6366f1;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .news-item-description {
+            color: #e5e5e5;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .news-date {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .news-category {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .empty-state {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .news-layout {
+                padding: 0.75rem;
+                padding-bottom: 120px;
+            }
+
+            .news-header {
+                padding: 1.5rem;
+            }
+
+            .news-title {
+                font-size: 1.75rem;
+            }
+
+            .news-item {
+                padding: 1.25rem;
+            }
+
+            .news-item-header {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .news-icon {
+                align-self: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Include Navigation -->
     <%- include('partials/navigation', { currentPage: 'news', user: user }) %>
 
     <main class="main-content">
-        <div class="container">
-            <!-- Header -->
-            <section class="page-header">
-                <h1 class="page-title">📰 Berita & Pengumuman</h1>
-                <p class="page-subtitle">Ikuti perkembangan terbaru dari NoMercy Bot</p>
+        <div class="news-layout">
+            <!-- Header Section -->
+            <section class="news-header">
+                <h1 class="news-title">Pengumuman & Berita</h1>
+                <p class="news-subtitle">Semua pengumuman dan update terbaru dari NoMercy Squad</p>
             </section>
 
-            <!-- Featured News -->
-            <section class="featured-news">
-                <article class="featured-card">
-                    <div class="news-header">
-                        <span class="news-tag featured">⚡ Featured</span>
-                        <span class="news-date">July 14, 2025</span>
+            <!-- News Grid -->
+            <section class="news-grid">
+                <% if (announcements && announcements.length > 0) { %>
+                    <% announcements.forEach((announcement, index) => { %>
+                        <article class="news-item">
+                            <div class="news-item-header">
+                                <div class="news-icon"><%= announcement.icon %></div>
+                                <div class="news-item-content">
+                                    <h2 class="news-item-title">
+                                        <%= announcement.title %>
+                                        <% if (index < 3) { %><span class="new-badge">Baru</span><% } %>
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <div class="news-item-description">
+                                <%= announcement.content %>
+                            </div>
+
+                            <div class="news-meta">
+                                <span class="news-date">
+                                    <% 
+                                    const formatDate = (dateString) => {
+                                        const date = new Date(dateString);
+                                        if (isNaN(date.getTime())) {
+                                            return 'Tanggal tidak valid';
+                                        }
+                                        const options = { 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            timeZone: 'Asia/Jakarta',
+                                            hour12: false
+                                        };
+                                        return date.toLocaleDateString('id-ID', options);
+                                    };
+                                    %>
+                                    <%= formatDate(announcement.createdAt) %>
+                                </span>
+                                <span class="news-category"><%= announcement.category %></span>
+                            </div>
+                        </article>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <div class="empty-icon">📢</div>
+                        <h2 class="empty-title">Belum Ada Pengumuman</h2>
+                        <p class="empty-description">
+                            Saat ini belum ada pengumuman atau berita terbaru. Silakan cek kembali nanti.
+                        </p>
                     </div>
-                    <h2 class="news-title">Level System Update - 9 Tier Baru!</h2>
-                    <p class="news-content">
-                        Sistem level telah diperbarui dengan 9 tier baru yang lebih menantang: 
-                        <strong>Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Honor, dan Immortal</strong>. 
-                        
-                        <br><br>Setiap tier memiliki keuntungan dan privilege khusus. Kumpulkan EXP dengan menggunakan command bot dan naik level untuk membuka fitur-fitur eksklusif!
-                        
-                        <br><br>📈 <strong>Cara mendapatkan EXP:</strong>
-                        <br>• Menggunakan command bot
-                        <br>• Menyelesaikan quest harian
-                        <br>• Berpartisipasi dalam tournament
-                        <br>• Aktivitas premium lainnya
-                    </p>
-                    <div class="news-author">By: +6285709557572</div>
-                </article>
-            </section>
-
-            <!-- News List -->
-            <section class="news-list">
-                <div class="news-grid">
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">🎮 Games</span>
-                            <span class="news-date">July 14, 2025</span>
-                        </div>
-                        <h3 class="news-title">Game Mines Casino Tersedia!</h3>
-                        <p class="news-excerpt">
-                            Game Mines casino kini telah tersedia! Mainkan permainan seru ini dan menangkan chips. 
-                            Game ini menggunakan sistem grid dengan bomb tersembunyi. 
-                            Akses melalui menu Games di dashboard atau ketik .mine di WhatsApp.
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                    
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">🏆 Tournament</span>
-                            <span class="news-date">July 14, 2025</span>
-                        </div>
-                        <h3 class="news-title">Tournament Mingguan Dimulai!</h3>
-                        <p class="news-excerpt">
-                            Bergabunglah dalam tournament mingguan untuk memenangkan hadiah menarik! 
-                            Kompetisi ini terbuka untuk semua member squad. 
-                            Daftar sekarang melalui menu Tournament.
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                    
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">💎 Shop</span>
-                            <span class="news-date">July 13, 2025</span>
-                        </div>
-                        <h3 class="news-title">Item Baru di Shop!</h3>
-                        <p class="news-excerpt">
-                            Berbagai item baru telah ditambahkan ke shop termasuk booster EXP, 
-                            premium status upgrade, dan berbagai aksesori eksklusif. 
-                            Gunakan chips untuk membeli item favorit Anda.
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                    
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">🎁 Redeem</span>
-                            <span class="news-date">July 13, 2025</span>
-                        </div>
-                        <h3 class="news-title">Kode Redeem Spesial</h3>
-                        <p class="news-excerpt">
-                            Tukarkan kode redeem spesial untuk mendapatkan bonus chips dan item eksklusif. 
-                            Kode redeem dibagikan secara berkala melalui pengumuman resmi. 
-                            Jangan lewatkan kesempatan terbatas ini!
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                    
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">⚔️ Quest</span>
-                            <span class="news-date">July 12, 2025</span>
-                        </div>
-                        <h3 class="news-title">Quest System Diperkenalkan</h3>
-                        <p class="news-excerpt">
-                            Sistem quest harian kini tersedia! Selesaikan misi-misi menarik untuk 
-                            mendapatkan reward berupa EXP, chips, dan item khusus. 
-                            Quest direset setiap 24 jam dengan tantangan yang berbeda.
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                    
-                    <article class="news-card">
-                        <div class="news-header">
-                            <span class="news-tag">🎉 Welcome</span>
-                            <span class="news-date">July 10, 2025</span>
-                        </div>
-                        <h3 class="news-title">Selamat Datang di NoMercy Bot!</h3>
-                        <p class="news-excerpt">
-                            Bot WhatsApp canggih dengan berbagai fitur menarik seperti games, level system, 
-                            quest, tournament, dan banyak lagi. Nikmati pengalaman chatting yang lebih seru 
-                            dengan sistem yang komprehensif dan user-friendly.
-                        </p>
-                        <div class="news-author">By: +6285709557572</div>
-                    </article>
-                </div>
+                <% } %>
             </section>
         </div>
     </main>
 
     <!-- Mobile bottom padding -->
-    <div class="mobile-bottom-padding"></div>
+    <div class="mobile-bottom-padding" style="height: 100px;"></div>
 </body>
 </html>

@@ -9,8 +9,23 @@ const { getUser, createUser } = require('./utils/userUtils');
 const { 
     initAnnouncementsTable, 
     getRecentAnnouncements, 
-    getAllAnnouncements 
+    getAllAnnouncements,
+    addAnnouncement,
+    updateAnnouncement,
+    deleteAnnouncement
 } = require('./database/announcements');
+
+const {
+    initPostsTable,
+    getRecentPosts,
+    getPostsByUser,
+    createPost,
+    updatePost,
+    deletePost,
+    likePost,
+    unlikePost,
+    addComment
+} = require('./database/posts');
 
 // Global variable to store bot instance
 let botInstance = null;
@@ -97,13 +112,19 @@ app.get('/test-dashboard', (req, res) => {
     res.render('dashboard-owner', { user: null });
 });
 
-// Initialize database on startup
+// Initialize database after MongoDB connection is established
+const connectDB = require('./database/connection');
 (async () => {
     try {
+        // Wait for MongoDB connection first
+        await connectDB();
+        
+        // Then initialize announcements and posts
         await initAnnouncementsTable();
-        console.log('✅ Database initialized successfully');
+        await initPostsTable();
+        console.log('✅ Announcements and Posts system initialized successfully');
     } catch (error) {
-        console.error('❌ Failed to initialize database:', error);
+        console.error('❌ Failed to initialize announcements system:', error);
     }
 })();
 
@@ -130,7 +151,7 @@ app.get('/home', async (req, res) => {
         console.error('Error fetching announcements:', error);
     }
     
-    res.render('home', { user: userData, announcements });
+    res.render('home', { user: userData, announcements, isOwner: req.session.isOwner });
 });
 
 app.get('/social', async (req, res) => {
@@ -139,7 +160,7 @@ app.get('/social', async (req, res) => {
     }
     
     let userData = null;
-    let announcements = [];
+    let posts = [];
     
     if (req.session.userPhone) {
         try {
@@ -150,15 +171,15 @@ app.get('/social', async (req, res) => {
     }
     
     try {
-        announcements = await getAllAnnouncements();
+        posts = await getRecentPosts(20);
     } catch (error) {
-        console.error('Error fetching announcements:', error);
+        console.error('Error fetching posts:', error);
     }
     
-    res.render('social', { user: userData, announcements });
+    res.render('social', { user: userData, posts, isOwner: req.session.isOwner });
 });
 
-// Route alias for news (same as social)
+// News route - shows all announcements
 app.get('/news', async (req, res) => {
     if (!req.session.isAuthenticated && !req.session.isOwner) {
         return res.redirect('/');
@@ -181,7 +202,7 @@ app.get('/news', async (req, res) => {
         console.error('Error fetching announcements:', error);
     }
     
-    res.render('social', { user: userData, announcements });
+    res.render('news', { user: userData, announcements, isOwner: req.session.isOwner });
 });
 
 app.get('/profile', async (req, res) => {
@@ -566,6 +587,534 @@ app.get('/api/qr-code', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Error generating QR code: ' + error.message 
+        });
+    }
+});
+
+// News Manager Routes (Owner only)
+app.get('/news-manager', async (req, res) => {
+    console.log('🔍 News Manager access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+    
+    if (!isOwner) {
+        console.log('❌ Access denied to news-manager - not owner');
+        return res.redirect('/');
+    }
+    
+    let announcements = [];
+    
+    try {
+        announcements = await getAllAnnouncements();
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+    }
+    
+    console.log('✅ Access granted to news-manager');
+    res.render('news-manager', { announcements, user: userData, isOwner: true });
+});
+
+// API Routes for News Management
+app.post('/api/news/add', async (req, res) => {
+    console.log('🔍 API news/add access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+    
+    if (!isOwner) {
+        console.log('❌ Access denied to news/add API - not owner');
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { title, content, author, icon, category } = req.body;
+        
+        if (!title || !content || !author) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Title, content, and author are required' 
+            });
+        }
+        
+        console.log('✅ Adding news with data:', { title, author, icon, category });
+        const newAnnouncement = await addAnnouncement(title, content, author, icon, category);
+        res.json({ 
+            success: true, 
+            message: 'News added successfully',
+            announcement: newAnnouncement
+        });
+    } catch (error) {
+        console.error('Error adding news:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to add news: ' + error.message 
+        });
+    }
+});
+
+app.post('/api/news/update', async (req, res) => {
+    console.log('🔍 API news/update access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+    
+    if (!isOwner) {
+        console.log('❌ Access denied to news/update API - not owner');
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { newsId, title, content, author, icon, category } = req.body;
+        
+        if (!newsId || !title || !content || !author) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'NewsId, title, content, and author are required' 
+            });
+        }
+        
+        console.log('✅ Updating news with ID:', newsId);
+        const updatedAnnouncement = await updateAnnouncement(newsId, {
+            title,
+            content,
+            author,
+            icon,
+            category
+        });
+        
+        if (!updatedAnnouncement) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'News not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            message: 'News updated successfully',
+            announcement: updatedAnnouncement
+        });
+    } catch (error) {
+        console.error('Error updating news:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update news: ' + error.message 
+        });
+    }
+});
+
+app.delete('/api/news/delete', async (req, res) => {
+    console.log('🔍 API news/delete access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
+    
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+    
+    if (!isOwner) {
+        console.log('❌ Access denied to news/delete API - not owner');
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { newsId } = req.body;
+        
+        if (!newsId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'NewsId is required' 
+            });
+        }
+        
+        console.log('✅ Deleting news with ID:', newsId);
+        const result = await deleteAnnouncement(newsId);
+        
+        if (!result) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'News not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            message: 'News deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting news:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete news: ' + error.message 
+        });
+    }
+});
+
+// File upload middleware
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, 'public', 'uploads');
+        // Create directory if it doesn't exist
+        const fs = require('fs');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        // Accept only images and videos
+        if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image and video files are allowed!'), false);
+        }
+    }
+});
+
+// File upload API
+app.post('/api/upload', upload.single('file'), (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ 
+        success: true, 
+        fileUrl: fileUrl,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        size: req.file.size
+    });
+});
+
+// Get all posts API
+app.get('/api/posts/all', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const posts = await getRecentPosts(50); // Get more posts for better UX
+        res.json({ 
+            success: true, 
+            posts: posts
+        });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch posts: ' + error.message 
+        });
+    }
+});
+
+// Delete post API
+app.delete('/api/posts/delete', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { postId } = req.body;
+        
+        if (!postId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post ID is required' 
+            });
+        }
+        
+        // Get the post first to check ownership
+        const Post = require('./database/models/Post');
+        const post = await Post.findById(postId);
+        
+        if (!post) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Post not found' 
+            });
+        }
+        
+        // Check if user owns the post
+        const currentUserId = req.session.userPhone + '@s.whatsapp.net';
+        if (post.userId !== currentUserId && !req.session.isOwner) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'You can only delete your own posts' 
+            });
+        }
+        
+        // Delete associated media file if exists
+        if (post.mediaUrl) {
+            const fs = require('fs');
+            const filePath = path.join(__dirname, 'public', post.mediaUrl);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        
+        const deleted = await deletePost(postId);
+        if (deleted) {
+            res.json({ 
+                success: true, 
+                message: 'Post deleted successfully'
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to delete post' 
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete post: ' + error.message 
+        });
+    }
+});
+
+// Social Posts API Routes
+app.post('/api/posts/create', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { type, content, mediaUrl } = req.body;
+        
+        if (!content) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Content is required' 
+            });
+        }
+        
+        let userData = null;
+        let author = 'Anonymous';
+        let userId = 'unknown';
+        
+        if (req.session.userPhone) {
+            userId = req.session.userPhone + '@s.whatsapp.net';
+            try {
+                userData = await getUser(userId);
+                author = userData ? userData.username : req.session.userPhone;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                author = req.session.userPhone;
+            }
+        }
+        
+        const newPost = await createPost(userId, author, type || 'text', content, mediaUrl || '');
+        res.json({ 
+            success: true, 
+            message: 'Post created successfully',
+            post: newPost
+        });
+    } catch (error) {
+        console.error('Error creating post:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create post: ' + error.message 
+        });
+    }
+});
+
+app.post('/api/posts/like', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { postId } = req.body;
+        
+        if (!postId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post ID is required' 
+            });
+        }
+        
+        const userId = req.session.userPhone ? req.session.userPhone + '@s.whatsapp.net' : 'unknown';
+        const result = await likePost(postId, userId);
+        
+        res.json(result);
+    } catch (error) {
+        console.error('Error liking post:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to like post: ' + error.message 
+        });
+    }
+});
+
+app.post('/api/posts/unlike', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { postId } = req.body;
+        
+        if (!postId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post ID is required' 
+            });
+        }
+        
+        const userId = req.session.userPhone ? req.session.userPhone + '@s.whatsapp.net' : 'unknown';
+        const result = await unlikePost(postId, userId);
+        
+        res.json(result);
+    } catch (error) {
+        console.error('Error unliking post:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to unlike post: ' + error.message 
+        });
+    }
+});
+
+app.post('/api/posts/comment', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { postId, content } = req.body;
+        
+        if (!postId || !content) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post ID and content are required' 
+            });
+        }
+        
+        let userData = null;
+        let author = 'Anonymous';
+        const userId = req.session.userPhone ? req.session.userPhone + '@s.whatsapp.net' : 'unknown';
+        
+        if (req.session.userPhone) {
+            try {
+                userData = await getUser(userId);
+                author = userData ? userData.username : req.session.userPhone;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                author = req.session.userPhone;
+            }
+        }
+        
+        const result = await addComment(postId, userId, author, content);
+        res.json(result);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to add comment: ' + error.message 
+        });
+    }
+});
+
+app.delete('/api/posts/delete', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    
+    try {
+        const { postId } = req.body;
+        
+        if (!postId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post ID is required' 
+            });
+        }
+        
+        // TODO: Add authorization check to ensure user can only delete their own posts
+        const result = await deletePost(postId);
+        
+        if (!result) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Post not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            message: 'Post deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete post: ' + error.message 
         });
     }
 });

@@ -1,40 +1,19 @@
-const { Pool } = require('pg');
+const Announcement = require('./models/Announcement');
 
-// Create PostgreSQL connection pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
-
-// Initialize announcements table
+// Initialize announcements collection with sample data
 const initAnnouncementsTable = async () => {
     try {
-        const query = `
-            CREATE TABLE IF NOT EXISTS announcements (
-                id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                content TEXT NOT NULL,
-                author VARCHAR(100) NOT NULL,
-                icon VARCHAR(50) DEFAULT '📢',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_active BOOLEAN DEFAULT true
-            );
-        `;
+        console.log('✅ Announcements collection initialized successfully');
         
-        await pool.query(query);
-        console.log('✅ Announcements table initialized successfully');
-        
-        // Insert sample announcements if table is empty
-        const countResult = await pool.query('SELECT COUNT(*) FROM announcements');
-        const count = parseInt(countResult.rows[0].count);
+        // Insert sample announcements if collection is empty
+        const count = await Announcement.countDocuments({});
         
         if (count === 0) {
             await insertSampleAnnouncements();
         }
         
     } catch (error) {
-        console.error('❌ Error initializing announcements table:', error);
+        console.error('❌ Error initializing announcements collection:', error);
     }
 };
 
@@ -43,43 +22,26 @@ const insertSampleAnnouncements = async () => {
     try {
         const sampleAnnouncements = [
             {
-                title: 'Level System Update',
-                content: 'Sistem level telah diperbarui dengan 9 tier baru: Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic, Honor, dan Immortal. Dapatkan EXP dan naik level!',
-                author: '+6285709557572',
-                icon: '⚡'
-            },
-            {
-                title: 'Game Mines Tersedia!',
-                content: 'Game Mines casino kini telah tersedia! Mainkan permainan seru ini dan menangkan chips. Akses melalui menu Games di dashboard.',
-                author: '+6285709557572',
-                icon: '🎮'
-            },
-            {
-                title: 'Selamat Datang di NoMercy Bot!',
-                content: 'Bot WhatsApp canggih dengan berbagai fitur menarik seperti games, level system, dan banyak lagi. Nikmati pengalaman chatting yang lebih seru!',
+                title: 'Welcome to Seana Bot!',
+                content: 'Bot WhatsApp canggih dengan berbagai fitur menarik seperti commands, sticker maker, dan banyak lagi. Nikmati pengalaman chatting yang lebih seru!',
                 author: '+6285709557572',
                 icon: '🎉'
             },
             {
-                title: 'Update Sistem Sticker',
-                content: 'Fitur pembuatan sticker telah diperbarui dengan kualitas gambar yang lebih baik dan metadata yang sempurna. Gunakan command .s atau .sticker!',
+                title: 'Sticker Feature Available',
+                content: 'Fitur pembuatan sticker telah tersedia! Convert gambar menjadi sticker dengan mudah menggunakan command .s atau .sticker!',
                 author: '+6285709557572',
                 icon: '🖼️'
             },
             {
-                title: 'Tournament Mode Coming Soon',
-                content: 'Mode tournament akan segera hadir! Bersiaplah untuk kompetisi seru antar squad dengan hadiah menarik. Stay tuned!',
+                title: 'Bot Commands Updated',
+                content: 'Sistem command telah diperbarui dengan response time yang lebih cepat. Gunakan .menu untuk melihat semua command yang tersedia.',
                 author: '+6285709557572',
-                icon: '🏆'
+                icon: '⚡'
             }
         ];
         
-        for (const announcement of sampleAnnouncements) {
-            await pool.query(
-                'INSERT INTO announcements (title, content, author, icon) VALUES ($1, $2, $3, $4)',
-                [announcement.title, announcement.content, announcement.author, announcement.icon]
-            );
-        }
+        await Announcement.insertMany(sampleAnnouncements);
         
         console.log('✅ Sample announcements inserted successfully');
     } catch (error) {
@@ -90,16 +52,10 @@ const insertSampleAnnouncements = async () => {
 // Get recent announcements (limit for homepage)
 const getRecentAnnouncements = async (limit = 3) => {
     try {
-        const query = `
-            SELECT id, title, content, author, icon, created_at 
-            FROM announcements 
-            WHERE is_active = true 
-            ORDER BY created_at DESC 
-            LIMIT $1
-        `;
-        
-        const result = await pool.query(query, [limit]);
-        return result.rows;
+        return await Announcement.find({ isActive: true })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
     } catch (error) {
         console.error('❌ Error fetching recent announcements:', error);
         return [];
@@ -109,15 +65,9 @@ const getRecentAnnouncements = async (limit = 3) => {
 // Get all announcements (for news page)
 const getAllAnnouncements = async () => {
     try {
-        const query = `
-            SELECT id, title, content, author, icon, created_at 
-            FROM announcements 
-            WHERE is_active = true 
-            ORDER BY created_at DESC
-        `;
-        
-        const result = await pool.query(query);
-        return result.rows;
+        return await Announcement.find({ isActive: true })
+            .sort({ createdAt: -1 })
+            .lean();
     } catch (error) {
         console.error('❌ Error fetching all announcements:', error);
         return [];
@@ -125,18 +75,28 @@ const getAllAnnouncements = async () => {
 };
 
 // Add new announcement
-const addAnnouncement = async (title, content, author, icon = '📢') => {
+const addAnnouncement = async (title, content, author, icon = '📢', category = 'pengumuman') => {
     try {
-        const query = `
-            INSERT INTO announcements (title, content, author, icon) 
-            VALUES ($1, $2, $3, $4) 
-            RETURNING *
-        `;
-        
-        const result = await pool.query(query, [title, content, author, icon]);
-        return result.rows[0];
+        const announcement = new Announcement({
+            title,
+            content,
+            author,
+            icon,
+            category
+        });
+        return await announcement.save();
     } catch (error) {
         console.error('❌ Error adding announcement:', error);
+        throw error;
+    }
+};
+
+// Update announcement
+const updateAnnouncement = async (id, updateData) => {
+    try {
+        return await Announcement.findByIdAndUpdate(id, updateData, { new: true });
+    } catch (error) {
+        console.error('❌ Error updating announcement:', error);
         throw error;
     }
 };
@@ -144,8 +104,7 @@ const addAnnouncement = async (title, content, author, icon = '📢') => {
 // Delete announcement
 const deleteAnnouncement = async (id) => {
     try {
-        const query = 'UPDATE announcements SET is_active = false WHERE id = $1';
-        await pool.query(query, [id]);
+        await Announcement.findByIdAndUpdate(id, { isActive: false });
         return true;
     } catch (error) {
         console.error('❌ Error deleting announcement:', error);
@@ -156,12 +115,20 @@ const deleteAnnouncement = async (id) => {
 // Format date for display
 const formatDate = (dateString) => {
     const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+        return 'Tanggal tidak valid';
+    }
+    
     const options = { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: 'Asia/Jakarta',
+        hour12: false
     };
     return date.toLocaleDateString('id-ID', options);
 };
@@ -171,7 +138,7 @@ module.exports = {
     getRecentAnnouncements,
     getAllAnnouncements,
     addAnnouncement,
+    updateAnnouncement,
     deleteAnnouncement,
-    formatDate,
-    pool
+    formatDate
 };
