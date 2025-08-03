@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const QRCode = require('qrcode');
+const multer = require('multer');
 const config = require('./config/config');
 const { getUser, createUser, updateUser } = require('./utils/userUtils');
 const { 
@@ -25,6 +26,30 @@ const {
     unlikePost,
     addComment
 } = require('./database/posts');
+
+const {
+    initBordersTable,
+    getAllBorders,
+    getBorderById,
+    createBorder,
+    updateBorder,
+    deleteBorder,
+    getUserBorders,
+    addBorderToUser,
+    equipBorder,
+    getUserEquippedBorder
+} = require('./database/borders');
+
+const {
+    initShopTable,
+    getAllShopItems,
+    getShopItemById,
+    createShopItem,
+    updateShopItem,
+    deleteShopItem,
+    purchaseItem,
+    getUserPurchaseHistory
+} = require('./database/shop');
 
 // Global variable to store bot instance
 let botInstance = null;
@@ -97,6 +122,40 @@ app.set('views', path.join(__dirname, 'views'));
 // Store verification codes temporarily
 const verificationCodes = new Map();
 
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        if (file.fieldname === 'borderImage') {
+            cb(null, 'public/borders/');
+        } else {
+            cb(null, 'public/uploads/');
+        }
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        if (file.fieldname === 'borderImage') {
+            cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        } else {
+            cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        }
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        // Accept images only
+        if (!file.originalname.match(/\.(jpg|jpeg|png|svg|webp)$/)) {
+            req.fileValidationError = 'Only image files are allowed!';
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     if (req.session.isAuthenticated || req.session.isOwner) {
@@ -118,10 +177,12 @@ const connectDB = require('./database/connection');
         // Wait for MongoDB connection first
         await connectDB();
 
-        // Then initialize announcements and posts
+        // Then initialize announcements, posts, borders, and shop
         await initAnnouncementsTable();
         await initPostsTable();
-        console.log('✅ Announcements and Posts system initialized successfully');
+        await initBordersTable();
+        await initShopTable();
+        console.log('✅ Announcements, Posts, Borders, and Shop system initialized successfully');
     } catch (error) {
         console.error('❌ Failed to initialize announcements system:', error);
     }
@@ -210,15 +271,200 @@ app.get('/profile', async (req, res) => {
     }
 
     let userData = null;
+    let userBorders = null;
+    let equippedBorder = null;
+
     if (req.session.userPhone) {
         try {
-            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            const userId = req.session.userPhone + '@s.whatsapp.net';
+            userData = await getUser(userId);
+            const userBorderDoc = await getUserBorders(userId);
+            userBorders = userBorderDoc.ownedBorders || [];
+            equippedBorder = await getUserEquippedBorder(userId);
+            
+            console.log('📋 Profile page user borders:', {
+                userId,
+                ownedBordersCount: userBorders.length,
+                ownedBorders: userBorders,
+                equippedBorder: equippedBorder ? equippedBorder.borderId : null
+            });
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     }
 
-    res.render('profile', { user: userData });
+    res.render('profile', { 
+        user: userData, 
+        userBorders: userBorders,
+        equippedBorder: equippedBorder
+    });
+});
+
+// API to get available borders for user
+app.get('/api/borders/available', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        
+        // Get user's borders using the fixed function
+        const userBorderDoc = await getUserBorders(userId);
+        const allBorders = await getAllBorders();
+        
+        console.log('📊 Available borders API:', {
+            userId,
+            allBordersCount: allBorders.length,
+            ownedBordersCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
+            ownedBorders: userBorderDoc.ownedBorders,
+            equippedBorder: userBorderDoc.equippedBorder
+        });
+
+        res.json({ 
+            success: true, 
+            borders: allBorders,
+            userBorders: userBorderDoc.ownedBorders || [],
+            equippedBorder: userBorderDoc.equippedBorder
+        });
+    } catch (error) {
+        console.error('❌ Error fetching available borders:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch borders: ' + error.message 
+        });
+    }
+});
+
+// API to equip border
+app.post('/api/borders/equip', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { borderId } = req.body;
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!borderId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Border ID is required' 
+            });
+        }
+
+        console.log('🎯 Equipping border:', { userId, borderId });
+
+        // Get user's border document
+        const { UserBorder } = require('./database/borders');
+        let userBorderDoc = await UserBorder.findOne({ userId });
+        
+        if (!userBorderDoc) {
+            userBorderDoc = new UserBorder({
+                userId,
+                ownedBorders: [{ borderId: 'default' }],
+                equippedBorder: null
+            });
+            await userBorderDoc.save();
+        }
+
+        // Check if user owns this border (default border is always available)
+        const hasBorder = borderId === 'default' || userBorderDoc.ownedBorders.some(border => border.borderId === borderId);
+
+        if (!hasBorder) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'You do not own this border' 
+            });
+        }
+
+        // Update equipped border
+        userBorderDoc.equippedBorder = borderId;
+        userBorderDoc.updatedAt = new Date();
+        await userBorderDoc.save();
+
+        console.log('✅ Border equipped successfully:', borderId);
+
+        res.json({ 
+            success: true, 
+            message: 'Border equipped successfully',
+            equippedBorder: borderId
+        });
+    } catch (error) {
+        console.error('❌ Error equipping border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to equip border: ' + error.message 
+        });
+    }
+});
+
+// API to remove equipped border
+app.post('/api/borders/remove', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        const result = await equipBorder(userId, null);
+
+        if (result) {
+            res.json({ 
+                success: true, 
+                message: 'Border removed successfully' 
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to remove border' 
+            });
+        }
+    } catch (error) {
+        console.error('Error removing border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to remove border' 
+        });
+    }
+});
+
+// API to grant border to user (owner only)
+app.post('/api/borders/grant', async (req, res) => {
+    if (!req.session.isOwner) {
+        return res.status(403).json({ success: false, message: 'Owner access required' });
+    }
+
+    try {
+        const { userId, borderId } = req.body;
+
+        if (!userId || !borderId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID and Border ID are required' 
+            });
+        }
+
+        const result = await addBorderToUser(userId, borderId);
+
+        if (result) {
+            res.json({ 
+                success: true, 
+                message: 'Border granted successfully' 
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to grant border' 
+            });
+        }
+    } catch (error) {
+        console.error('Error granting border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to grant border' 
+        });
+    }
 });
 
 // List Menu Routes
@@ -419,6 +665,64 @@ app.get('/owner/user-manager', async (req, res) => {
 
     console.log('✅ Access granted to user-manager');
     res.render('user-manager', { user: userData, users: allUsers, isOwner: true });
+});
+
+// Border Manager Route
+app.get('/owner/border-manager', async (req, res) => {
+    console.log('🔍 Border Manager access attempt');
+
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // Check if user is owner
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        console.log('❌ Access denied to border-manager - not owner');
+        return res.redirect('/');
+    }
+
+    // Get all borders from database
+    let borders = [];
+    try {
+        borders = await getAllBorders();
+    } catch (error) {
+        console.error('Error fetching borders:', error);
+    }
+
+    console.log('✅ Access granted to border-manager');
+    res.render('border-manager', { user: userData, borders, isOwner: true });
+});
+
+// Shop Manager Route
+app.get('/owner/shop-manager', async (req, res) => {
+    console.log('🔍 Shop Manager access attempt');
+
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // Check if user is owner
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        console.log('❌ Access denied to shop-manager - not owner');
+        return res.redirect('/');
+    }
+
+    console.log('✅ Access granted to shop-manager');
+    res.render('shop-manager', { user: userData, isOwner: true });
 });
 
 app.get('/login', (req, res) => {
@@ -830,28 +1134,23 @@ app.delete('/api/news/delete', async (req, res) => {
     }
 });
 
-// File upload middleware
-const multer = require('multer');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadDir = path.join(__dirname, 'public', 'uploads');
-        // Create directory if it doesn't exist
-        const fs = require('fs');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+// Additional upload configuration for posts
+const postUpload = multer({ 
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            const uploadDir = path.join(__dirname, 'public', 'uploads');
+            // Create directory if it doesn't exist
+            const fs = require('fs');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            cb(null, uploadDir);
+        },
+        filename: function (req, file, cb) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
         }
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ 
-    storage: storage,
+    }),
     limits: {
         fileSize: 10 * 1024 * 1024 // 10MB limit
     },
@@ -866,7 +1165,7 @@ const upload = multer({
 });
 
 // File upload API
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', postUpload.single('file'), (req, res) => {
     if (!req.session.isAuthenticated && !req.session.isOwner) {
         return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -998,7 +1297,7 @@ app.post('/api/profile/update', upload.single('profilePhoto'), async (req, res) 
         }
 
         const userId = userPhone + '@s.whatsapp.net';
-        
+
         // Prepare update data
         const updateData = {};
 
@@ -1016,7 +1315,7 @@ app.post('/api/profile/update', upload.single('profilePhoto'), async (req, res) 
 
         // Update user in database
         const updatedUser = await updateUser(userId, updateData);
-        
+
         if (!updatedUser) {
             return res.status(404).json({ 
                 success: false, 
@@ -1419,6 +1718,544 @@ app.put('/api/users/:id', async (req, res) => {
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ success: false, message: 'Failed to update user' });
+    }
+});
+
+// Border API Routes
+// Get all borders
+app.get('/api/borders', async (req, res) => {
+    try {
+        const borders = await getAllBorders();
+        res.json({ success: true, data: borders });
+    } catch (error) {
+        console.error('Error fetching borders:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch borders' });
+    }
+});
+
+// Get single border
+app.get('/api/borders/:id', async (req, res) => {
+    try {
+        const border = await getBorderById(req.params.id);
+        if (!border) {
+            return res.status(404).json({ success: false, message: 'Border not found' });
+        }
+        res.json({ success: true, data: border });
+    } catch (error) {
+        console.error('Error fetching border:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch border' });
+    }
+});
+
+// Create new border
+app.post('/api/borders', upload.single('borderImage'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { borderId, name, description, rarity } = req.body;
+
+        if (!borderId || !name || !req.file) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Border ID, name, and image are required' 
+            });
+        }
+
+        // Check if border ID already exists
+        const existingBorder = await getBorderById(borderId);
+        if (existingBorder) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'Border ID already exists' 
+            });
+        }
+
+        const borderData = {
+            borderId,
+            name,
+            description: description || '',
+            rarity: rarity || 'common',
+            imageUrl: `/borders/${req.file.filename}`,
+            createdBy: userData ? userData.userId : 'unknown'
+        };
+
+        const newBorder = await createBorder(borderData);
+
+        if (!newBorder) {
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Failed to create border' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Border created successfully',
+            data: newBorder
+        });
+    } catch (error) {
+        console.error('Error creating border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create border: ' + error.message 
+        });
+    }
+});
+
+// Update border
+app.put('/api/borders/:id', upload.single('borderImage'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const originalBorderId = req.params.id;
+        const { borderId, name, description, rarity } = req.body;
+
+        const updateData = {
+            borderId: borderId || originalBorderId,
+            name,
+            description: description || '',
+            rarity: rarity || 'common'
+        };
+
+        // If new image is uploaded, update the image URL
+        if (req.file) {
+            updateData.imageUrl = `/borders/${req.file.filename}`;
+        }
+
+        const updatedBorder = await updateBorder(originalBorderId, updateData);
+
+        if (!updatedBorder) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Border not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Border updated successfully',
+            data: updatedBorder
+        });
+    } catch (error) {
+        console.error('Error updating border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update border: ' + error.message 
+        });
+    }
+});
+
+// Delete border
+app.delete('/api/borders/:id', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const borderId = req.params.id;
+
+        // Prevent deletion of default border
+        if (borderId === 'default') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Cannot delete default border' 
+            });
+        }
+
+        const deletedBorder = await deleteBorder(borderId);
+
+        if (!deletedBorder) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Border not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Border deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting border:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete border: ' + error.message 
+        });
+    }
+});
+
+// User Border Management APIs
+// Get user's borders
+app.get('/api/user/borders', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        const userBorders = await getUserBorders(userId);
+        const allBorders = await getAllBorders();
+
+        // Get border details for owned borders
+        const ownedBordersWithDetails = await Promise.all(
+            userBorders.ownedBorders.map(async (ownedBorder) => {
+                const borderDetails = await getBorderById(ownedBorder.borderId);
+                return {
+                    ...borderDetails.toObject(),
+                    obtainedAt: ownedBorder.obtainedAt
+                };
+            })
+        );
+
+        res.json({ 
+            success: true, 
+            data: {
+                ownedBorders: ownedBordersWithDetails,
+                equippedBorder: userBorders.equippedBorder,
+                allBorders
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching user borders:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch borders' });
+    }
+});
+
+// Equip border
+app.post('/api/user/equip-border', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { borderId } = req.body;
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        const result = await equipBorder(userId, borderId);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error equipping border:', error);
+        res.status(500).json({ success: false, message: 'Failed to equip border' });
+    }
+});
+
+// Add border to user (admin only)
+app.post('/api/user/:userId/add-border', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { userId } = req.params;
+        const { borderId } = req.body;
+
+        const result = await addBorderToUser(userId, borderId);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error adding border to user:', error);
+        res.status(500).json({ success: false, message: 'Failed to add border' });
+    }
+});
+
+// Shop API Routes
+// Get all shop items
+app.get('/api/shop/items', async (req, res) => {
+    try {
+        const items = await getAllShopItems();
+        res.json({ success: true, items });
+    } catch (error) {
+        console.error('Error fetching shop items:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch shop items' });
+    }
+});
+
+// Add new shop item (owner only)
+app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { name, description, category, price, priceType, stock } = req.body;
+
+        if (!name || !category || !price || !priceType || !stock) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Name, category, price, priceType, and stock are required' 
+            });
+        }
+
+        const itemData = {
+            name,
+            description: description || '',
+            category,
+            price: parseInt(price),
+            priceType,
+            stock: parseInt(stock),
+            purchaseLimit: req.body.purchaseLimit || 'unlimited',
+            imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
+            createdBy: userData ? userData.userId : 'unknown'
+        };
+
+        const newItem = await createShopItem(itemData);
+
+        if (!newItem) {
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Failed to create shop item' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Shop item created successfully',
+            item: newItem
+        });
+    } catch (error) {
+        console.error('Error creating shop item:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create shop item: ' + error.message 
+        });
+    }
+});
+
+// Update shop item (owner only)
+app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { itemId, name, description, category, price, priceType, stock } = req.body;
+
+        if (!itemId || !name || !category || !price || !priceType || !stock) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'ItemId, name, category, price, priceType, and stock are required' 
+            });
+        }
+
+        const updateData = {
+            name,
+            description: description || '',
+            category,
+            price: parseInt(price),
+            priceType,
+            stock: parseInt(stock),
+            purchaseLimit: req.body.purchaseLimit || 'unlimited'
+        };
+
+        // If new image is uploaded, update the image URL
+        if (req.file) {
+            updateData.imageUrl = `/uploads/${req.file.filename}`;
+        }
+
+        const updatedItem = await updateShopItem(itemId, updateData);
+
+        if (!updatedItem) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Shop item not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Shop item updated successfully',
+            item: updatedItem
+        });
+    } catch (error) {
+        console.error('Error updating shop item:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update shop item: ' + error.message 
+        });
+    }
+});
+
+// Delete shop item (owner only)
+app.delete('/api/shop/items/delete', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { itemId } = req.body;
+
+        if (!itemId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'ItemId is required' 
+            });
+        }
+
+        const deletedItem = await deleteShopItem(itemId);
+
+        if (!deletedItem) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Shop item not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Shop item deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting shop item:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete shop item: ' + error.message 
+        });
+    }
+});
+
+// Purchase item
+app.post('/api/shop/purchase', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { itemId } = req.body;
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!itemId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Item ID is required' 
+            });
+        }
+
+        const result = await purchaseItem(userId, itemId);
+
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(400).json(result);
+        }
+    } catch (error) {
+        console.error('Error purchasing item:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to purchase item: ' + error.message 
+        });
+    }
+});
+
+// Get user purchase history
+app.get('/api/shop/history', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        const history = await getUserPurchaseHistory(userId);
+
+        res.json({ 
+            success: true, 
+            history 
+        });
+    } catch (error) {
+        console.error('Error fetching purchase history:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch purchase history' 
+        });
     }
 });
 

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Border Manager - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'borders', user: user }) %>
+
+    <main class="main-content">
+        <div class="border-manager-container">
+            <!-- Page Header -->
+            <div class="page-header-section">
+                <div class="header-content">
+                    <h1 class="page-title">
+                        <span class="title-icon">🎨</span>
+                        Border Manager
+                    </h1>
+                    <p class="page-description">Manage and organize profile borders for all users</p>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="openAddBorderModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Add New Border
+                    </button>
+                    <button class="btn-secondary" onclick="refreshBorders()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12A9 9 0 1 0 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 3V9H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Borders</div>
+                        <div class="stat-value" id="totalBorders">-</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Legendary</div>
+                        <div class="stat-value" id="legendaryCount">-</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Epic</div>
+                        <div class="stat-value" id="epicCount">-</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔮</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Rare</div>
+                        <div class="stat-value" id="rareCount">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Borders Section -->
+            <div class="borders-section">
+                <div class="section-header">
+                    <h2 class="section-title">Available Borders</h2>
+                    <div class="view-controls">
+                        <button class="view-toggle active" data-view="grid">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                                <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                                <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                                <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <button class="view-toggle" data-view="list">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/>
+                                <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/>
+                                <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/>
+                                <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2"/>
+                                <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2"/>
+                                <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading borders...</p>
+                </div>
+
+                <!-- Borders Grid -->
+                <div class="borders-grid grid-view" id="bordersGrid">
+                <!-- Borders will be loaded via JavaScript -->
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">🎨</div>
+                    <h3>No Borders Available</h3>
+                    <p>Create your first border to get started</p>
+                    <button class="btn-primary" onclick="openAddBorderModal()">Add Your First Border</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Border Modal -->
+    <div class="modal-overlay" id="addBorderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Border</h3>
+                <button class="close-btn" onclick="closeAddBorderModal()">&times;</button>
+            </div>
+            
+            <form id="addBorderForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label" for="borderId">Border ID</label>
+                    <input type="text" id="borderId" name="borderId" class="form-input" required 
+                           placeholder="e.g., cosmic-purple" pattern="[a-z0-9-]+" 
+                           title="Only lowercase letters, numbers, and hyphens allowed">
+                    <small class="form-hint">Use lowercase letters, numbers, and hyphens only</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="borderName">Border Name</label>
+                    <input type="text" id="borderName" name="name" class="form-input" required 
+                           placeholder="e.g., Cosmic Purple">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="borderDescription">Description</label>
+                    <textarea id="borderDescription" name="description" class="form-input" 
+                              placeholder="Brief description of the border" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="borderRarity">Rarity</label>
+                    <select id="borderRarity" name="rarity" class="form-input" required>
+                        <option value="common">Common</option>
+                        <option value="rare">Rare</option>
+                        <option value="epic">Epic</option>
+                        <option value="legendary">Legendary</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="borderImage">Border Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="borderImage" name="borderImage" 
+                               class="file-input" accept="image/*" required onchange="previewBorderImage(this)">
+                        <label for="borderImage" class="file-input-label">
+                            📷 Choose Border Image
+                        </label>
+                    </div>
+                    <small class="form-hint">Upload a PNG image with transparent background. Recommended size: 200x200px</small>
+                    <div class="file-preview" id="borderImagePreview"></div>
+                    <img id="borderPreviewImg" class="preview-image" style="display: none;">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddBorderModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">Create Border</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Border Modal -->
+    <div class="modal-overlay" id="editBorderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Border</h3>
+                <button class="close-btn" onclick="closeEditBorderModal()">&times;</button>
+            </div>
+            
+            <form id="editBorderForm" enctype="multipart/form-data">
+                <input type="hidden" id="editBorderOriginalId" name="originalBorderId">
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBorderIdField">Border ID</label>
+                    <input type="text" id="editBorderIdField" name="borderId" class="form-input" required 
+                           pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBorderName">Border Name</label>
+                    <input type="text" id="editBorderName" name="name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBorderDescription">Description</label>
+                    <textarea id="editBorderDescription" name="description" class="form-input" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBorderRarity">Rarity</label>
+                    <select id="editBorderRarity" name="rarity" class="form-input" required>
+                        <option value="common">Common</option>
+                        <option value="rare">Rare</option>
+                        <option value="epic">Epic</option>
+                        <option value="legendary">Legendary</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editBorderImage">Border Image (Optional)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editBorderImage" name="borderImage" 
+                               class="file-input" accept="image/*" onchange="previewEditBorderImage(this)">
+                        <label for="editBorderImage" class="file-input-label">
+                            📷 Update Border Image
+                        </label>
+                    </div>
+                    <small class="form-hint">Leave empty to keep current image</small>
+                    <div class="file-preview" id="editBorderImagePreview"></div>
+                    <img id="editBorderPreviewImg" class="preview-image" style="display: none;">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeEditBorderModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">Update Border</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* Border Manager Styles */
+        .border-manager-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Page Header */
+        .page-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .header-content .page-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .title-icon {
+            font-size: 2.5rem;
+        }
+
+        .page-description {
+            color: #9ca3af;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(75, 85, 99, 0.2);
+            color: #d1d5db;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(75, 85, 99, 0.3);
+            color: #ffffff;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 12px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Borders Section */
+        .borders-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .view-toggle {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle.active, .view-toggle:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a855f7;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(139, 92, 246, 0.2);
+            border-radius: 50%;
+            border-top-color: #8b5cf6;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Borders Grid */
+        .borders-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .borders-grid.grid-view {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .borders-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .border-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .border-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .border-preview {
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .preview-avatar-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+
+        .sample-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .border-overlay {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: calc(100% + 12px);
+            height: calc(100% + 12px);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .border-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .border-info {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .border-name {
+            color: #ffffff;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .border-description {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin: 0 0 1rem 0;
+            line-height: 1.4;
+        }
+
+        .border-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .rarity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .rarity-badge.common {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .rarity-badge.rare {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .rarity-badge.epic {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .rarity-badge.legendary {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .border-id {
+            color: #6b7280;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
+        .border-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-small {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #9ca3af;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 2rem;
+        }
+
+        .error-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .border-manager-container {
+                padding: 1rem;
+            }
+            
+            .page-header-section {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .borders-grid.grid-view {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .secondary-btn {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(107, 114, 128, 0.3);
+            color: #ffffff;
+        }
+
+        /* Borders Grid */
+        .borders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .border-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .border-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .border-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .preview-avatar {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .border-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 2;
+        }
+
+        .sample-avatar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .border-info {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .border-name {
+            color: #ffffff;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .border-description {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .border-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .rarity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .rarity-badge.common {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .rarity-badge.rare {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .rarity-badge.epic {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .rarity-badge.legendary {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .border-id {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: 'Courier New', monospace;
+        }
+
+        .border-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-small {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        .edit-btn:hover {
+            background: rgba(99, 102, 241, 0.25);
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            transform: scale(1.05);
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.98);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .form-hint {
+            display: block;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid #8b5cf6;
+            border-radius: 8px;
+            color: #8b5cf6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .file-input-label:hover {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-save {
+            background: #8b5cf6;
+            color: #ffffff;
+        }
+
+        .btn-save:hover {
+            background: #7c3aed;
+        }
+
+        .preview-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-top: 0.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .borders-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-btn {
+                justify-content: center;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Modal functions
+        function openAddBorderModal() {
+            document.getElementById('addBorderModal').classList.add('show');
+        }
+
+        function closeAddBorderModal() {
+            document.getElementById('addBorderModal').classList.remove('show');
+            document.getElementById('addBorderForm').reset();
+            document.getElementById('borderImagePreview').innerHTML = '';
+            document.getElementById('borderPreviewImg').style.display = 'none';
+        }
+
+        function openEditBorderModal() {
+            document.getElementById('editBorderModal').classList.add('show');
+        }
+
+        function closeEditBorderModal() {
+            document.getElementById('editBorderModal').classList.remove('show');
+            document.getElementById('editBorderForm').reset();
+            document.getElementById('editBorderImagePreview').innerHTML = '';
+            document.getElementById('editBorderPreviewImg').style.display = 'none';
+        }
+
+        // Preview functions
+        function previewBorderImage(input) {
+            const preview = document.getElementById('borderPreviewImg');
+            const previewText = document.getElementById('borderImagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    previewText.innerHTML = `Selected: ${input.files[0].name}`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewEditBorderImage(input) {
+            const preview = document.getElementById('editBorderPreviewImg');
+            const previewText = document.getElementById('editBorderImagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    previewText.innerHTML = `Selected: ${input.files[0].name}`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // CRUD functions
+        async function editBorder(borderId) {
+            try {
+                const response = await fetch(`/api/borders/${borderId}`);
+                const border = await response.json();
+                
+                if (border.success) {
+                    const borderData = border.data;
+                    document.getElementById('editBorderOriginalId').value = borderData.borderId;
+                    document.getElementById('editBorderIdField').value = borderData.borderId;
+                    document.getElementById('editBorderName').value = borderData.name;
+                    document.getElementById('editBorderDescription').value = borderData.description;
+                    document.getElementById('editBorderRarity').value = borderData.rarity;
+                    
+                    openEditBorderModal();
+                } else {
+                    alert('Failed to load border data');
+                }
+            } catch (error) {
+                console.error('Error loading border:', error);
+                alert('Failed to load border data');
+            }
+        }
+
+        async function deleteBorder(borderId) {
+            if (!confirm('Are you sure you want to delete this border? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/borders/${borderId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Border deleted successfully');
+                    refreshBorders();
+                } else {
+                    alert('Failed to delete border: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error deleting border:', error);
+                alert('Failed to delete border');
+            }
+        }
+
+        function refreshBorders() {
+            loadBorders();
+        }
+
+        // Load and display borders
+        async function loadBorders() {
+            const loadingState = document.getElementById('loadingState');
+            const bordersGrid = document.getElementById('bordersGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Show loading state
+            loadingState.style.display = 'block';
+            bordersGrid.innerHTML = '';
+            emptyState.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/borders');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const borders = result.data;
+                    
+                    // Hide loading state
+                    loadingState.style.display = 'none';
+                    
+                    if (borders.length === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        // Update statistics
+                        updateStatistics(borders);
+                        
+                        // Display borders
+                        displayBorders(borders);
+                    }
+                } else {
+                    throw new Error('Failed to load borders');
+                }
+            } catch (error) {
+                console.error('Error loading borders:', error);
+                loadingState.style.display = 'none';
+                bordersGrid.innerHTML = '<div class="error-state">Failed to load borders. Please try refreshing the page.</div>';
+            }
+        }
+
+        function updateStatistics(borders) {
+            document.getElementById('totalBorders').textContent = borders.length;
+            document.getElementById('legendaryCount').textContent = borders.filter(b => b.rarity === 'legendary').length;
+            document.getElementById('epicCount').textContent = borders.filter(b => b.rarity === 'epic').length;
+            document.getElementById('rareCount').textContent = borders.filter(b => b.rarity === 'rare').length;
+        }
+
+        function displayBorders(borders) {
+            const bordersGrid = document.getElementById('bordersGrid');
+            
+            bordersGrid.innerHTML = borders.map(border => `
+                <div class="border-card">
+                    <div class="border-preview">
+                        <div class="preview-avatar">
+                            <div class="sample-avatar">👤</div>
+                            ${border.imageUrl ? `<img src="${border.imageUrl}" alt="${border.name}" class="border-image">` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="border-info">
+                        <h3 class="border-name">${border.name}</h3>
+                        <p class="border-description">${border.description || ''}</p>
+                    </div>
+                    
+                    <div class="border-meta">
+                        <span class="rarity-badge ${border.rarity}">${border.rarity}</span>
+                        <span class="border-id">${border.borderId}</span>
+                    </div>
+                    
+                    <div class="border-actions">
+                        <button class="btn-small edit-btn" onclick="editBorder('${border.borderId}')" title="Edit Border">
+                            ✏️
+                        </button>
+                        ${border.borderId !== 'default' ? `
+                            <button class="btn-small delete-btn" onclick="deleteBorder('${border.borderId}')" title="Delete Border">
+                                🗑️
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load borders when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBorders();
+        });
+
+        // Form submission handlers
+        document.getElementById('addBorderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/api/borders', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Border created successfully!');
+                    closeAddBorderModal();
+                    refreshBorders();
+                } else {
+                    alert('Failed to create border: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error creating border:', error);
+                alert('Failed to create border');
+            }
+        });
+
+        document.getElementById('editBorderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const originalId = document.getElementById('editBorderOriginalId').value;
+            
+            try {
+                const response = await fetch(`/api/borders/${originalId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Border updated successfully!');
+                    closeEditBorderModal();
+                    refreshBorders();
+                } else {
+                    alert('Failed to update border: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating border:', error);
+                alert('Failed to update border');
+            }
+        });
+    </script>
+</body>
+</html>

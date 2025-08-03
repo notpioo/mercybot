@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffed4e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8860b;stop-opacity:1" />
+    </linearGradient>
+    <filter id="goldGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer decorative ring -->
+  <circle cx="100" cy="100" r="98" fill="none" stroke="url(#goldGradient)" stroke-width="4" filter="url(#goldGlow)"/>
+  
+  <!-- Middle ornate ring -->
+  <circle cx="100" cy="100" r="93" fill="none" stroke="#ffd700" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Inner accent ring -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#ffed4e" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Decorative elements around the border -->
+  <g stroke="#ffd700" stroke-width="1.5" fill="#ffd700" opacity="0.7">
+    <!-- Top -->
+    <polygon points="100,5 105,15 100,20 95,15" />
+    <!-- Right -->
+    <polygon points="195,100 185,95 180,100 185,105" />
+    <!-- Bottom -->
+    <polygon points="100,195 95,185 100,180 105,185" />
+    <!-- Left -->
+    <polygon points="5,100 15,105 20,100 15,95" />
+  </g>
+</svg>

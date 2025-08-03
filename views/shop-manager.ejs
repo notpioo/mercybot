@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Manager - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/navigation.css">
+    <style>
+        .manager-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            padding-bottom: 120px;
+        }
+
+        .manager-header {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-content h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-content p {
+            color: #a0a0a0;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .add-item-btn {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .shop-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .shop-item-card {
+            background: rgba(40, 40, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .item-info h3 {
+            color: #ffffff;
+            margin: 0 0 0.25rem 0;
+            font-size: 1.125rem;
+        }
+
+        .item-category {
+            background: #6366f1;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .item-details {
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .item-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #059669;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #047857;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(40, 40, 40, 0.8);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            background: rgba(40, 40, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: #a0a0a0;
+        }
+
+        @media (max-width: 768px) {
+            .manager-layout {
+                padding: 1rem;
+                padding-bottom: 120px;
+            }
+
+            .manager-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'shop-manager', user: user }) %>
+
+    <main class="manager-layout">
+        <div class="manager-header">
+            <div class="header-content">
+                <h1>🛒 Shop Manager</h1>
+                <p>Kelola item shop dan stok NoMercy Squad</p>
+            </div>
+            <button class="add-item-btn" onclick="openAddModal()">
+                <span>➕</span>
+                <span>Tambah Item</span>
+            </button>
+        </div>
+
+        <div class="shop-items-grid" id="shopItemsGrid">
+            <!-- Shop items will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Tambah Item Baru</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="itemForm" enctype="multipart/form-data">
+                <input type="hidden" id="itemId" name="itemId">
+
+                <div class="form-group">
+                    <label class="form-label" for="name">Nama Item *</label>
+                    <input type="text" id="name" name="name" class="form-input" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Deskripsi</label>
+                    <textarea id="description" name="description" class="form-textarea" placeholder="Deskripsi item..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="category">Kategori *</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="border">Border</option>
+                            <option value="premium">Premium</option>
+                            <option value="booster">Booster</option>
+                            <option value="cosmetic">Cosmetic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="priceType">Jenis Harga *</label>
+                        <select id="priceType" name="priceType" class="form-select" required>
+                            <option value="balance">Balance (💰)</option>
+                            <option value="chips">Chips (💎)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="price">Harga *</label>
+                        <input type="number" id="price" name="price" class="form-input" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="stock">Stock *</label>
+                        <input type="number" id="stock" name="stock" class="form-input" required min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="purchaseLimit">Batas Pembelian *</label>
+                    <select id="purchaseLimit" name="purchaseLimit" class="form-select" required>
+                        <option value="unlimited">Unlimited - Bisa dibeli berulang</option>
+                        <option value="once">Sekali Saja - Satu kali per akun</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="imageFile">Gambar/Icon</label>
+                    <input type="file" id="imageFile" name="imageFile" class="form-input" accept="image/*">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editingItemId = null;
+        let shopItems = [];
+
+        // Load shop items when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadShopItems();
+        });
+
+        // Load shop items from database
+        async function loadShopItems() {
+            try {
+                const response = await fetch('/api/shop/items');
+                const data = await response.json();
+                if (data.success) {
+                    shopItems = data.items;
+                    renderShopItems();
+                }
+            } catch (error) {
+                console.error('Error loading shop items:', error);
+            }
+        }
+
+        // Render shop items
+        function renderShopItems() {
+            const grid = document.getElementById('shopItemsGrid');
+            
+            if (shopItems.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        <h3 class="empty-title">Belum Ada Item Shop</h3>
+                        <p class="empty-description">
+                            Mulai dengan menambahkan item pertama untuk shop.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = shopItems.map(item => `
+                <div class="shop-item-card" data-id="${item._id}">
+                    <div class="item-header">
+                        <img src="${item.imageUrl || '/borders/default.svg'}" alt="${item.name}" class="item-icon">
+                        <div class="item-info">
+                            <h3>${item.name}</h3>
+                            <span class="item-category">${item.category}</span>
+                        </div>
+                    </div>
+                    <div class="item-details">
+                        ${item.description || 'Tidak ada deskripsi'}
+                    </div>
+                    <div class="item-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Harga</div>
+                            <div class="stat-value">
+                                ${item.price.toLocaleString()} ${item.priceType === 'balance' ? '💰' : '💎'}
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Stock</div>
+                            <div class="stat-value">${item.stock}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Batas Beli</div>
+                            <div class="stat-value">
+                                ${item.purchaseLimit === 'once' ? '🔒 Sekali' : '🔄 Unlimited'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="action-btn edit-btn" onclick="editItem('${item._id}')">
+                            Edit
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteItem('${item._id}')">
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddModal() {
+            editingItemId = null;
+            document.getElementById('modalTitle').textContent = 'Tambah Item Baru';
+            document.getElementById('submitBtn').textContent = 'Simpan Item';
+            document.getElementById('itemForm').reset();
+            document.getElementById('itemId').value = '';
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function editItem(itemId) {
+            editingItemId = itemId;
+            const item = shopItems.find(i => i._id === itemId);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Item';
+            document.getElementById('submitBtn').textContent = 'Update Item';
+            document.getElementById('itemId').value = itemId;
+            document.getElementById('name').value = item.name;
+            document.getElementById('description').value = item.description || '';
+            document.getElementById('category').value = item.category;
+            document.getElementById('priceType').value = item.priceType;
+            document.getElementById('price').value = item.price;
+            document.getElementById('stock').value = item.stock;
+            document.getElementById('purchaseLimit').value = item.purchaseLimit || 'unlimited';
+
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function deleteItem(itemId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus item ini?')) return;
+
+            fetch('/api/shop/items/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadShopItems(); // Refresh list
+                } else {
+                    alert('Gagal menghapus item: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus item');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        // Form submission
+        document.getElementById('itemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const url = editingItemId ? '/api/shop/items/update' : '/api/shop/items/add';
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal();
+                    loadShopItems(); // Refresh list
+                } else {
+                    alert('Gagal menyimpan item: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyimpan item');
+            });
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('itemModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

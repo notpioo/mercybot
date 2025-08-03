@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#0080ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8000ff;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#ff00ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:1" />
+      <animateTransform attributeName="gradientTransform" attributeType="XML" type="rotate" from="0 100 100" to="360 100 100" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer glowing ring -->
+  <circle cx="100" cy="100" r="98" fill="none" stroke="url(#neonGradient)" stroke-width="5" filter="url(#neonGlow)"/>
+  
+  <!-- Middle pulsing ring -->
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Inner accent ring -->
+  <circle cx="100" cy="100" r="87" fill="none" stroke="#8000ff" stroke-width="1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Rotating energy particles -->
+  <g>
+    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 100 100" to="360 100 100" dur="4s" repeatCount="indefinite"/>
+    <circle cx="100" cy="10" r="2" fill="#00ffff" opacity="0.8"/>
+    <circle cx="190" cy="100" r="2" fill="#ff00ff" opacity="0.8"/>
+    <circle cx="100" cy="190" r="2" fill="#8000ff" opacity="0.8"/>
+    <circle cx="10" cy="100" r="2" fill="#0080ff" opacity="0.8"/>
+  </g>
+</svg>

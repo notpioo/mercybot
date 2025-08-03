@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="diamondGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#e0e7ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#c7d2fe;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#a5b4fc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="sparkleGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    <filter id="diamondGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer luxury ring -->
+  <circle cx="100" cy="100" r="98" fill="none" stroke="url(#diamondGradient)" stroke-width="6" filter="url(#diamondGlow)"/>
+  
+  <!-- Decorative diamond pattern ring -->
+  <circle cx="100" cy="100" r="91" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9" stroke-dasharray="8,4"/>
+  
+  <!-- Inner elegant ring -->
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#c7d2fe" stroke-width="1" opacity="0.7"/>
+  
+  <!-- Diamond shaped decorations -->
+  <g stroke="#ffffff" stroke-width="1" fill="#ffffff" opacity="0.8">
+    <!-- Top diamond -->
+    <polygon points="100,8 106,14 100,20 94,14" />
+    <!-- Top-right diamond -->
+    <polygon points="142,29 148,35 142,41 136,35" />
+    <!-- Right diamond -->
+    <polygon points="192,100 186,94 180,100 186,106" />
+    <!-- Bottom-right diamond -->
+    <polygon points="142,171 136,165 142,159 148,165" />
+    <!-- Bottom diamond -->
+    <polygon points="100,192 94,186 100,180 106,186" />
+    <!-- Bottom-left diamond -->
+    <polygon points="58,171 64,165 58,159 52,165" />
+    <!-- Left diamond -->
+    <polygon points="8,100 14,106 20,100 14,94" />
+    <!-- Top-left diamond -->
+    <polygon points="58,29 52,35 58,41 64,35" />
+  </g>
+  
+  <!-- Sparkling effects -->
+  <g>
+    <circle cx="100" cy="25" r="1" fill="url(#sparkleGradient)" opacity="0.9">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="175" cy="100" r="1" fill="url(#sparkleGradient)" opacity="0.9">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="175" r="1" fill="url(#sparkleGradient)" opacity="0.9">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="25" cy="100" r="1" fill="url(#sparkleGradient)" opacity="0.9">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
