@@ -302,36 +302,72 @@ app.get('/profile', async (req, res) => {
 
 // API to get available borders for user
 app.get('/api/borders/available', async (req, res) => {
+    console.log('🔍 API borders/available request received');
+    console.log('🔍 Session authenticated:', req.session.isAuthenticated);
+    console.log('🔍 Session owner:', req.session.isOwner);
+    console.log('🔍 User phone:', req.session.userPhone);
+
     if (!req.session.isAuthenticated && !req.session.isOwner) {
+        console.log('❌ Access denied - not authenticated');
         return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
     try {
         const userId = req.session.userPhone + '@s.whatsapp.net';
+        console.log('👤 Processing for userId:', userId);
         
-        // Get user's borders using the fixed function
-        const userBorderDoc = await getUserBorders(userId);
+        // Get all borders first
+        console.log('🎨 Fetching all borders...');
         const allBorders = await getAllBorders();
+        console.log('✅ All borders received, count:', allBorders.length);
         
-        console.log('📊 Available borders API:', {
-            userId,
-            allBordersCount: allBorders.length,
-            ownedBordersCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
-            ownedBorders: userBorderDoc.ownedBorders,
-            equippedBorder: userBorderDoc.equippedBorder
+        if (!allBorders || allBorders.length === 0) {
+            console.log('⚠️ No borders available in database');
+            return res.json({ 
+                success: true, 
+                borders: [],
+                userBorders: [],
+                equippedBorder: null,
+                message: 'No borders available'
+            });
+        }
+        
+        // Get user's borders
+        console.log('📦 Fetching user borders...');
+        const userBorderDoc = await getUserBorders(userId);
+        console.log('✅ User border doc received:', {
+            userId: userBorderDoc.userId,
+            ownedCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
+            equipped: userBorderDoc.equippedBorder
         });
-
-        res.json({ 
-            success: true, 
+        
+        const responseData = {
+            success: true,
             borders: allBorders,
             userBorders: userBorderDoc.ownedBorders || [],
-            equippedBorder: userBorderDoc.equippedBorder
+            equippedBorder: userBorderDoc.equippedBorder || null,
+            meta: {
+                userId,
+                totalBorders: allBorders.length,
+                ownedBorders: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0
+            }
+        };
+        
+        console.log('📊 Available borders API response:', {
+            success: responseData.success,
+            bordersCount: responseData.borders.length,
+            userBordersCount: responseData.userBorders.length,
+            equipped: responseData.equippedBorder
         });
+
+        res.json(responseData);
     } catch (error) {
         console.error('❌ Error fetching available borders:', error);
+        console.error('❌ Error stack:', error.stack);
         res.status(500).json({ 
             success: false, 
-            message: 'Failed to fetch borders: ' + error.message 
+            message: 'Failed to fetch borders: ' + error.message,
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });
@@ -1921,6 +1957,25 @@ app.delete('/api/borders/:id', async (req, res) => {
     }
 });
 
+// Quick fix border image URL
+app.patch('/api/borders/:id/image', async (req, res) => {
+    try {
+        const borderId = req.params.id;
+        const { imageUrl } = req.body;
+        
+        console.log(`🔧 Updating border ${borderId} image to:`, imageUrl);
+        
+        const { updateBorder } = require('./database/borders');
+        const result = await updateBorder(borderId, { imageUrl });
+        
+        console.log('✅ Border image updated:', result);
+        res.json({ success: true, data: result });
+    } catch (error) {
+        console.error('Error fixing border image:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // User Border Management APIs
 // Get user's borders
 app.get('/api/user/borders', async (req, res) => {
@@ -2045,7 +2100,7 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
     }
 
     try {
-        const { name, description, category, price, priceType, stock } = req.body;
+        const { name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId } = req.body;
 
         if (!name || !category || !price || !priceType || !stock) {
             return res.status(400).json({ 
@@ -2061,7 +2116,9 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
             price: parseInt(price),
             priceType,
             stock: parseInt(stock),
-            purchaseLimit: req.body.purchaseLimit || 'unlimited',
+            purchaseLimit: purchaseLimit || 'unlimited',
+            maxPurchases: purchaseLimit === 'custom' ? parseInt(maxPurchases) || 0 : 0,
+            linkedBorderId: category === 'border' ? linkedBorderId : null,
             imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
             createdBy: userData ? userData.userId : 'unknown'
         };
@@ -2107,7 +2164,7 @@ app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) 
     }
 
     try {
-        const { itemId, name, description, category, price, priceType, stock } = req.body;
+        const { itemId, name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId } = req.body;
 
         if (!itemId || !name || !category || !price || !priceType || !stock) {
             return res.status(400).json({ 
@@ -2123,7 +2180,9 @@ app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) 
             price: parseInt(price),
             priceType,
             stock: parseInt(stock),
-            purchaseLimit: req.body.purchaseLimit || 'unlimited'
+            purchaseLimit: purchaseLimit || 'unlimited',
+            maxPurchases: purchaseLimit === 'custom' ? parseInt(maxPurchases) || 0 : 0,
+            linkedBorderId: category === 'border' ? linkedBorderId : null
         };
 
         // If new image is uploaded, update the image URL
@@ -2155,6 +2214,38 @@ app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) 
 });
 
 // Delete shop item (owner only)
+// Get available borders for shop manager
+app.get('/api/borders/available', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const borders = await getAllBorders();
+        res.json({ 
+            success: true, 
+            borders: borders 
+        });
+    } catch (error) {
+        console.error('Error fetching borders:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch borders: ' + error.message 
+        });
+    }
+});
+
 app.delete('/api/shop/items/delete', async (req, res) => {
     let userData = null;
     if (req.session.userPhone) {

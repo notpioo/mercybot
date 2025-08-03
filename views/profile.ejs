@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - NoMercy</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/navigation.css">
-    <link rel="stylesheet" href="/dashboard.css">
+    <link rel="stylesheet" href="/styles.css?v=2025080313">
+    <link rel="stylesheet" href="/navigation.css?v=2025080313">
+    <link rel="stylesheet" href="/dashboard.css?v=2025080313">
 </head>
 <body>
     <!-- Include Navigation -->
@@ -31,7 +30,7 @@
                                         </svg>
                                     </div>
                                 <% } %>
-                                
+
                                 <% if (equippedBorder && equippedBorder.imageUrl) { %>
                                     <div class="profile-border-overlay">
                                         <img src="<%= equippedBorder.imageUrl %>" alt="<%= equippedBorder.name %>" class="profile-border-image">
@@ -111,7 +110,7 @@
                                 { name: 'Zenith', minLevel: 101, maxLevel: 129, color: '#ef4444', icon: '⚡' },
                                 { name: 'Celestial', minLevel: 130, maxLevel: 999, color: '#ec4899', icon: '👑' }
                             ];
-                            
+
                             for (const rank of ranks) {
                                 if (level >= rank.minLevel && level <= rank.maxLevel) {
                                     currentRank = rank;
@@ -195,65 +194,57 @@
                 </div>
             </div>
 
-            <!-- Border Selection Section -->
-            <div class="border-section">
-                <div class="border-header">
-                    <h3>🎨 Profile Borders</h3>
-                    <p>Personalize your profile with unique borders</p>
-                </div>
-
-                <div class="border-current">
-                    <h4>Currently Equipped</h4>
-                    <div class="current-border-display">
-                        <% if (equippedBorder) { %>
-                            <div class="border-preview">
-                                <div class="preview-avatar-wrapper">
-                                    <div class="preview-avatar">
-                                        <% if (user && user.profilePhoto) { %>
-                                            <img src="<%= user.profilePhoto %>" alt="Profile">
-                                        <% } else { %>
-                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white"/>
-                                                <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="white"/>
-                                            </svg>
-                                        <% } %>
-                                    </div>
-                                    <div class="preview-border-overlay">
-                                        <img src="<%= equippedBorder.imageUrl %>" alt="<%= equippedBorder.name %>">
-                                    </div>
-                                </div>
-                                <div class="border-info">
-                                    <span class="border-name"><%= equippedBorder.name %></span>
-                                    <span class="border-rarity <%= equippedBorder.rarity %>">
-                                        <%= equippedBorder.rarity.toUpperCase() %>
-                                    </span>
-                                </div>
-                            </div>
-                            <button class="btn-remove-border" onclick="removeBorder()">Remove Border</button>
-                        <% } else { %>
-                            <div class="no-border-message">
-                                <div class="preview-avatar-wrapper">
-                                    <div class="preview-avatar">
-                                        <% if (user && user.profilePhoto) { %>
-                                            <img src="<%= user.profilePhoto %>" alt="Profile">
-                                        <% } else { %>
-                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white"/>
-                                                <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="white"/>
-                                            </svg>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                <p>No border equipped</p>
-                            </div>
-                        <% } %>
+            <!-- Modern Border Selection Section -->
+            <div class="border-section-modern">
+                <div class="border-header-compact">
+                    <div class="header-content">
+                        <h3>🎨 Borders Collection</h3>
+                        <p>Customize your profile style</p>
                     </div>
+                    <% if (equippedBorder) { %>
+                        <div class="equipped-badge">
+                            <div class="equipped-preview">
+                                <img src="<%= equippedBorder.imageUrl %>" alt="<%= equippedBorder.name %>">
+                            </div>
+                            <div class="equipped-info">
+                                <span class="equipped-name"><%= equippedBorder.name %></span>
+                                <span class="equipped-rarity <%= equippedBorder.rarity %>">
+                                    <%= equippedBorder.rarity %>
+                                </span>
+                            </div>
+                            <button class="btn-unequip" onclick="removeBorder()" title="Remove Border">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m18 6-12 12M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    <% } else { %>
+                        <div class="no-border-equipped">
+                            <span>No border equipped</span>
+                        </div>
+                    <% } %>
                 </div>
 
-                <div class="border-collection">
-                    <h4>Available Borders</h4>
-                    <div class="borders-grid" id="bordersGrid">
-                        <div class="loading-message">Loading borders...</div>
+                <div class="borders-carousel">
+                    <div class="carousel-wrapper">
+                        <div class="borders-track" id="bordersTrack">
+                            <div class="loading-borders">
+                                <div class="loading-spinner"></div>
+                                <span>Loading collection...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn prev" id="prevBtn" onclick="scrollBorders(-1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="carousel-btn next" id="nextBtn" onclick="scrollBorders(1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -617,14 +608,286 @@
             color: #6b7280;
         }
 
-        /* Border Selection Styles */
-        .border-section {
+        /* Modern Border Section Styles */
+        .border-section-modern {
             background: rgba(30, 30, 30, 0.9);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
+        }
+
+        .border-header-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-content h3 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin: 0 0 0.25rem 0;
+            font-weight: 700;
+        }
+
+        .header-content p {
+            color: #9ca3af;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .equipped-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            position: relative;
+        }
+
+        .equipped-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .equipped-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .equipped-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .equipped-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .equipped-rarity {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .equipped-rarity.common { color: #9ca3af; }
+        .equipped-rarity.rare { color: #3b82f6; }
+        .equipped-rarity.epic { color: #8b5cf6; }
+        .equipped-rarity.legendary { color: #fbbf24; }
+
+        .btn-unequip {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-unequip:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .no-border-equipped {
+            background: rgba(107, 114, 128, 0.1);
+            border: 1px solid rgba(107, 114, 128, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .borders-carousel {
+            position: relative;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .carousel-wrapper {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .borders-track {
+            display: flex;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        .border-card {
+            flex: 0 0 auto;
+            width: 120px;
+            background: rgba(40, 40, 40, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .border-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .border-card.equipped {
+            border-color: rgba(34, 197, 94, 0.6);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .border-card.owned {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .border-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .border-card.locked:hover {
+            transform: none;
+            border-color: transparent;
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        .border-preview-small {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 0.75rem;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .border-preview-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .border-card-name {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .border-card-rarity {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .border-card-rarity.common { color: #9ca3af; }
+        .border-card-rarity.rare { color: #3b82f6; }
+        .border-card-rarity.epic { color: #8b5cf6; }
+        .border-card-rarity.legendary { color: #fbbf24; }
+
+        .border-status {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .border-status.equipped {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .border-status.owned {
+            background: #6366f1;
+        }
+
+        .border-status.locked {
+            background: #6b7280;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .carousel-btn {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #ffffff;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(99, 102, 241, 0.4);
+            transform: scale(1.1);
+        }
+
+        .carousel-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-borders {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            color: #a0a0a0;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-top: 2px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .border-header {
@@ -957,6 +1220,11 @@
         @media (max-width: 768px) {
             .profile-container {
                 padding: 1rem;
+                padding-bottom: 120px;
+                width: 100%;
+                max-width: 100vw;
+                overflow-x: hidden;
+                box-sizing: border-box;
             }
 
             .stats-grid {
@@ -1288,14 +1556,14 @@
                 <h3 class="modal-title">Edit Profile</h3>
                 <button class="close-btn" onclick="closeEditProfileModal()">&times;</button>
             </div>
-            
+
             <form id="editProfileForm" enctype="multipart/form-data">
                 <div class="form-group">
                     <label class="form-label" for="editUsername">Username (Optional)</label>
                     <input type="text" id="editUsername" name="username" class="form-input" 
                            value="<%= user ? user.username : '' %>" placeholder="Enter new username or leave blank to keep current">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label" for="editProfilePhoto">Profile Photo</label>
                     <div class="file-input-wrapper">
@@ -1308,7 +1576,7 @@
                     <div class="file-preview" id="filePreview"></div>
                     <img id="imagePreview" class="preview-image" style="display: none;">
                 </div>
-                
+
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" onclick="closeEditProfileModal()">Cancel</button>
                     <button type="submit" class="btn btn-save">Save Changes</button>
@@ -1332,12 +1600,12 @@
         function closeEditProfileModal() {
             const modal = document.getElementById('editProfileModal');
             modal.classList.remove('show');
-            
+
             // Reset form
             document.getElementById('editProfileForm').reset();
             document.getElementById('filePreview').innerHTML = '';
             document.getElementById('imagePreview').style.display = 'none';
-            
+
             // Reset username field to current value
             const currentUsername = '<%= user ? user.username : "" %>';
             document.getElementById('editUsername').value = currentUsername;
@@ -1346,16 +1614,16 @@
         function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             const filePreview = document.getElementById('filePreview');
-            
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
+
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     filePreview.innerHTML = 'Selected: ' + input.files[0].name;
                 };
-                
+
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.style.display = 'none';
@@ -1366,32 +1634,32 @@
         // Handle form submission
         document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const username = document.getElementById('editUsername').value;
             const photoFile = document.getElementById('editProfilePhoto').files[0];
-            
+
             formData.append('username', username);
             if (photoFile) {
                 formData.append('profilePhoto', photoFile);
             }
-            
+
             const saveBtn = document.querySelector('.btn-save');
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
-            
+
             try {
                 const response = await fetch('/api/profile/update', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Show success message
                     alert('Profile updated successfully!');
-                    
+
                     // Reload page to show updated profile
                     window.location.reload();
                 } else {
@@ -1417,122 +1685,187 @@
         let availableBorders = [];
         let userOwnedBorders = [];
         let equippedBorder = null;
+        let currentSlide = 0;
 
         // Load borders on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadAvailableBorders();
         });
 
+        // Handle window resize for responsive carousel
+        window.addEventListener('resize', function() {
+            if (availableBorders.length > 0) {
+                const slidesPerView = calculateSlidesPerView();
+                const maxSlide = Math.max(0, availableBorders.length - slidesPerView);
+                currentSlide = Math.min(currentSlide, maxSlide);
+
+                const track = document.getElementById('bordersTrack');
+                const translateX = currentSlide * (120 + 16);
+                track.style.transform = `translateX(-${translateX}px)`;
+
+                document.getElementById('prevBtn').disabled = currentSlide === 0;
+                document.getElementById('nextBtn').disabled = currentSlide >= maxSlide;
+            }
+        });
+
         async function loadAvailableBorders() {
             try {
                 console.log('🔄 Loading available borders...');
-                const response = await fetch('/api/borders/available');
                 
+                // Show loading state
+                const track = document.getElementById('bordersTrack');
+                track.innerHTML = `
+                    <div class="loading-borders">
+                        <div class="loading-spinner"></div>
+                        <span>Loading collection...</span>
+                    </div>
+                `;
+
+                const response = await fetch('/api/borders/available');
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('📊 Borders API response:', data);
-                
+
                 if (data.success) {
                     availableBorders = data.borders || [];
                     userOwnedBorders = data.userBorders || [];
                     equippedBorder = data.equippedBorder || null;
-                    
+
                     console.log('✅ Borders loaded:', {
                         available: availableBorders.length,
                         owned: userOwnedBorders.length,
                         equipped: equippedBorder
                     });
-                    
-                    renderBordersGrid();
+
+                    // Add delay to show the borders properly
+                    setTimeout(() => {
+                        renderBordersCarousel();
+                    }, 500);
                 } else {
                     console.error('❌ Failed to load borders:', data.message);
-                    document.getElementById('bordersGrid').innerHTML = 
-                        `<div class="loading-message">Failed to load borders: ${data.message}</div>`;
+                    track.innerHTML = `
+                        <div class="loading-borders">
+                            <span style="color: #f87171;">Failed to load borders: ${data.message}</span>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('❌ Error loading borders:', error);
-                document.getElementById('bordersGrid').innerHTML = 
-                    `<div class="loading-message">Error loading borders: ${error.message}</div>`;
+                const track = document.getElementById('bordersTrack');
+                track.innerHTML = `
+                    <div class="loading-borders">
+                        <span style="color: #f87171;">Error loading borders. Please refresh the page.</span>
+                    </div>
+                `;
             }
         }
 
-        function renderBordersGrid() {
-            const grid = document.getElementById('bordersGrid');
-            
+        // Function to calculate slides per view based on screen size
+        function calculateSlidesPerView() {
+            const width = window.innerWidth;
+            if (width < 480) return 2;
+            if (width < 768) return 3;
+            if (width < 1024) return 4;
+            return 5;
+        }
+
+        // Function to scroll borders carousel
+        function scrollBorders(direction) {
+            const slidesPerView = calculateSlidesPerView();
+            const maxSlide = Math.max(0, availableBorders.length - slidesPerView);
+
+            currentSlide += direction;
+            currentSlide = Math.max(0, Math.min(currentSlide, maxSlide));
+
+            const track = document.getElementById('bordersTrack');
+            const translateX = currentSlide * (120 + 16); // card width + gap
+            track.style.transform = `translateX(-${translateX}px)`;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide >= maxSlide;
+        }
+
+        function renderBordersCarousel() {
+            const track = document.getElementById('bordersTrack');
+
             if (!availableBorders || availableBorders.length === 0) {
-                grid.innerHTML = '<div class="loading-message">No borders available</div>';
+                track.innerHTML = `
+                    <div class="loading-borders">
+                        <span style="color: #9ca3af;">No borders available</span>
+                    </div>
+                `;
                 return;
             }
 
-            console.log('🎨 Rendering borders grid:', {
+            console.log('🎨 Rendering borders carousel:', {
                 totalBorders: availableBorders.length,
                 ownedBorders: userOwnedBorders.length,
                 equipped: equippedBorder,
                 userOwnedBorders: userOwnedBorders
             });
 
-            grid.innerHTML = availableBorders.map(border => {
+            const bordersHTML = availableBorders.map(border => {
                 // Check if user owns this border - default border is always owned
                 const isOwned = border.borderId === 'default' || userOwnedBorders.some(ub => ub.borderId === border.borderId);
                 const isEquipped = equippedBorder === border.borderId;
-                
+
                 let statusClass = isEquipped ? 'equipped' : (isOwned ? 'owned' : 'locked');
-                let statusText = isEquipped ? 'Equipped' : (isOwned ? 'Owned' : 'Locked');
-                
+
                 console.log(`🔍 Border ${border.borderId}:`, {
                     owned: isOwned,
                     equipped: isEquipped,
+                    statusClass: statusClass,
                     userOwnedBorders: userOwnedBorders.map(ub => ub.borderId)
                 });
-                
+
+                const clickHandler = (isOwned || border.borderId === 'default') ? `onclick="equipBorder('${border.borderId}')"` : '';
+
                 return `
-                    <div class="border-card ${statusClass}" data-border-id="${border.borderId}">
-                        <div class="border-card-header">
-                            <span class="border-rarity ${border.rarity}">${border.rarity.toUpperCase()}</span>
-                            <span class="border-status ${statusClass}">${statusText}</span>
+                    <div class="border-card ${statusClass}" ${clickHandler} data-border-id="${border.borderId}">
+                        <div class="border-status ${statusClass}" title="${statusClass}"></div>
+
+                        <div class="border-preview-small">
+                            <img src="${border.imageUrl}" alt="${border.name}" onerror="this.style.opacity='0.3';">
                         </div>
-                        
-                        <div class="border-card-preview">
-                            <div class="preview-avatar-wrapper">
-                                <div class="preview-avatar">
-                                    <% if (user && user.profilePhoto) { %>
-                                        <img src="<%= user.profilePhoto %>" alt="Profile">
-                                    <% } else { %>
-                                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white"/>
-                                            <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="white"/>
-                                        </svg>
-                                    <% } %>
-                                </div>
-                                ${isOwned || border.borderId === 'default' ? `<div class="preview-border-overlay">
-                                    <img src="${border.imageUrl}" alt="${border.name}" onerror="this.style.display='none'">
-                                </div>` : ''}
-                            </div>
-                        </div>
-                        
-                        <div class="border-card-content">
-                            <h5>${border.name || 'Unknown Border'}</h5>
-                            <p>${border.description || 'No description available'}</p>
-                        </div>
-                        
-                        <div class="border-card-actions">
-                            ${isOwned || border.borderId === 'default' ? (isEquipped ? 
-                                '<button class="btn-equip" disabled>Currently Equipped</button>' :
-                                `<button class="btn-equip" onclick="equipBorder('${border.borderId}')">Equip Border</button>`
-                            ) : '<button class="btn-equip" disabled>Not Available</button>'}
-                        </div>
+
+                        <div class="border-card-name">${border.name || 'Unknown Border'}</div>
+                        <div class="border-card-rarity ${border.rarity || 'common'}">${border.rarity || 'common'}</div>
                     </div>
                 `;
             }).join('');
+
+            track.innerHTML = bordersHTML;
+
+            // Reset carousel position and update controls
+            currentSlide = 0;
+            track.style.transform = 'translateX(0px)';
+
+            // Update button states
+            updateCarouselButtons();
+
+            console.log('✅ Borders carousel rendered successfully');
+        }
+
+        function updateCarouselButtons() {
+            const slidesPerView = calculateSlidesPerView();
+            const maxSlide = Math.max(0, availableBorders.length - slidesPerView);
+            
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (prevBtn) prevBtn.disabled = currentSlide === 0;
+            if (nextBtn) nextBtn.disabled = currentSlide >= maxSlide || availableBorders.length <= slidesPerView;
         }
 
         async function equipBorder(borderId) {
             try {
                 console.log('🎯 Equipping border:', borderId);
-                
+
                 const response = await fetch('/api/borders/equip', {
                     method: 'POST',
                     headers: {
@@ -1540,20 +1873,20 @@
                     },
                     body: JSON.stringify({ borderId })
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('📊 Equip border response:', data);
-                
+
                 if (data.success) {
                     console.log('✅ Border equipped successfully');
                     // Update local state
                     equippedBorder = borderId;
                     // Re-render the grid to show updated state
-                    renderBordersGrid();
+                    renderBordersCarousel();
                     // Also reload the page to update the currently equipped section
                     setTimeout(() => {
                         window.location.reload();
@@ -1580,9 +1913,9 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Reload the page to show the removed border
                     window.location.reload();

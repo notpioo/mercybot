@@ -42,8 +42,17 @@ const shopItemSchema = new mongoose.Schema({
     },
     purchaseLimit: {
         type: String,
-        enum: ['unlimited', 'once'],
+        enum: ['unlimited', 'once', 'custom'],
         default: 'unlimited'
+    },
+    maxPurchases: {
+        type: Number,
+        default: 0, // 0 means unlimited, any positive number means limit
+        min: 0
+    },
+    linkedBorderId: {
+        type: String,
+        default: null // For border category items, link to specific border
     },
     createdAt: {
         type: Date,
@@ -231,11 +240,16 @@ const purchaseItem = async (userId, itemId) => {
             return { success: false, message: 'User tidak ditemukan' };
         }
 
-        // Check if item is one-time purchase and user already bought it
+        // Check purchase limits
         if (item.purchaseLimit === 'once') {
             const existingPurchase = await PurchaseHistory.findOne({ userId, itemId });
             if (existingPurchase) {
                 return { success: false, message: 'Item ini hanya bisa dibeli sekali per akun' };
+            }
+        } else if (item.purchaseLimit === 'custom' && item.maxPurchases > 0) {
+            const purchaseCount = await PurchaseHistory.countDocuments({ userId, itemId });
+            if (purchaseCount >= item.maxPurchases) {
+                return { success: false, message: `Item ini maksimal bisa dibeli ${item.maxPurchases}x per akun` };
             }
         }
 
@@ -261,22 +275,28 @@ const purchaseItem = async (userId, itemId) => {
         // Add item to user if it's a border
         if (item.category === 'border') {
             const { addBorderToUser } = require('./borders');
-            // Create proper border ID mapping
-            let borderId;
-            if (item.name.toLowerCase().includes('gold')) {
-                borderId = 'gold-frame';
-            } else if (item.name.toLowerCase().includes('neon')) {
-                borderId = 'neon-glow';
-            } else if (item.name.toLowerCase().includes('diamond')) {
-                borderId = 'diamond-luxury';
-            } else {
-                // Create ID from name
-                borderId = item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            
+            // Use linkedBorderId if available, otherwise use old mapping logic
+            let borderId = item.linkedBorderId;
+            
+            if (!borderId) {
+                // Fallback to old mapping logic for existing items
+                if (item.name.toLowerCase().includes('gold')) {
+                    borderId = 'gold-frame';
+                } else if (item.name.toLowerCase().includes('neon')) {
+                    borderId = 'neon-glow';
+                } else if (item.name.toLowerCase().includes('diamond')) {
+                    borderId = 'diamond-luxury';
+                } else {
+                    // Create ID from name
+                    borderId = item.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                }
             }
             
             console.log(`🛒 Adding border to user ${userId}:`, {
                 itemName: item.name,
                 borderId: borderId,
+                linkedBorderId: item.linkedBorderId,
                 category: item.category
             });
             

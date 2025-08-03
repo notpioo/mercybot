@@ -331,6 +331,14 @@
             color: #a0a0a0;
         }
 
+        .form-help {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #a0a0a0;
+            line-height: 1.4;
+        }
+
         @media (max-width: 768px) {
             .manager-layout {
                 padding: 1rem;
@@ -429,10 +437,25 @@
 
                 <div class="form-group">
                     <label class="form-label" for="purchaseLimit">Batas Pembelian *</label>
-                    <select id="purchaseLimit" name="purchaseLimit" class="form-select" required>
+                    <select id="purchaseLimit" name="purchaseLimit" class="form-select" required onchange="toggleCustomLimit()">
                         <option value="unlimited">Unlimited - Bisa dibeli berulang</option>
                         <option value="once">Sekali Saja - Satu kali per akun</option>
+                        <option value="custom">Custom - Jumlah terbatas</option>
                     </select>
+                </div>
+
+                <div class="form-group" id="customLimitGroup" style="display: none;">
+                    <label class="form-label" for="maxPurchases">Maksimal Pembelian</label>
+                    <input type="number" id="maxPurchases" name="maxPurchases" class="form-input" min="1" placeholder="Contoh: 3">
+                    <small class="form-help">Berapa kali item ini bisa dibeli per akun</small>
+                </div>
+
+                <div class="form-group" id="borderSelectionGroup" style="display: none;">
+                    <label class="form-label" for="linkedBorderId">Pilih Border *</label>
+                    <select id="linkedBorderId" name="linkedBorderId" class="form-select">
+                        <option value="">Loading borders...</option>
+                    </select>
+                    <small class="form-help">Border yang akan diberikan kepada pembeli</small>
                 </div>
 
                 <div class="form-group">
@@ -451,10 +474,12 @@
     <script>
         let editingItemId = null;
         let shopItems = [];
+        let availableBorders = [];
 
         // Load shop items when page loads
         document.addEventListener('DOMContentLoaded', async () => {
             await loadShopItems();
+            await loadAvailableBorders();
         });
 
         // Load shop items from database
@@ -470,6 +495,60 @@
                 console.error('Error loading shop items:', error);
             }
         }
+
+        // Load available borders
+        async function loadAvailableBorders() {
+            try {
+                const response = await fetch('/api/borders/available');
+                const data = await response.json();
+                if (data.success) {
+                    availableBorders = data.borders;
+                    updateBorderSelect();
+                }
+            } catch (error) {
+                console.error('Error loading borders:', error);
+            }
+        }
+
+        // Update border select options
+        function updateBorderSelect() {
+            const select = document.getElementById('linkedBorderId');
+            select.innerHTML = '<option value="">Pilih border...</option>' + 
+                availableBorders.map(border => 
+                    `<option value="${border.borderId}">${border.name} (${border.rarity})</option>`
+                ).join('');
+        }
+
+        // Toggle custom limit input
+        function toggleCustomLimit() {
+            const purchaseLimit = document.getElementById('purchaseLimit').value;
+            const customLimitGroup = document.getElementById('customLimitGroup');
+            
+            if (purchaseLimit === 'custom') {
+                customLimitGroup.style.display = 'block';
+                document.getElementById('maxPurchases').required = true;
+            } else {
+                customLimitGroup.style.display = 'none';
+                document.getElementById('maxPurchases').required = false;
+            }
+        }
+
+        // Toggle border selection based on category
+        function toggleBorderSelection() {
+            const category = document.getElementById('category').value;
+            const borderGroup = document.getElementById('borderSelectionGroup');
+            
+            if (category === 'border') {
+                borderGroup.style.display = 'block';
+                document.getElementById('linkedBorderId').required = true;
+            } else {
+                borderGroup.style.display = 'none';
+                document.getElementById('linkedBorderId').required = false;
+            }
+        }
+
+        // Add event listener for category change
+        document.getElementById('category').addEventListener('change', toggleBorderSelection);
 
         // Render shop items
         function renderShopItems() {
@@ -514,7 +593,9 @@
                         <div class="stat-item">
                             <div class="stat-label">Batas Beli</div>
                             <div class="stat-value">
-                                ${item.purchaseLimit === 'once' ? '🔒 Sekali' : '🔄 Unlimited'}
+                                ${item.purchaseLimit === 'once' ? '🔒 Sekali' : 
+                                  item.purchaseLimit === 'custom' ? `⚡ Max ${item.maxPurchases}x` : 
+                                  '🔄 Unlimited'}
                             </div>
                         </div>
                     </div>
@@ -536,6 +617,13 @@
             document.getElementById('submitBtn').textContent = 'Simpan Item';
             document.getElementById('itemForm').reset();
             document.getElementById('itemId').value = '';
+            
+            // Reset visibility of conditional fields
+            document.getElementById('customLimitGroup').style.display = 'none';
+            document.getElementById('borderSelectionGroup').style.display = 'none';
+            document.getElementById('maxPurchases').required = false;
+            document.getElementById('linkedBorderId').required = false;
+            
             document.getElementById('itemModal').classList.add('active');
         }
 
@@ -554,6 +642,12 @@
             document.getElementById('price').value = item.price;
             document.getElementById('stock').value = item.stock;
             document.getElementById('purchaseLimit').value = item.purchaseLimit || 'unlimited';
+            document.getElementById('maxPurchases').value = item.maxPurchases || '';
+            document.getElementById('linkedBorderId').value = item.linkedBorderId || '';
+
+            // Show/hide conditional fields based on current values
+            toggleCustomLimit();
+            toggleBorderSelection();
 
             document.getElementById('itemModal').classList.add('active');
         }
