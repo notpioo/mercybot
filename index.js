@@ -178,6 +178,9 @@ class SeanaBot {
 const bot = new SeanaBot();
 bot.initialize();
 
+// Initialize banner system
+const { initBannersTable } = require('./database/banners');
+
 // Also start the web server
 require('./server');
 

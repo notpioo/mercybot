@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 
 // Shop Item Schema
 const shopItemSchema = new mongoose.Schema({
+    itemId: {
+        type: String,
+        unique: true,
+        sparse: true // Allow null values but ensure uniqueness when present
+    },
     name: {
         type: String,
         required: true
@@ -14,7 +19,7 @@ const shopItemSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['border', 'premium', 'booster', 'cosmetic']
+        enum: ['border', 'banner', 'premium', 'booster', 'cosmetic']
     },
     price: {
         type: Number,
@@ -53,6 +58,10 @@ const shopItemSchema = new mongoose.Schema({
     linkedBorderId: {
         type: String,
         default: null // For border category items, link to specific border
+    },
+    linkedBannerId: {
+        type: String,
+        default: null // For banner category items, link to specific banner
     },
     createdAt: {
         type: Date,
@@ -170,6 +179,11 @@ const getShopItemById = async (itemId) => {
 // Create new shop item
 const createShopItem = async (itemData) => {
     try {
+        // Generate unique itemId if not provided
+        if (!itemData.itemId) {
+            itemData.itemId = `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+        
         const newItem = new ShopItem(itemData);
         await newItem.save();
         console.log(`✅ Shop item created: ${newItem.name}`);
@@ -307,6 +321,35 @@ const purchaseItem = async (userId, itemId) => {
                 console.error(`❌ Failed to add border ${borderId} to user ${userId}:`, borderResult.message);
             } else {
                 console.log(`✅ Successfully added border ${borderId} to user ${userId}`);
+            }
+        }
+
+        // Add item to user if it's a banner
+        if (item.category === 'banner') {
+            const { addBannerToUser } = require('./banners');
+            
+            // Use linkedBannerId
+            const bannerId = item.linkedBannerId;
+            
+            if (!bannerId) {
+                console.error(`❌ Banner item ${item.name} does not have linkedBannerId`);
+                return { success: false, message: 'Banner item tidak memiliki banner ID yang terhubung' };
+            }
+            
+            console.log(`🛒 Adding banner to user ${userId}:`, {
+                itemName: item.name,
+                bannerId: bannerId,
+                linkedBannerId: item.linkedBannerId,
+                category: item.category
+            });
+            
+            const bannerResult = await addBannerToUser(userId, bannerId);
+            console.log(`🛒 Banner assignment result for ${userId}:`, bannerResult);
+            
+            if (!bannerResult.success) {
+                console.error(`❌ Failed to add banner ${bannerId} to user ${userId}:`, bannerResult.message);
+            } else {
+                console.log(`✅ Successfully added banner ${bannerId} to user ${userId}`);
             }
         }
 

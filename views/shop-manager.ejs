@@ -410,6 +410,7 @@
                         <label class="form-label" for="category">Kategori *</label>
                         <select id="category" name="category" class="form-select" required>
                             <option value="border">Border</option>
+                            <option value="banner">Banner</option>
                             <option value="premium">Premium</option>
                             <option value="booster">Booster</option>
                             <option value="cosmetic">Cosmetic</option>
@@ -458,6 +459,14 @@
                     <small class="form-help">Border yang akan diberikan kepada pembeli</small>
                 </div>
 
+                <div class="form-group" id="bannerSelectionGroup" style="display: none;">
+                    <label class="form-label" for="linkedBannerId">Pilih Banner *</label>
+                    <select id="linkedBannerId" name="linkedBannerId" class="form-select">
+                        <option value="">Loading banners...</option>
+                    </select>
+                    <small class="form-help">Banner yang akan diberikan kepada pembeli</small>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" for="imageFile">Gambar/Icon</label>
                     <input type="file" id="imageFile" name="imageFile" class="form-input" accept="image/*">
@@ -475,11 +484,13 @@
         let editingItemId = null;
         let shopItems = [];
         let availableBorders = [];
+        let availableBanners = [];
 
         // Load shop items when page loads
         document.addEventListener('DOMContentLoaded', async () => {
             await loadShopItems();
             await loadAvailableBorders();
+            await loadAvailableBanners();
         });
 
         // Load shop items from database
@@ -510,12 +521,35 @@
             }
         }
 
+        // Load available banners
+        async function loadAvailableBanners() {
+            try {
+                const response = await fetch('/api/banners/all');
+                const data = await response.json();
+                if (data.success) {
+                    availableBanners = data.banners;
+                    updateBannerSelect();
+                }
+            } catch (error) {
+                console.error('Error loading banners:', error);
+            }
+        }
+
         // Update border select options
         function updateBorderSelect() {
             const select = document.getElementById('linkedBorderId');
             select.innerHTML = '<option value="">Pilih border...</option>' + 
                 availableBorders.map(border => 
                     `<option value="${border.borderId}">${border.name} (${border.rarity})</option>`
+                ).join('');
+        }
+
+        // Update banner select options
+        function updateBannerSelect() {
+            const select = document.getElementById('linkedBannerId');
+            select.innerHTML = '<option value="">Pilih banner...</option>' + 
+                availableBanners.map(banner => 
+                    `<option value="${banner.bannerId}">${banner.name} (${banner.rarity})</option>`
                 ).join('');
         }
 
@@ -533,17 +567,24 @@
             }
         }
 
-        // Toggle border selection based on category
+        // Toggle border/banner selection based on category
         function toggleBorderSelection() {
             const category = document.getElementById('category').value;
             const borderGroup = document.getElementById('borderSelectionGroup');
+            const bannerGroup = document.getElementById('bannerSelectionGroup');
+            
+            // Reset all fields
+            borderGroup.style.display = 'none';
+            bannerGroup.style.display = 'none';
+            document.getElementById('linkedBorderId').required = false;
+            document.getElementById('linkedBannerId').required = false;
             
             if (category === 'border') {
                 borderGroup.style.display = 'block';
                 document.getElementById('linkedBorderId').required = true;
-            } else {
-                borderGroup.style.display = 'none';
-                document.getElementById('linkedBorderId').required = false;
+            } else if (category === 'banner') {
+                bannerGroup.style.display = 'block';
+                document.getElementById('linkedBannerId').required = true;
             }
         }
 
@@ -621,8 +662,10 @@
             // Reset visibility of conditional fields
             document.getElementById('customLimitGroup').style.display = 'none';
             document.getElementById('borderSelectionGroup').style.display = 'none';
+            document.getElementById('bannerSelectionGroup').style.display = 'none';
             document.getElementById('maxPurchases').required = false;
             document.getElementById('linkedBorderId').required = false;
+            document.getElementById('linkedBannerId').required = false;
             
             document.getElementById('itemModal').classList.add('active');
         }
@@ -644,6 +687,7 @@
             document.getElementById('purchaseLimit').value = item.purchaseLimit || 'unlimited';
             document.getElementById('maxPurchases').value = item.maxPurchases || '';
             document.getElementById('linkedBorderId').value = item.linkedBorderId || '';
+            document.getElementById('linkedBannerId').value = item.linkedBannerId || '';
 
             // Show/hide conditional fields based on current values
             toggleCustomLimit();

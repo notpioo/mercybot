@@ -1,0 +1,13 @@
+<svg width="400" height="160" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="sunset" x1="0" y1="0" x2="0" y2="160">
+<stop stop-color="#ff9a8b"/>
+<stop offset="0.5" stop-color="#fecfef"/>
+<stop offset="1" stop-color="#ffecd2"/>
+</linearGradient>
+</defs>
+<rect width="400" height="160" fill="url(#sunset)"/>
+<polygon points="0,160 100,60 200,100 300,40 400,80 400,160" fill="#2d1b69" opacity="0.8"/>
+<polygon points="0,160 80,80 180,120 280,60 400,100 400,160" fill="#4c1d95" opacity="0.6"/>
+<circle cx="320" cy="40" r="20" fill="#fbbf24" opacity="0.9"/>
+</svg>

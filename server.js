@@ -51,6 +51,19 @@ const {
     getUserPurchaseHistory
 } = require('./database/shop');
 
+const {
+    initBannersTable,
+    getAllBanners,
+    getBannerById,
+    createBanner,
+    updateBanner,
+    deleteBanner,
+    getUserBanners,
+    addBannerToUser,
+    equipBanner,
+    getUserEquippedBanner
+} = require('./database/banners');
+
 // Global variable to store bot instance
 let botInstance = null;
 let currentQRCode = null;
@@ -182,7 +195,10 @@ const connectDB = require('./database/connection');
         await initPostsTable();
         await initBordersTable();
         await initShopTable();
-        console.log('✅ Announcements, Posts, Borders, and Shop system initialized successfully');
+        // Initialize banners system
+        await initBannersTable();
+
+        console.log('✅ Announcements, Posts, Borders, Banners, and Shop system initialized successfully');
     } catch (error) {
         console.error('❌ Failed to initialize announcements system:', error);
     }
@@ -273,6 +289,7 @@ app.get('/profile', async (req, res) => {
     let userData = null;
     let userBorders = null;
     let equippedBorder = null;
+    let equippedBanner = null;
 
     if (req.session.userPhone) {
         try {
@@ -281,12 +298,14 @@ app.get('/profile', async (req, res) => {
             const userBorderDoc = await getUserBorders(userId);
             userBorders = userBorderDoc.ownedBorders || [];
             equippedBorder = await getUserEquippedBorder(userId);
-            
+            equippedBanner = await getUserEquippedBanner(userId);
+
             console.log('📋 Profile page user borders:', {
                 userId,
                 ownedBordersCount: userBorders.length,
                 ownedBorders: userBorders,
-                equippedBorder: equippedBorder ? equippedBorder.borderId : null
+                equippedBorder: equippedBorder ? equippedBorder.borderId : null,
+                equippedBanner: equippedBanner ? equippedBanner.bannerId : null
             });
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -296,7 +315,8 @@ app.get('/profile', async (req, res) => {
     res.render('profile', { 
         user: userData, 
         userBorders: userBorders,
-        equippedBorder: equippedBorder
+        equippedBorder: equippedBorder,
+        equippedBanner: equippedBanner
     });
 });
 
@@ -315,12 +335,12 @@ app.get('/api/borders/available', async (req, res) => {
     try {
         const userId = req.session.userPhone + '@s.whatsapp.net';
         console.log('👤 Processing for userId:', userId);
-        
+
         // Get all borders first
         console.log('🎨 Fetching all borders...');
         const allBorders = await getAllBorders();
         console.log('✅ All borders received, count:', allBorders.length);
-        
+
         if (!allBorders || allBorders.length === 0) {
             console.log('⚠️ No borders available in database');
             return res.json({ 
@@ -331,7 +351,7 @@ app.get('/api/borders/available', async (req, res) => {
                 message: 'No borders available'
             });
         }
-        
+
         // Get user's borders
         console.log('📦 Fetching user borders...');
         const userBorderDoc = await getUserBorders(userId);
@@ -340,7 +360,7 @@ app.get('/api/borders/available', async (req, res) => {
             ownedCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
             equipped: userBorderDoc.equippedBorder
         });
-        
+
         const responseData = {
             success: true,
             borders: allBorders,
@@ -352,7 +372,7 @@ app.get('/api/borders/available', async (req, res) => {
                 ownedBorders: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0
             }
         };
-        
+
         console.log('📊 Available borders API response:', {
             success: responseData.success,
             bordersCount: responseData.borders.length,
@@ -394,7 +414,7 @@ app.post('/api/borders/equip', async (req, res) => {
         // Get user's border document
         const { UserBorder } = require('./database/borders');
         let userBorderDoc = await UserBorder.findOne({ userId });
-        
+
         if (!userBorderDoc) {
             userBorderDoc = new UserBorder({
                 userId,
@@ -499,6 +519,453 @@ app.post('/api/borders/grant', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Failed to grant border' 
+        });
+    }
+});
+
+// ===== BANNER MANAGEMENT ROUTES =====
+
+// Banner Manager Page (Owner only)
+app.get('/banner-manager', async (req, res) => {
+    console.log('🔍 Banner Manager access attempt');
+    console.log('🔍 Session isOwner:', req.session.isOwner);
+    console.log('🔍 Session isAuthenticated:', req.session.isAuthenticated);
+
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+            console.log('🔍 User data status:', userData ? userData.status : 'no user data');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // Check if user is owner either by session or by user status in database
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner) {
+        console.log('❌ Access denied to banner-manager - not owner');
+        return res.redirect('/');
+    }
+
+    console.log('✅ Access granted to banner-manager');
+    res.render('banner-manager', { user: userData });
+});
+
+// API Routes for Banner Management
+
+// Get all banners
+app.get('/api/banners/all', async (req, res) => {
+    try {
+        const banners = await getAllBanners();
+        res.json({ 
+            success: true, 
+            banners: banners 
+        });
+    } catch (error) {
+        console.error('Error fetching banners:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch banners' 
+        });
+    }
+});
+
+// Get banners available to a user
+app.get('/api/banners/available', async (req, res) => {
+    console.log('🔍 API banners/available request received');
+    console.log('🔍 Session authenticated:', req.session.isAuthenticated);
+    console.log('🔍 Session owner:', req.session.isOwner);
+    console.log('🔍 User phone:', req.session.userPhone);
+
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        console.log('❌ Access denied - not authenticated');
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        let userId = null;
+        if (req.session.userPhone) {
+            userId = req.session.userPhone + '@s.whatsapp.net';
+            console.log('👤 Processing for userId:', userId);
+        }
+
+        console.log('🖼️ Fetching all banners...');
+        const allBanners = await getAllBanners();
+        console.log('✅ All banners received, count:', allBanners.length);
+
+        if (!userId) {
+            // No user context, return all banners without ownership info
+            return res.json({ 
+                success: true, 
+                banners: allBanners.map(banner => ({
+                    ...banner._doc || banner,
+                    isOwned: false,
+                    isEquipped: false
+                }))
+            });
+        }
+
+        console.log('📦 Fetching user banners...');
+        const userBanners = await getUserBanners(userId);
+        console.log('✅ User banner doc received:', {
+            userId: userBanners.userId,
+            ownedCount: userBanners.ownedBanners?.length || 0,
+            equipped: userBanners.equippedBanner
+        });
+
+        // Map user ownership status to banners
+        const bannersWithOwnership = allBanners.map(banner => {
+            const bannerData = banner._doc || banner;
+            const isOwned = userBanners.ownedBanners?.some(ub => ub.bannerId === bannerData.bannerId) || false;
+            const isEquipped = userBanners.equippedBanner === bannerData.bannerId;
+
+            return {
+                ...bannerData,
+                isOwned,
+                isEquipped
+            };
+        });
+
+        console.log('📊 Available banners API response:', {
+            success: true,
+            bannersCount: bannersWithOwnership.length,
+            userBannersCount: userBanners.ownedBanners?.length || 0,
+            equipped: userBanners.equippedBanner
+        });
+
+        res.json({ 
+            success: true, 
+            banners: bannersWithOwnership,
+            userBanners: userBanners
+        });
+    } catch (error) {
+        console.error('❌ Error fetching available banners:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch banners: ' + error.message 
+        });
+    }
+});
+
+// Create new banner (owner only)
+app.post('/api/banners/create', upload.single('bannerImage'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner) {
+        return res.status(403).json({ success: false, message: 'Owner access required' });
+    }
+
+    try {
+        const { bannerId, name, description, rarity } = req.body;
+
+        if (!bannerId || !name || !rarity) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Banner ID, name, and rarity are required' 
+            });
+        }
+
+        // Check if banner ID already exists
+        const existingBanner = await getBannerById(bannerId);
+        if (existingBanner) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Banner ID already exists' 
+            });
+        }
+
+        let imageUrl = '/banners/default-gradient.svg'; // Default banner
+
+        // Handle file upload
+        if (req.file) {
+            const fileExtension = path.extname(req.file.originalname);
+            const fileName = `${bannerId}${fileExtension}`;
+            const uploadPath = path.join(__dirname, 'public', 'banners', fileName);
+
+            // Move uploaded file using fs.copyFileSync instead of writeFileSync with buffer
+            const fs = require('fs');
+
+            // Ensure banners directory exists
+            const bannersDir = path.join(__dirname, 'public', 'banners');
+            if (!fs.existsSync(bannersDir)) {
+                fs.mkdirSync(bannersDir, { recursive: true });
+            }
+
+            // Copy file from temp location to banners directory
+            fs.copyFileSync(req.file.path, uploadPath);
+            imageUrl = `/banners/${fileName}`;
+        }
+
+        const bannerData = {
+            bannerId,
+            name,
+            description,
+            imageUrl,
+            rarity,
+            createdBy: 'admin'
+        };
+
+        const newBanner = await createBanner(bannerData);
+
+        if (newBanner) {
+            res.json({ 
+                success: true, 
+                message: 'Banner created successfully',
+                banner: newBanner
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to create banner' 
+            });
+        }
+    } catch (error) {
+        console.error('Error creating banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create banner: ' + error.message 
+        });
+    }
+});
+
+// Update banner (owner only)
+app.put('/api/banners/update/:bannerId', upload.single('bannerImage'), async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner) {
+        return res.status(403).json({ success: false, message: 'Owner access required' });
+    }
+
+    try {
+        const { bannerId } = req.params;
+        const { name, description, rarity } = req.body;
+
+        if (!name || !rarity) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Name and rarity are required' 
+            });
+        }
+
+        const updateData = {
+            name,
+            description,
+            rarity
+        };
+
+        // Handle file upload if provided
+        if (req.file) {
+            const fileExtension = path.extname(req.file.originalname);
+            const fileName = `${bannerId}${fileExtension}`;
+            const uploadPath = path.join(__dirname, 'public', 'banners', fileName);
+
+            // Move uploaded file using fs.copyFileSync instead of writeFileSync with buffer
+            const fs = require('fs');
+
+            // Ensure banners directory exists
+            const bannersDir = path.join(__dirname, 'public', 'banners');
+            if (!fs.existsSync(bannersDir)) {
+                fs.mkdirSync(bannersDir, { recursive: true });
+            }
+
+            // Copy file from temp location to banners directory
+            fs.copyFileSync(req.file.path, uploadPath);
+            updateData.imageUrl = `/banners/${fileName}`;
+        }
+
+        const updatedBanner = await updateBanner(bannerId, updateData);
+
+        if (updatedBanner) {
+            res.json({ 
+                success: true, 
+                message: 'Banner updated successfully',
+                banner: updatedBanner
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: 'Banner not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error updating banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update banner: ' + error.message 
+        });
+    }
+});
+
+// Delete banner (owner only)
+app.delete('/api/banners/delete/:bannerId', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner) {
+        return res.status(403).json({ success: false, message: 'Owner access required' });
+    }
+
+    try {
+        const { bannerId } = req.params;
+
+        const deletedBanner = await deleteBanner(bannerId);
+
+        if (deletedBanner) {
+            res.json({ 
+                success: true, 
+                message: 'Banner deleted successfully' 
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: 'Banner not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete banner' 
+        });
+    }
+});
+
+// Equip banner for user
+app.post('/api/banners/equip', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { bannerId } = req.body;
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        const result = await equipBanner(userId, bannerId);
+
+        if (result.success) {
+            res.json({ 
+                success: true, 
+                message: 'Banner equipped successfully' 
+            });
+        } else {
+            res.status(400).json({ 
+                success: false, 
+                message: result.message 
+            });
+        }
+    } catch (error) {
+        console.error('Error equipping banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to equip banner' 
+        });
+    }
+});
+
+// Remove equipped banner (set to null)
+app.post('/api/banners/remove', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        const result = await equipBanner(userId, 'default');
+
+        if (result.success) {
+            res.json({ 
+                success: true, 
+                message: 'Banner removed successfully' 
+            });
+        } else {
+            res.status(400).json({ 
+                success: false, 
+                message: result.message 
+            });
+        }
+    } catch (error) {
+        console.error('Error removing banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to remove banner' 
+        });
+    }
+});
+
+// API to grant banner to user (owner only)
+app.post('/api/banners/grant', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner) {
+        return res.status(403).json({ success: false, message: 'Owner access required' });
+    }
+
+    try {
+        const { userId, bannerId } = req.body;
+
+        if (!userId || !bannerId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID and Banner ID are required' 
+            });
+        }
+
+        const result = await addBannerToUser(userId, bannerId);
+
+        if (result.success) {
+            res.json({ 
+                success: true, 
+                message: 'Banner granted successfully' 
+            });
+        } else {
+            res.status(400).json({ 
+                success: false, 
+                message: result.message 
+            });
+        }
+    } catch (error) {
+        console.error('Error granting banner:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to grant banner' 
         });
     }
 });
@@ -1962,12 +2429,12 @@ app.patch('/api/borders/:id/image', async (req, res) => {
     try {
         const borderId = req.params.id;
         const { imageUrl } = req.body;
-        
+
         console.log(`🔧 Updating border ${borderId} image to:`, imageUrl);
-        
+
         const { updateBorder } = require('./database/borders');
         const result = await updateBorder(borderId, { imageUrl });
-        
+
         console.log('✅ Border image updated:', result);
         res.json({ success: true, data: result });
     } catch (error) {
@@ -2082,7 +2549,7 @@ app.get('/api/shop/items', async (req, res) => {
     }
 });
 
-// Add new shop item (owner only)
+// Create new shop item (owner only)
 app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => {
     let userData = null;
     if (req.session.userPhone) {
@@ -2100,7 +2567,7 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
     }
 
     try {
-        const { name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId } = req.body;
+        const { name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId, linkedBannerId } = req.body;
 
         if (!name || !category || !price || !priceType || !stock) {
             return res.status(400).json({ 
@@ -2119,6 +2586,7 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
             purchaseLimit: purchaseLimit || 'unlimited',
             maxPurchases: purchaseLimit === 'custom' ? parseInt(maxPurchases) || 0 : 0,
             linkedBorderId: category === 'border' ? linkedBorderId : null,
+            linkedBannerId: category === 'banner' ? linkedBannerId : null,
             imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
             createdBy: userData ? userData.userId : 'unknown'
         };

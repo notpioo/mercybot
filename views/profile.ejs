@@ -16,6 +16,16 @@
         <div class="profile-container">
             <!-- Profile Header Section -->
             <div class="profile-hero">
+                <!-- Profile Banner Background -->
+                <div class="profile-banner" id="profileBanner">
+                    <% if (equippedBanner && equippedBanner.imageUrl) { %>
+                        <img src="<%= equippedBanner.imageUrl %>" alt="<%= equippedBanner.name %>" class="banner-image">
+                    <% } else { %>
+                        <div class="default-banner"></div>
+                    <% } %>
+                    <div class="banner-overlay"></div>
+                </div>
+
                 <div class="profile-main-info">
                     <div class="avatar-section">
                         <div class="avatar-wrapper">
@@ -66,7 +76,7 @@
                             <button class="action-btn edit-btn" onclick="openEditProfileModal()">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22 1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                             <form action="/logout" method="POST" style="margin: 0;">
@@ -194,13 +204,27 @@
                 </div>
             </div>
 
-            <!-- Modern Border Selection Section -->
+
+
+            <!-- Modern Collection Section -->
             <div class="border-section-modern">
-                <div class="border-header-compact">
-                    <div class="header-content">
-                        <h3>🎨 Borders Collection</h3>
-                        <p>Customize your profile style</p>
-                    </div>
+                <!-- Collection Navigation -->
+                <div class="collection-nav">
+                    <button class="collection-nav-btn active" onclick="switchCollection('borders')" id="bordersNavBtn">
+                        🎨 Borders
+                    </button>
+                    <button class="collection-nav-btn" onclick="switchCollection('banners')" id="bannersNavBtn">
+                        🖼️ Banners
+                    </button>
+                </div>
+
+                <!-- Borders Collection -->
+                <div class="collection-content" id="bordersCollection">
+                    <div class="border-header-compact">
+                        <div class="header-content">
+                            <h3>🎨 Borders Collection</h3>
+                            <p>Customize your profile border style</p>
+                        </div>
                     <% if (equippedBorder) { %>
                         <div class="equipped-badge">
                             <div class="equipped-preview">
@@ -247,6 +271,62 @@
                         </button>
                     </div>
                 </div>
+                </div>
+
+                <!-- Banners Collection -->
+                <div class="collection-content" id="bannersCollection" style="display: none;">
+                    <div class="border-header-compact">
+                        <div class="header-content">
+                            <h3>🖼️ Banners Collection</h3>
+                            <p>Customize your profile background banner</p>
+                        </div>
+                        <% if (equippedBanner) { %>
+                            <div class="equipped-badge">
+                                <div class="equipped-preview">
+                                    <img src="<%= equippedBanner.imageUrl %>" alt="<%= equippedBanner.name %>">
+                                </div>
+                                <div class="equipped-info">
+                                    <span class="equipped-name"><%= equippedBanner.name %></span>
+                                    <span class="equipped-rarity <%= equippedBanner.rarity %>">
+                                        <%= equippedBanner.rarity %>
+                                    </span>
+                                </div>
+                                <button class="btn-unequip" onclick="removeBanner()" title="Remove Banner">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m18 6-12 12M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        <% } else { %>
+                            <div class="no-border-equipped">
+                                <span>No banner equipped</span>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="borders-carousel">
+                        <div class="carousel-wrapper">
+                            <div class="borders-track" id="bannersTrack">
+                                <div class="loading-banners">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading collection...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-controls">
+                            <button class="carousel-btn prev" id="prevBannerBtn" onclick="scrollBanners(-1)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="carousel-btn next" id="nextBannerBtn" onclick="scrollBanners(1)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Activity Tabs -->
@@ -283,6 +363,7 @@
 
         /* Profile Hero Section */
         .profile-hero {
+            position: relative;
             background: rgba(30, 30, 30, 0.9);
             border-radius: 16px;
             padding: 2rem;
@@ -292,6 +373,47 @@
             width: 100%;
             box-sizing: border-box;
             overflow: hidden;
+            min-height: 200px;
+        }
+
+        /* Profile Banner Styles */
+        .profile-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .banner-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .default-banner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7));
+            z-index: 2;
+        }
+
+        .profile-main-info {
+            position: relative;
+            z-index: 3;
+            margin-top: 50px;
         }
 
         .avatar-section {
@@ -618,6 +740,42 @@
             backdrop-filter: blur(20px);
         }
 
+        /* Collection Navigation */
+        .collection-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;The code changes focus on addressing issues related to banner loading and equipping functionality within the user profile page.            background: rgba(40, 40, 40, 0.6);
+            border-radius: 12px;
+            padding: 0.5rem;
+        }
+
+        .collection-nav-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: #9ca3af;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .collection-nav-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: #8b5cf6;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .collection-nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .collection-content {
+            display: block;
+        }
+
         .border-header-compact {
             display: flex;
             justify-content: space-between;
@@ -813,6 +971,101 @@
         .border-card-rarity.epic { color: #8b5cf6; }
         .border-card-rarity.legendary { color: #fbbf24; }
 
+        /* Banner Card Styles */
+        .banner-card {
+            flex: 0 0 auto;
+            width: 140px;
+            background: rgba(40, 40, 40, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .banner-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .banner-card.equipped {
+            border-color: rgba(34, 197, 94, 0.6);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .banner-card.owned {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .banner-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .banner-card.locked:hover {
+            transform: none;
+            border-color: transparent;
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        .banner-preview-small {
+            width: 100px;
+            height: 50px;
+            margin: 0 auto 0.75rem;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .banner-preview-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-card-name {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .banner-card-rarity {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-card-rarity.common { color: #9ca3af; }
+        .banner-card-rarity.rare { color: #3b82f6; }
+        .banner-card-rarity.epic { color: #8b5cf6; }
+        .banner-card-rarity.legendary { color: #fbbf24; }
+
+        .banner-status {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .banner-status.equipped {
+            background: #10b981;
+        }
+
+        .banner-status.owned {
+            background: #6366f1;
+        }
+
+        .banner-status.locked {
+            background: #6b7280;
+        }
+
         .border-status {
             position: absolute;
             top: 0.5rem;
@@ -867,13 +1120,189 @@
             transform: none;
         }
 
-        .loading-borders {
+        .loading-borders, .loading-banners {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 1rem;
             padding: 2rem;
             color: #a0a0a0;
+        }
+
+        /* Banner Collection Styles */
+        .banner-section {
+            margin-bottom: 2rem;
+        }
+
+        .banner-preview-container {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .preview-banner-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-preview-content {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 3;
+        }
+
+        .preview-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-username {
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .no-banner-equipped {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: rgba(40, 40, 40, 0.8);
+            border-radius: 12px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .banners-track {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 0.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .banners-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .banner-card {
+            min-width: 140px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .banner-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .banner-card.equipped {
+            border-color: rgba(34, 197, 94, 0.6);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .banner-card.owned {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .banner-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .banner-card.locked:hover {
+            transform: none;
+            border-color: transparent;
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        .banner-preview-small {
+            width: 100px;
+            height: 60px;
+            margin: 0 auto 0.75rem;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .banner-preview-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-card-name {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .banner-card-rarity {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .banner-card-rarity.common { color: #9ca3af; }
+        .banner-card-rarity.rare { color: #3b82f6; }
+        .banner-card-rarity.epic { color: #8b5cf6; }
+        .banner-card-rarity.legendary { color: #fbbf24; }
+
+        .banner-status {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .banner-status.equipped {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .banner-status.owned {
+            background: #6366f1;
+        }
+
+        .banner-status.locked {
+            background: #6b7280;
         }
 
         .loading-spinner {
@@ -1687,9 +2116,16 @@
         let equippedBorder = null;
         let currentSlide = 0;
 
-        // Load borders on page load
+        // Banner management functionality  
+        let availableBanners = [];
+        let userOwnedBanners = [];
+        let equippedBanner = null;
+        let currentBannerSlide = 0;
+
+        // Load borders and banners on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadAvailableBorders();
+            loadAvailableBanners();
         });
 
         // Handle window resize for responsive carousel
@@ -1711,7 +2147,7 @@
         async function loadAvailableBorders() {
             try {
                 console.log('🔄 Loading available borders...');
-                
+
                 // Show loading state
                 const track = document.getElementById('bordersTrack');
                 track.innerHTML = `
@@ -1854,10 +2290,10 @@
         function updateCarouselButtons() {
             const slidesPerView = calculateSlidesPerView();
             const maxSlide = Math.max(0, availableBorders.length - slidesPerView);
-            
+
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            
+
             if (prevBtn) prevBtn.disabled = currentSlide === 0;
             if (nextBtn) nextBtn.disabled = currentSlide >= maxSlide || availableBorders.length <= slidesPerView;
         }
@@ -1927,6 +2363,205 @@
                 alert('Error removing border');
             }
         }
+        // Banner management functions
+        async function loadAvailableBanners() {
+            try {
+                console.log('🔄 Loading available banners...');
+
+                const track = document.getElementById('bannersTrack');
+                track.innerHTML = `
+                    <div class="loading-banners">
+                        <div class="loading-spinner"></div>
+                        <span>Loading collection...</span>
+                    </div>
+                `;
+
+                const response = await fetch('/api/banners/available');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('📊 Banners API response:', data);
+
+                if (data.success) {
+                    availableBanners = data.banners || [];
+                    userOwnedBanners = data.userBanners || [];
+                    equippedBanner = data.equippedBanner || null;
+
+                    console.log('✅ Banners loaded:', {
+                        available: availableBanners.length,
+                        owned: userOwnedBanners.length,
+                        equipped: equippedBanner
+                    });
+
+                    setTimeout(() => {
+                        renderBannersCarousel();
+                    }, 500);
+                } else {
+                    console.error('❌ Failed to load banners:', data.message);
+                    track.innerHTML = `
+                        <div class="loading-banners">
+                            <span style="color: #f87171;">Failed to load banners: ${data.message}</span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Error loading banners:', error);
+                const track = document.getElementById('bannersTrack');
+                track.innerHTML = `
+                    <div class="loading-banners">
+                        <span style="color: #f87171;">Error loading banners. Please refresh the page.</span>
+                    </div>
+                `;
+            }
+        }
+
+        function scrollBanners(direction) {
+            const slidesPerView = calculateSlidesPerView();
+            const maxSlide = Math.max(0, availableBanners.length - slidesPerView);
+
+            currentBannerSlide += direction;
+            currentBannerSlide = Math.max(0, Math.min(currentBannerSlide, maxSlide));
+
+            const track = document.getElementById('bannersTrack');
+            const translateX = currentBannerSlide * (140 + 16); // card width + gap
+            track.style.transform = `translateX(-${translateX}px)`;
+
+            document.getElementById('prevBannerBtn').disabled = currentBannerSlide === 0;
+            document.getElementById('nextBannerBtn').disabled = currentBannerSlide >= maxSlide;
+        }
+
+        function renderBannersCarousel() {
+            const track = document.getElementById('bannersTrack');
+
+            if (!availableBanners || availableBanners.length === 0) {
+                track.innerHTML = `
+                    <div class="loading-banners">
+                        <span style="color: #9ca3af;">No banners available</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const bannersHTML = availableBanners.map(banner => {
+                const isOwned = banner.bannerId === 'default' || userOwnedBanners.some(ub => ub.bannerId === banner.bannerId);
+                const isEquipped = equippedBanner === banner.bannerId;
+
+                let statusClass = isEquipped ? 'equipped' : (isOwned ? 'owned' : 'locked');
+
+                return `
+                    <div class="banner-card ${statusClass}" onclick="${isOwned ? `equipBanner('${banner.bannerId}')` : ''}">
+                        <div class="banner-status ${statusClass}"></div>
+                        <div class="banner-preview-small">
+                            <img src="${banner.imageUrl}" alt="${banner.name}">
+                        </div>
+                        <div class="banner-card-name">${banner.name}</div>
+                        <div class="banner-card-rarity ${banner.rarity}">${banner.rarity}</div>
+                        ${isEquipped ? '<div style="color: #10b981; font-size: 0.7rem; font-weight: 600;">EQUIPPED</div>' : ''}
+                        ${!isOwned ? '<div style="color: #6b7280; font-size: 0.7rem;">🔒 LOCKED</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            track.innerHTML = bannersHTML;
+
+            const slidesPerView = calculateSlidesPerView();
+            const maxSlide = Math.max(0, availableBanners.length - slidesPerView);
+
+            document.getElementById('prevBannerBtn').disabled = currentBannerSlide === 0;
+            document.getElementById('nextBannerBtn').disabled = currentBannerSlide >= maxSlide;
+        }
+
+        async function equipBanner(bannerId) {
+            try {
+                console.log('🔄 Equipping banner:', bannerId);
+
+                const response = await fetch('/api/banners/equip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bannerId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log('✅ Banner equipped successfully');
+                    equippedBanner = bannerId;
+                    renderBannersCarousel();
+
+                    // Update profile banner display
+                    const profileBanner = document.getElementById('profileBanner');
+                    const selectedBanner = availableBanners.find(b => b.bannerId === bannerId);
+
+                    if (selectedBanner && profileBanner) {
+                        profileBanner.innerHTML = `
+                            <img src="${selectedBanner.imageUrl}" alt="${selectedBanner.name}" class="banner-image">
+                            <div class="banner-overlay"></div>
+                        `;
+                    }
+
+                    alert('Banner equipped successfully!');
+                } else {
+                    console.error('❌ Failed to equip banner:', data.message);
+                    alert('Failed to equip banner: ' + data.message);
+                }
+            } catch (error) {
+                console.error('❌ Error equipping banner:', error);
+                alert('Error equipping banner. Please try again.');
+            }
+        }
+
+        async function removeBanner() {
+            if (!confirm('Are you sure you want to remove your current banner?')) {
+                return;
+            }
+
+            try {
+                console.log('🔄 Removing banner...');
+
+                const response = await fetch('/api/banners/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log('✅ Banner removed successfully');
+                    // Reload the page to show the removed banner
+                    window.location.reload();
+                } else {
+                    console.error('❌ Failed to remove banner:', data.message);
+                    alert('Failed to remove banner: ' + data.message);
+                }
+            } catch (error) {
+                console.error('❌ Error removing banner:', error);
+                alert('Error removing banner. Please try again.');
+            }
+        }
+
+        // Function to switch between collections
+        function switchCollection(type) {
+            const bordersBtn = document.getElementById('bordersNavBtn');
+            const bannersBtn = document.getElementById('bannersNavBtn');
+            const bordersCollection = document.getElementById('bordersCollection');
+            const bannersCollection = document.getElementById('bannersCollection');
+
+            if (type === 'borders') {
+                bordersBtn.classList.add('active');
+                bannersBtn.classList.remove('active');
+                bordersCollection.style.display = 'block';
+                bannersCollection.style.display = 'none';
+            } else if (type === 'banners') {
+                bordersBtn.classList.remove('active');
+                bannersBtn.classList.add('active');
+                bordersCollection.style.display = 'none';
+                bordersCollection.style.display = 'block';
+            }
+        }
+
     </script>
 </body>
 </html>
