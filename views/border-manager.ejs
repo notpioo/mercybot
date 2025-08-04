@@ -74,28 +74,17 @@
                 </div>
             </div>
 
-            <!-- Borders Section -->
+            <!-- Borders Table Section -->
             <div class="borders-section">
                 <div class="section-header">
                     <h2 class="section-title">Available Borders</h2>
-                    <div class="view-controls">
-                        <button class="view-toggle active" data-view="grid">
+                    <div class="table-controls">
+                        <button class="btn-secondary" onclick="refreshBorders()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                                <path d="M3 12A9 9 0 1 0 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 3V9H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                        </button>
-                        <button class="view-toggle" data-view="list">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/>
-                                <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/>
-                                <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/>
-                                <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2"/>
-                                <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2"/>
-                                <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2"/>
-                            </svg>
+                            Refresh
                         </button>
                     </div>
                 </div>
@@ -106,9 +95,26 @@
                     <p>Loading borders...</p>
                 </div>
 
-                <!-- Borders Grid -->
-                <div class="borders-grid grid-view" id="bordersGrid">
-                <!-- Borders will be loaded via JavaScript -->
+                <!-- Borders Table -->
+                <div class="table-container" id="bordersTableContainer" style="display: none;">
+                    <table class="borders-table">
+                        <thead>
+                            <tr>
+                                <th>Preview</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Rarity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bordersTableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <!-- Empty State -->
                 <div class="empty-state" id="emptyState" style="display: none;">
                     <div class="empty-icon">🎨</div>
@@ -117,6 +123,7 @@
                     <button class="btn-primary" onclick="openAddBorderModal()">Add Your First Border</button>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -443,37 +450,228 @@
             }
         }
 
-        /* Borders Grid - Completely Rebuilt Design */
-        .borders-grid {
-            display: grid;
-            gap: 2rem;
-            margin-top: 1rem;
+        /* Table Layout Styles */
+        .borders-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 20, 0.8);
+        }
+
+        .borders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .borders-table th {
+            background: rgba(139, 92, 246, 0.1);
+            color: #ffffff;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .borders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e5e7eb;
+        }
+
+        .borders-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .border-preview-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .preview-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .preview-border {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: calc(100% + 8px);
+            height: calc(100% + 8px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .preview-border img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .border-id {
+            font-family: monospace;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #a855f7;
+        }
+
+        .border-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .border-description {
+            color: #9ca3af;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rarity-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rarity-common {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .rarity-rare {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .rarity-epic {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .rarity-legendary {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-table {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-edit {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #16a34a;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
         }
 
         .borders-grid.grid-view {
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
 
         .borders-grid.list-view {
             grid-template-columns: 1fr;
+            max-width: 600px;
         }
 
         .border-card {
-            background: linear-gradient(145deg, rgba(30, 30, 40, 0.98), rgba(20, 20, 30, 1));
-            border-radius: 20px;
-            padding: 2rem;
-            border: 2px solid rgba(139, 92, 246, 0.15);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            height: 480px;
+            background: #2a2a35;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #3a3a45;
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 280px;
+            height: 350px;
             display: flex;
             flex-direction: column;
-            box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .border-card::before {
@@ -510,61 +708,57 @@
         }
 
         .border-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(139, 92, 246, 0.4);
-            box-shadow: 
-                0 12px 40px rgba(139, 92, 246, 0.25),
-                0 0 0 1px rgba(139, 92, 246, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            border-color: #5a5a65;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         }
 
         .border-preview {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
-            position: relative;
-            height: 160px;
+            margin-bottom: 1rem;
+            text-align: center;
         }
 
         .preview-avatar-container {
             position: relative;
-            width: 120px;
-            height: 120px;
-            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 0.8rem;
         }
 
         .sample-avatar {
-            width: 120px;
-            height: 120px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            font-size: 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            font-size: 2rem;
             position: relative;
             z-index: 1;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
         }
 
         .border-card:hover .sample-avatar {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
         }
 
         .border-overlay {
             position: absolute;
-            top: -20px;
-            left: -20px;
-            width: calc(100% + 40px);
-            height: calc(100% + 40px);
+            top: -12px;
+            left: -12px;
+            width: calc(100% + 24px);
+            height: calc(100% + 24px);
             border-radius: 50%;
             pointer-events: none;
             z-index: 2;
-            filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
         }
 
         .border-overlay img {
@@ -575,52 +769,56 @@
 
         .border-info {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .border-name {
             color: #ffffff;
-            font-size: 1.375rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 600;
             margin: 0 0 0.5rem 0;
-            line-height: 1.3;
-            background: linear-gradient(135deg, #ffffff, #e5e7eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-align: center;
         }
 
         .border-description {
             color: #9ca3af;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin: 0 0 1rem 0;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            line-height: 1.4;
+            text-align: center;
+            min-height: 2.8rem;
             overflow: hidden;
-            min-height: 2.7rem;
         }
 
         .border-meta {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
         }
 
         .rarity-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 16px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            position: relative;
-            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .border-id {
+            background: #3a3a45;
+            color: #b0b0b5;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            font-family: monospace;
         }
 
         .rarity-badge::before {
@@ -686,13 +884,12 @@
         .border-stats {
             display: flex;
             justify-content: space-around;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1.25rem;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(17, 24, 39, 0.4));
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: #333340;
+            border-radius: 8px;
+            border: 1px solid #404050;
         }
 
         .stat-item {
@@ -715,43 +912,40 @@
 
         .stat-label {
             color: #9ca3af;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
             color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .border-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.6rem;
             justify-content: center;
             margin-top: auto;
         }
 
         .btn-small {
             flex: 1;
-            padding: 0.875rem 1.5rem;
+            padding: 0.6rem 0.8rem;
             border: none;
-            border-radius: 12px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+            gap: 0.3rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            min-height: 44px;
-            position: relative;
-            overflow: hidden;
+            min-height: 36px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -772,31 +966,25 @@
         }
 
         .edit-btn {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.3));
-            color: #86efac;
-            border: 2px solid rgba(34, 197, 94, 0.4);
-            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.2);
+            background: #22c55e;
+            color: white;
+            border: 1px solid #16a34a;
         }
 
         .edit-btn:hover {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(16, 185, 129, 0.4));
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
-            border-color: rgba(34, 197, 94, 0.6);
+            background: #16a34a;
+            transform: translateY(-1px);
         }
 
         .delete-btn {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.3));
-            color: #fca5a5;
-            border: 2px solid rgba(239, 68, 68, 0.4);
-            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+            background: #ef4444;
+            color: white;
+            border: 1px solid #dc2626;
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.4));
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
-            border-color: rgba(239, 68, 68, 0.6);
+            background: #dc2626;
+            transform: translateY(-1px);
         }
 
         .btn-small[disabled] {
@@ -844,6 +1032,21 @@
             border-radius: 12px;
         }
 
+        /* Tablet Responsive */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .borders-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                max-width: 900px;
+            }
+            
+            .border-card {
+                max-width: 280px;
+                height: 330px;
+                padding: 1.3rem;
+            }
+        }
+
         /* Mobile Responsive - Updated for new design */
         @media (max-width: 768px) {
             .border-manager-container {
@@ -869,15 +1072,19 @@
                 gap: 1rem;
             }
             
-            .borders-grid.grid-view {
+            .borders-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1.2rem;
+                padding: 0.5rem;
+                max-width: 100%;
             }
             
             .border-card {
-                padding: 1.75rem;
-                height: 420px;
-                border-radius: 16px;
+                padding: 1.2rem;
+                height: 320px;
+                border-radius: 10px;
+                max-width: 100%;
+                margin: 0;
             }
             
             .preview-avatar-container {
@@ -1411,51 +1618,58 @@
         }
 
         // CRUD functions
-        async function editBorder(borderId) {
-            try {
-                const response = await fetch(`/api/borders/${borderId}`);
-                const border = await response.json();
-                
-                if (border.success) {
-                    const borderData = border.data;
-                    document.getElementById('editBorderOriginalId').value = borderData.borderId;
-                    document.getElementById('editBorderIdField').value = borderData.borderId;
-                    document.getElementById('editBorderName').value = borderData.name;
-                    document.getElementById('editBorderDescription').value = borderData.description;
-                    document.getElementById('editBorderRarity').value = borderData.rarity;
+        function editBorder(borderId) {
+            console.log('Edit border clicked:', borderId);
+            
+            fetch(`/api/borders/${borderId}`)
+                .then(response => response.json())
+                .then(border => {
+                    console.log('Border data received:', border);
                     
-                    openEditBorderModal();
-                } else {
+                    if (border.success) {
+                        const borderData = border.data;
+                        document.getElementById('editBorderOriginalId').value = borderData.borderId;
+                        document.getElementById('editBorderIdField').value = borderData.borderId;
+                        document.getElementById('editBorderName').value = borderData.name;
+                        document.getElementById('editBorderDescription').value = borderData.description;
+                        document.getElementById('editBorderRarity').value = borderData.rarity;
+                        
+                        openEditBorderModal();
+                    } else {
+                        alert('Failed to load border data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading border:', error);
                     alert('Failed to load border data');
-                }
-            } catch (error) {
-                console.error('Error loading border:', error);
-                alert('Failed to load border data');
-            }
+                });
         }
 
-        async function deleteBorder(borderId) {
-            if (!confirm('Are you sure you want to delete this border? This action cannot be undone.')) {
+        function deleteBorder(borderId) {
+            console.log('Delete border clicked:', borderId);
+            
+            if (!confirm('Apakah Anda yakin ingin menghapus border ini? Tindakan ini tidak dapat dibatalkan.')) {
                 return;
             }
 
-            try {
-                const response = await fetch(`/api/borders/${borderId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
+            fetch(`/api/borders/${borderId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Delete result:', result);
                 
                 if (result.success) {
-                    alert('Border deleted successfully');
+                    alert('Border berhasil dihapus');
                     refreshBorders();
                 } else {
-                    alert('Failed to delete border: ' + result.message);
+                    alert('Gagal menghapus border: ' + result.message);
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error('Error deleting border:', error);
-                alert('Failed to delete border');
-            }
+                alert('Gagal menghapus border');
+            });
         }
 
         function refreshBorders() {
@@ -1463,103 +1677,114 @@
         }
 
         // Load and display borders
-        async function loadBorders() {
+        function loadBorders() {
+            console.log('Loading borders...');
+            
             const loadingState = document.getElementById('loadingState');
-            const bordersGrid = document.getElementById('bordersGrid');
+            const bordersTableContainer = document.getElementById('bordersTableContainer');
             const emptyState = document.getElementById('emptyState');
             
             // Show loading state
             loadingState.style.display = 'block';
-            bordersGrid.innerHTML = '';
+            bordersTableContainer.style.display = 'none';
             emptyState.style.display = 'none';
             
-            try {
-                const response = await fetch('/api/borders');
-                const result = await response.json();
-                
-                if (result.success && result.data) {
-                    const borders = result.data;
+            fetch('/api/borders')
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Borders loaded:', result);
                     
                     // Hide loading state
                     loadingState.style.display = 'none';
                     
-                    if (borders.length === 0) {
-                        emptyState.style.display = 'block';
+                    if (result.success && result.data && result.data.length > 0) {
+                        displayBorders(result.data);
+                        updateStatistics(result.data);
+                        bordersTableContainer.style.display = 'block';
+                        emptyState.style.display = 'none';
                     } else {
-                        // Update statistics
-                        updateStatistics(borders);
-                        
-                        // Display borders
-                        displayBorders(borders);
+                        emptyState.style.display = 'block';
+                        bordersTableContainer.style.display = 'none';
                     }
-                } else {
-                    throw new Error('Failed to load borders');
-                }
-            } catch (error) {
-                console.error('Error loading borders:', error);
-                loadingState.style.display = 'none';
-                bordersGrid.innerHTML = '<div class="error-state">Failed to load borders. Please try refreshing the page.</div>';
-            }
+                })
+                .catch(error => {
+                    console.error('Error loading borders:', error);
+                    loadingState.style.display = 'none';
+                    bordersTableContainer.innerHTML = `
+                        <div class="error-state">
+                            <h3>❌ Error Loading Borders</h3>
+                            <p>Failed to load borders. Please try again.</p>
+                            <button onclick="loadBorders()" class="btn btn-primary">Retry</button>
+                        </div>
+                    `;
+                });
         }
 
         function updateStatistics(borders) {
-            document.getElementById('totalBorders').textContent = borders.length;
-            document.getElementById('legendaryCount').textContent = borders.filter(b => b.rarity === 'legendary').length;
-            document.getElementById('epicCount').textContent = borders.filter(b => b.rarity === 'epic').length;
-            document.getElementById('rareCount').textContent = borders.filter(b => b.rarity === 'rare').length;
+            const totalElement = document.getElementById('totalBorders');
+            const legendaryElement = document.getElementById('legendaryCount');
+            const epicElement = document.getElementById('epicCount');
+            const rareElement = document.getElementById('rareCount');
+            
+            if (totalElement) totalElement.textContent = borders.length;
+            if (legendaryElement) legendaryElement.textContent = borders.filter(b => b.rarity === 'legendary').length;
+            if (epicElement) epicElement.textContent = borders.filter(b => b.rarity === 'epic').length;
+            if (rareElement) rareElement.textContent = borders.filter(b => b.rarity === 'rare').length;
         }
 
         function displayBorders(borders) {
-            const bordersGrid = document.getElementById('bordersGrid');
+            const bordersTableBody = document.getElementById('bordersTableBody');
             
-            bordersGrid.innerHTML = borders.map(border => `
-                <div class="border-card">
-                    <div class="border-preview">
-                        <div class="preview-avatar-container">
-                            <div class="sample-avatar">👤</div>
-                            ${border.imageUrl ? `
-                                <div class="border-overlay">
-                                    <img src="${border.imageUrl}" alt="${border.name}">
-                                </div>
-                            ` : ''}
+            bordersTableBody.innerHTML = borders.map(border => `
+                <tr>
+                    <td>
+                        <div class="border-preview-cell">
+                            <div class="preview-avatar">
+                                👤
+                                ${border.imageUrl ? `
+                                    <div class="preview-border">
+                                        <img src="${border.imageUrl}" alt="${border.name}">
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div class="border-info">
-                            <h3 class="border-name">${border.name}</h3>
-                            <p class="border-description">${border.description || 'No description available'}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="border-meta">
-                        <span class="rarity-badge ${border.rarity}">${border.rarity}</span>
+                    </td>
+                    <td>
                         <span class="border-id">${border.borderId}</span>
-                    </div>
-                    
-                    <div class="border-stats">
-                        <div class="stat-item">
-                            <div class="stat-label">Status</div>
-                            <div class="stat-value">Active</div>
+                    </td>
+                    <td>
+                        <div class="border-name">${border.name}</div>
+                    </td>
+                    <td>
+                        <div class="border-description" title="${border.description || 'No description available'}">
+                            ${border.description || 'No description available'}
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Type</div>
-                            <div class="stat-value">Border</div>
+                    </td>
+                    <td>
+                        <span class="rarity-badge rarity-${border.rarity}">${border.rarity}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${border.isActive ? 'active' : 'inactive'}">
+                            ${border.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-table btn-edit" onclick="editBorder('${border.borderId}')" title="Edit Border">
+                                ✏️ Edit
+                            </button>
+                            ${border.borderId !== 'default' ? `
+                                <button class="btn-table btn-delete" onclick="deleteBorder('${border.borderId}')" title="Delete Border">
+                                    🗑️ Delete
+                                </button>
+                            ` : `
+                                <button class="btn-table" style="background: #6b7280; cursor: not-allowed;" disabled title="Cannot delete default border">
+                                    🔒 Default
+                                </button>
+                            `}
                         </div>
-                    </div>
-                    
-                    <div class="border-actions">
-                        <button class="btn-small edit-btn" onclick="editBorder('${border.borderId}')" title="Edit Border">
-                            ✏️ Edit
-                        </button>
-                        ${border.borderId !== 'default' ? `
-                            <button class="btn-small delete-btn" onclick="deleteBorder('${border.borderId}')" title="Delete Border">
-                                🗑️ Hapus
-                            </button>
-                        ` : `
-                            <button class="btn-small" style="background: rgba(107, 114, 128, 0.15); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); cursor: not-allowed;" disabled>
-                                🔒 Default
-                            </button>
-                        `}
-                    </div>
-                </div>
+                    </td>
+                </tr>
             `).join('');
         }
 
