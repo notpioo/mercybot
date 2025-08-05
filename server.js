@@ -64,6 +64,19 @@ const {
     getUserEquippedBanner
 } = require('./database/banners');
 
+const {
+    initFriendsTable,
+    sendFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
+    getUserFriends,
+    getPendingRequests,
+    getSentRequests,
+    getFriendshipStatus,
+    searchUsersByUsername,
+    removeFriend
+} = require('./database/friends');
+
 // Global variable to store bot instance
 let botInstance = null;
 let currentQRCode = null;
@@ -197,8 +210,10 @@ const connectDB = require('./database/connection');
         await initShopTable();
         // Initialize banners system
         await initBannersTable();
+        // Initialize friends system
+        await initFriendsTable();
 
-        console.log('✅ Announcements, Posts, Borders, Banners, and Shop system initialized successfully');
+        console.log('✅ Announcements, Posts, Borders, Banners, Shop, and Friends system initialized successfully');
     } catch (error) {
         console.error('❌ Failed to initialize announcements system:', error);
     }
@@ -318,6 +333,66 @@ app.get('/profile', async (req, res) => {
         equippedBorder: equippedBorder,
         equippedBanner: equippedBanner
     });
+});
+
+// View other user profile
+app.get('/profile/:phoneNumber', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.redirect('/');
+    }
+
+    try {
+        const { phoneNumber } = req.params;
+        const targetUserId = phoneNumber + '@s.whatsapp.net';
+        
+        console.log('🔍 Viewing profile for user:', targetUserId);
+
+        // Get target user data
+        const targetUser = await getUser(targetUserId);
+        if (!targetUser) {
+            return res.render('error', { 
+                message: 'User not found',
+                user: null
+            });
+        }
+
+        // Get target user borders and banners
+        const userBorderDoc = await getUserBorders(targetUserId);
+        const userBannerDoc = await getUserBanners(targetUserId);
+        const equippedBorder = await getUserEquippedBorder(targetUserId);
+        const equippedBanner = await getUserEquippedBanner(targetUserId);
+
+        // Get current user data for navigation
+        let currentUser = null;
+        if (req.session.userPhone) {
+            currentUser = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        }
+
+        console.log('📋 Other user profile page data:', {
+            targetUserId,
+            targetUsername: targetUser.username,
+            ownedBordersCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
+            ownedBannersCount: userBannerDoc.ownedBanners ? userBannerDoc.ownedBanners.length : 0,
+            equippedBorder: equippedBorder ? equippedBorder.borderId : null,
+            equippedBanner: equippedBanner ? equippedBanner.bannerId : null
+        });
+
+        res.render('user-profile', { 
+            targetUser: targetUser,
+            user: currentUser, // Current logged in user for navigation
+            userBorders: userBorderDoc.ownedBorders || [],
+            equippedBorder: equippedBorder,
+            equippedBanner: equippedBanner,
+            isOwnProfile: false
+        });
+
+    } catch (error) {
+        console.error('❌ Error viewing other user profile:', error);
+        res.render('error', { 
+            message: 'Error loading user profile',
+            user: null
+        });
+    }
 });
 
 // API to get available borders for user
@@ -554,6 +629,23 @@ app.get('/banner-manager', async (req, res) => {
 });
 
 // API Routes for Banner Management
+
+// Get all borders (public access for displaying in user profiles)
+app.get('/api/borders/all', async (req, res) => {
+    try {
+        const borders = await getAllBorders();
+        res.json({ 
+            success: true, 
+            borders: borders 
+        });
+    } catch (error) {
+        console.error('Error fetching borders:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch borders' 
+        });
+    }
+});
 
 // Get all banners
 app.get('/api/banners/all', async (req, res) => {
@@ -2847,6 +2939,262 @@ app.get('/api/shop/history', async (req, res) => {
             success: false, 
             message: 'Failed to fetch purchase history' 
         });
+    }
+});
+
+// Friends API Routes
+// Search users for friends
+app.get('/api/friends/search', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { q } = req.query;
+        const currentUserId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!q || q.trim().length < 2) {
+            return res.status(400).json({ success: false, message: 'Search query must be at least 2 characters' });
+        }
+
+        const users = await searchUsersByUsername(q.trim(), currentUserId, 10);
+        res.json({ success: true, users });
+    } catch (error) {
+        console.error('Error searching users:', error);
+        res.status(500).json({ success: false, message: 'Failed to search users' });
+    }
+});
+
+// Send friend request
+app.post('/api/friends/request', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { recipientUserId } = req.body;
+        const requesterUserId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!recipientUserId) {
+            return res.status(400).json({ success: false, message: 'Recipient user ID is required' });
+        }
+
+        const friendRequest = await sendFriendRequest(requesterUserId, recipientUserId);
+        res.json({ success: true, friendRequest });
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+        res.status(500).json({ success: false, message: error.message || 'Failed to send friend request' });
+    }
+});
+
+// Get friend requests (received)
+app.get('/api/friends/requests', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        const requests = await getPendingRequests(userId);
+        res.json({ success: true, requests });
+    } catch (error) {
+        console.error('Error loading friend requests:', error);
+        res.status(500).json({ success: false, message: 'Failed to load friend requests' });
+    }
+});
+
+// Accept friend request
+app.post('/api/friends/accept', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { requestId } = req.body;
+        const recipientUserId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!requestId) {
+            return res.status(400).json({ success: false, message: 'Request ID is required' });
+        }
+
+        const acceptedRequest = await acceptFriendRequest(requestId, recipientUserId);
+        res.json({ success: true, acceptedRequest });
+    } catch (error) {
+        console.error('Error accepting friend request:', error);
+        res.status(500).json({ success: false, message: error.message || 'Failed to accept friend request' });
+    }
+});
+
+// Decline friend request
+app.post('/api/friends/decline', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { requestId } = req.body;
+        const recipientUserId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!requestId) {
+            return res.status(400).json({ success: false, message: 'Request ID is required' });
+        }
+
+        const declinedRequest = await declineFriendRequest(requestId, recipientUserId);
+        res.json({ success: true, declinedRequest });
+    } catch (error) {
+        console.error('Error declining friend request:', error);
+        res.status(500).json({ success: false, message: error.message || 'Failed to decline friend request' });
+    }
+});
+
+// Get friends list
+app.get('/api/friends/list', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+        const friends = await getUserFriends(userId);
+        res.json({ success: true, friends });
+    } catch (error) {
+        console.error('Error loading friends list:', error);
+        res.status(500).json({ success: false, message: 'Failed to load friends list' });
+    }
+});
+
+// Remove friend
+app.post('/api/friends/remove', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { friendshipId } = req.body;
+        const userId = req.session.userPhone + '@s.whatsapp.net';
+
+        if (!friendshipId) {
+            return res.status(400).json({ success: false, message: 'Friendship ID is required' });
+        }
+
+        await removeFriend(friendshipId, userId);
+        res.json({ success: true, message: 'Friend removed successfully' });
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        res.status(500).json({ success: false, message: error.message || 'Failed to remove friend' });
+    }
+});
+
+// Get other user profile data
+app.get('/api/user/profile/:userId', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { userId } = req.params;
+        
+        if (!userId) {
+            return res.status(400).json({ success: false, message: 'User ID is required' });
+        }
+
+        // Format userId to include WhatsApp suffix if not present
+        const formattedUserId = userId.includes('@') ? userId : userId + '@s.whatsapp.net';
+
+        console.log('🔍 Getting profile data for user:', formattedUserId);
+
+        // Get user data
+        const userData = await getUser(formattedUserId);
+        if (!userData) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Get user borders and banners
+        const userBorderDoc = await getUserBorders(formattedUserId);
+        const userBannerDoc = await getUserBanners(formattedUserId);
+        const equippedBorder = await getUserEquippedBorder(formattedUserId);
+        const equippedBanner = await getUserEquippedBanner(formattedUserId);
+
+        console.log('📋 Other user profile data:', {
+            userId: formattedUserId,
+            username: userData.username,
+            level: userData.level,
+            status: userData.status,
+            ownedBordersCount: userBorderDoc.ownedBorders ? userBorderDoc.ownedBorders.length : 0,
+            ownedBannersCount: userBannerDoc.ownedBanners ? userBannerDoc.ownedBanners.length : 0,
+            equippedBorder: equippedBorder ? equippedBorder.borderId : null,
+            equippedBanner: equippedBanner ? equippedBanner.bannerId : null
+        });
+
+        res.json({
+            success: true,
+            user: {
+                userId: userData.userId,
+                username: userData.username,
+                level: userData.level,
+                xp: userData.xp,
+                totalXp: userData.totalXp,
+                status: userData.status,
+                memberSince: userData.memberSince,
+                profilePhoto: userData.profilePhoto,
+                lastActive: userData.lastActive
+            },
+            borders: {
+                owned: userBorderDoc.ownedBorders || [],
+                equipped: equippedBorder
+            },
+            banners: {
+                owned: userBannerDoc.ownedBanners || [],
+                equipped: equippedBanner
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error getting other user profile:', error);
+        res.status(500).json({ success: false, message: 'Failed to get user profile' });
+    }
+});
+
+// Get user profile with borders and banners
+app.get('/api/user/profile', async (req, res) => {
+    if (!req.session.isAuthenticated && !req.session.isOwner) {
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    try {
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: 'User ID is required' });
+        }
+
+        // Get user data
+        const userData = await getUser(userId);
+        if (!userData) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Get user's equipped banner and border
+        const [userBanners, userBorders] = await Promise.all([
+            getUserBanners(userId),
+            getUserBorders(userId)
+        ]);
+
+        const profileData = {
+            userId: userData.userId,
+            username: userData.username,
+            profilePhoto: userData.profilePhoto,
+            level: userData.level,
+            totalXp: userData.totalXp,
+            createdAt: userData.createdAt,
+            equippedBanner: userBanners.equippedBanner,
+            equippedBorder: userBorders.equippedBorder
+        };
+
+        res.json({ success: true, user: profileData });
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch user profile' });
     }
 });
 

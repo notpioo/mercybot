@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= targetUser.username || 'User' %> - Profile - NoMercy</title>
+    <link rel="stylesheet" href="/styles.css?v=2025080313">
+    <link rel="stylesheet" href="/navigation.css?v=2025080313">
+    <link rel="stylesheet" href="/dashboard.css?v=2025080313">
+</head>
+<body>
+    <!-- Include Navigation -->
+    <%- include('partials/navigation', { currentPage: 'social', user: user }) %>
+
+    <main class="main-content">
+        <div class="profile-container">
+            <!-- Back Button -->
+            <div class="back-navigation">
+                <button onclick="history.back()" class="back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back
+                </button>
+            </div>
+
+            <!-- Profile Header Section -->
+            <div class="profile-hero">
+                <!-- Profile Banner Background -->
+                <div class="profile-banner" id="profileBanner">
+                    <% if (equippedBanner && equippedBanner.imageUrl) { %>
+                        <img src="<%= equippedBanner.imageUrl %>" alt="<%= equippedBanner.name %>" class="banner-image">
+                    <% } else { %>
+                        <div class="default-banner"></div>
+                    <% } %>
+                    <div class="banner-overlay"></div>
+                </div>
+
+                <div class="profile-main-info">
+                    <div class="avatar-section">
+                        <div class="avatar-wrapper">
+                            <div class="profile-avatar-container">
+                                <% if (targetUser && targetUser.profilePhoto) { %>
+                                    <img src="<%= targetUser.profilePhoto %>" alt="Profile Photo" class="profile-avatar">
+                                <% } else { %>
+                                    <div class="profile-avatar default-avatar">
+                                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white"/>
+                                            <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="white"/>
+                                        </svg>
+                                    </div>
+                                <% } %>
+
+                                <% if (equippedBorder && equippedBorder.imageUrl) { %>
+                                    <div class="profile-border-overlay">
+                                        <img src="<%= equippedBorder.imageUrl %>" alt="<%= equippedBorder.name %>" class="profile-border-image">
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="profile-identity">
+                            <div class="profile-header-top">
+                                <div class="profile-info">
+                                    <h1 class="username"><%= targetUser ? targetUser.username || 'User' : 'User' %></h1>
+                                    <p class="user-id">ID: <%= targetUser ? targetUser.userId.split('@')[0] : 'Unknown' %></p>
+                                </div>
+                            </div>
+
+                            <div class="user-badges">
+                                <% if (targetUser) { %>
+                                    <% if (targetUser.status === 'owner') { %>
+                                        <span class="status-badge owner-badge">Owner</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } else if (targetUser.status === 'premium') { %>
+                                        <span class="status-badge premium-badge">Premium</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } else { %>
+                                        <span class="status-badge basic-badge">Basic</span>
+                                        <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                    <% } %>
+                                <% } else { %>
+                                    <span class="status-badge basic-badge">Basic</span>
+                                    <span class="rank-badge luminary-badge">⭐ Luminary</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Level Progress Card -->
+                <div class="stat-card level-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <h3>Level & Peringkat</h3>
+                    </div>
+
+                    <%
+                        let xp = targetUser ? targetUser.xp || 0 : 0;
+                        let totalXp = targetUser ? targetUser.totalXp || 0 : 0;
+                        let level = targetUser ? targetUser.level || 1 : 1;
+                        let xpRequired = Math.floor(50 + (level * 25) + (level ** 1.2 * 15));
+
+                        // Get current rank dynamically
+                        let currentRank = null;
+                        if (targetUser) {
+                            const ranks = [
+                                { name: 'Luminary', minLevel: 1, maxLevel: 15, color: '#fbbf24', icon: '⭐' },
+                                { name: 'Sage', minLevel: 16, maxLevel: 30, color: '#10b981', icon: '🌟' },
+                                { name: 'Visionary', minLevel: 31, maxLevel: 50, color: '#3b82f6', icon: '🔮' },
+                                { name: 'Guardian', minLevel: 51, maxLevel: 75, color: '#8b5cf6', icon: '🛡️' },
+                                { name: 'Mastermind', minLevel: 76, maxLevel: 100, color: '#f59e0b', icon: '🧠' },
+                                { name: 'Zenith', minLevel: 101, maxLevel: 129, color: '#ef4444', icon: '⚡' },
+                                { name: 'Celestial', minLevel: 130, maxLevel: 999, color: '#ec4899', icon: '👑' }
+                            ];
+
+                            for (const rank of ranks) {
+                                if (level >= rank.minLevel && level <= rank.maxLevel) {
+                                    currentRank = rank;
+                                    break;
+                                }
+                            }
+                            if (!currentRank) {
+                                currentRank = ranks[ranks.length - 1]; // Default to highest rank
+                            }
+                        } else {
+                            currentRank = { name: 'Luminary', icon: '⭐' };
+                        }
+                    %>
+
+                    <div class="level-showcase">
+                        <div class="level-number-large"><%= level %></div>
+                        <div class="rank-display">
+                            <div class="rank-name"><%= currentRank.icon %> <%= currentRank.name %></div>
+                        </div>
+                    </div>
+
+                    <div class="xp-progress-section">
+                        <div class="xp-info">
+                            <span class="current-xp"><%= xp %> XP</span>
+                            <span class="required-xp"><%= xpRequired %> XP</span>
+                        </div>
+                        <div class="total-xp-obtained">
+                            Total XP Diperoleh: <%= totalXp %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Card -->
+                <div class="stat-card statistics-card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <h3>Informasi Pengguna</h3>
+                    </div>
+
+                    <div class="stats-grid-inner">
+                        <div class="stat-item">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Status</div>
+                                <div class="stat-value status-text <%= targetUser ? targetUser.status : 'basic' %>">
+                                    <%= targetUser ? (targetUser.status === 'owner' ? 'Owner' : targetUser.status === 'premium' ? 'Premium' : 'Basic') : 'Basic' %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Member Since</div>
+                                <div class="stat-value">
+                                    <%= targetUser ? new Date(targetUser.memberSince).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown' %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">🕒</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Last Active</div>
+                                <div class="stat-value">
+                                    <%= targetUser ? new Date(targetUser.lastActive).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown' %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Level</div>
+                                <div class="stat-value"><%= level %></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collection Display Section -->
+            <div class="border-section-modern">
+                <!-- Collection Navigation -->
+                <div class="collection-nav">
+                    <button class="collection-nav-btn active" onclick="switchCollection('borders')" id="bordersNavBtn">
+                        🎨 Borders
+                    </button>
+                    <button class="collection-nav-btn" onclick="switchCollection('banners')" id="bannersNavBtn">
+                        🖼️ Banners
+                    </button>
+                </div>
+
+                <!-- Borders Collection -->
+                <div class="collection-content" id="bordersCollection">
+                    <div class="border-header-compact">
+                        <div class="header-content">
+                            <h3>🎨 Borders Collection</h3>
+                            <p><%= targetUser.username || 'User' %>'s border collection</p>
+                        </div>
+                        <% if (equippedBorder) { %>
+                            <div class="equipped-badge">
+                                <div class="equipped-preview">
+                                    <img src="<%= equippedBorder.imageUrl %>" alt="<%= equippedBorder.name %>">
+                                </div>
+                                <div class="equipped-info">
+                                    <span class="equipped-name"><%= equippedBorder.name %></span>
+                                    <span class="equipped-rarity <%= equippedBorder.rarity %>">
+                                        <%= equippedBorder.rarity %>
+                                    </span>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="no-border-equipped">
+                                <span>No border equipped</span>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="user-collection-display">
+                        <% if (userBorders && userBorders.length > 0) { %>
+                            <div class="owned-items-grid">
+                                <% userBorders.forEach(function(ownedBorder) { %>
+                                    <div class="collection-item border-item" data-border-id="<%= ownedBorder.borderId %>">
+                                        <div class="item-preview">
+                                            <div class="border-preview-small">
+                                                <div class="preview-avatar">
+                                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="#8b5cf6"/>
+                                                        <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="#8b5cf6"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="item-name"><%= ownedBorder.borderId %></div>
+                                            <div class="item-date">Obtained: <%= new Date(ownedBorder.obtainedAt).toLocaleDateString('id-ID') %></div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-items">
+                                <p>No borders owned</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Banners Collection -->
+                <div class="collection-content" id="bannersCollection" style="display: none;">
+                    <div class="border-header-compact">
+                        <div class="header-content">
+                            <h3>🖼️ Banners Collection</h3>
+                            <p><%= targetUser.username || 'User' %>'s banner collection</p>
+                        </div>
+                        <% if (equippedBanner) { %>
+                            <div class="equipped-badge">
+                                <div class="equipped-preview">
+                                    <img src="<%= equippedBanner.imageUrl %>" alt="<%= equippedBanner.name %>">
+                                </div>
+                                <div class="equipped-info">
+                                    <span class="equipped-name"><%= equippedBanner.name %></span>
+                                    <span class="equipped-rarity <%= equippedBanner.rarity %>">
+                                        <%= equippedBanner.rarity %>
+                                    </span>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="no-border-equipped">
+                                <span>No banner equipped</span>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="user-collection-display">
+                        <% if (userBanners && userBanners.length > 0) { %>
+                            <div class="owned-items-grid">
+                                <% userBanners.forEach(function(ownedBanner) { %>
+                                    <div class="collection-item banner-item" data-banner-id="<%= ownedBanner.bannerId %>">
+                                        <div class="item-preview banner-preview">
+                                            <div class="banner-thumbnail"></div>
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="item-name"><%= ownedBanner.bannerId %></div>
+                                            <div class="item-date">Obtained: <%= new Date(ownedBanner.obtainedAt).toLocaleDateString('id-ID') %></div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-items">
+                                <p>No banners owned</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .back-navigation {
+            margin-bottom: 1rem;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(50, 50, 50, 0.9);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-collection-display {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .owned-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .collection-item {
+            background: rgba(40, 40, 40, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .collection-item:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .item-preview {
+            margin-bottom: 0.75rem;
+        }
+
+        .border-preview-small {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            background: rgba(60, 60, 60, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .banner-preview {
+            width: 100%;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .banner-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .item-info {
+            text-align: center;
+        }
+
+        .item-name {
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            text-transform: capitalize;
+        }
+
+        .item-date {
+            color: #9ca3af;
+            font-size: 0.75rem;
+        }
+
+        .no-items {
+            text-align: center;
+            padding: 2rem;
+            color: #9ca3af;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1rem;
+            }
+
+            .owned-items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .collection-item {
+                padding: 0.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // Function to switch between collections
+        function switchCollection(type) {
+            const bordersBtn = document.getElementById('bordersNavBtn');
+            const bannersBtn = document.getElementById('bannersNavBtn');
+            const bordersCollection = document.getElementById('bordersCollection');
+            const bannersCollection = document.getElementById('bannersCollection');
+
+            if (type === 'borders') {
+                bordersBtn.classList.add('active');
+                bannersBtn.classList.remove('active');
+                bordersCollection.style.display = 'block';
+                bannersCollection.style.display = 'none';
+            } else if (type === 'banners') {
+                bordersBtn.classList.remove('active');
+                bannersBtn.classList.add('active');
+                bordersCollection.style.display = 'none';
+                bannersCollection.style.display = 'block';
+            }
+        }
+
+        // Load border images dynamically
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load border data and images
+            const borderItems = document.querySelectorAll('.border-item');
+            const bannerItems = document.querySelectorAll('.banner-item');
+
+            // Load all available borders and banners data
+            try {
+                const [bordersResponse, bannersResponse] = await Promise.all([
+                    fetch('/api/borders/all'),
+                    fetch('/api/banners/all')
+                ]);
+
+                const bordersData = await bordersResponse.json();
+                const bannersData = await bannersResponse.json();
+
+                if (bordersData.success) {
+                    const borders = bordersData.borders;
+                    
+                    borderItems.forEach(item => {
+                        const borderId = item.dataset.borderId;
+                        const border = borders.find(b => b.borderId === borderId);
+                        
+                        if (border) {
+                            const borderPreview = item.querySelector('.border-preview-small');
+                            if (borderPreview && border.imageUrl) {
+                                borderPreview.innerHTML = `<img src="${border.imageUrl}" alt="${border.name}" style="width: 100%; height: 100%; object-fit: contain;">`;
+                            }
+                            
+                            const itemName = item.querySelector('.item-name');
+                            if (itemName) {
+                                itemName.textContent = border.name;
+                            }
+                        }
+                    });
+                }
+
+                if (bannersData.success) {
+                    const banners = bannersData.banners;
+                    
+                    bannerItems.forEach(item => {
+                        const bannerId = item.dataset.bannerId;
+                        const banner = banners.find(b => b.bannerId === bannerId);
+                        
+                        if (banner) {
+                            const bannerThumbnail = item.querySelector('.banner-thumbnail');
+                            if (bannerThumbnail && banner.imageUrl) {
+                                bannerThumbnail.innerHTML = `<img src="${banner.imageUrl}" alt="${banner.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                            }
+                            
+                            const itemName = item.querySelector('.item-name');
+                            if (itemName) {
+                                itemName.textContent = banner.name;
+                            }
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading collection data:', error);
+            }
+        });
+    </script>
+</body>
+</html>

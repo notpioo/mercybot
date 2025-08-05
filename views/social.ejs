@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -581,6 +580,461 @@
             background: rgba(99, 102, 241, 0.1);
             border-color: rgba(99, 102, 241, 0.3);
         }
+
+        /* Tab Content Styles */
+        .tab-content {
+            display: block;
+        }
+
+        .tab-content[style*="display: none"] {
+            display: none !important;
+        }
+
+        /* Friends Section Styles */
+        .friends-search-section,
+        .friend-requests-section,
+        .friends-list-section {
+            background: rgba(40, 40, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-header h3,
+        .section-header h3 {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-header p {
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .search-button {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-results {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-username {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-status {
+            color: #a0a0a0;
+            font-size: 0.875rem;
+        }
+
+        .friend-action-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .friend-action-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #ffffff;
+        }
+
+        /* Friend Actions for Friend List */
+        .friend-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .action-icon-btn {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            color: #a0a0a0;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-icon-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .action-icon-btn.profile {
+            color: #6366f1;
+        }
+
+        .action-icon-btn.profile:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .action-icon-btn.message {
+            color: #10b981;
+        }
+
+        .action-icon-btn.message:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .action-icon-btn.delete {
+            color: #ef4444;
+        }
+
+        .action-icon-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Hidden sections */
+        .section-hidden {
+            display: none !important;
+        }
+
+        /* Messages Tab Styles */
+        .messages-container {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .messages-header h3 {
+            color: #ffffff;
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .messages-header p {
+            color: #a0a0a0;
+            margin: 0 0 2rem 0;
+        }
+
+        .coming-soon-section {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .coming-soon-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon-section h4 {
+            color: #ffffff;
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .coming-soon-section > p {
+            color: #a0a0a0;
+            margin: 0 0 2rem 0;
+            line-height: 1.6;
+        }
+
+        .features-preview {
+            display: grid;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+        }
+
+        .feature-icon {
+            font-size: 1.2rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .messages-container {
+                padding: 1rem;
+            }
+
+            .coming-soon-section {
+                padding: 2rem 1rem;
+            }
+
+            .coming-soon-icon {
+                font-size: 3rem;
+            }
+        }
+
+        .friend-action-btn.success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .friend-action-btn.success:hover {
+            background: rgba(34, 197, 94, 0.3);
+            color: #ffffff;
+        }
+
+        .friend-action-btn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .friend-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ffffff;
+        }
+
+        .friend-action-btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .section-header.collapsible:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin: -0.5rem -0.5rem 0.5rem -0.5rem;
+        }
+
+        .requests-count,
+        .friends-count,
+        .posts-count {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .toggle-icon {
+            margin-left: auto;
+            color: #a0a0a0;
+            font-size: 0.875rem;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(-90deg);
+        }
+
+        .requests-content {
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .requests-content.collapsed {
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .friend-requests-list,
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .request-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .request-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .my-feed-section {
+            margin-top: 2rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #a0a0a0;
+        }
+
+        .no-results .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-friends {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #a0a0a0;
+        }
+
+        .empty-friends .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #6366f1;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Style for the action buttons within request-actions and friend-actions */
+        .request-actions .friend-action-btn,
+        .friend-actions .action-icon-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 70px; /* Adjust as needed */
+        }
+
+        .request-actions .friend-action-btn.danger {
+            min-width: 60px; /* Shorter for Decline */
+        }
+        
+        .request-actions .friend-action-btn.view-btn,
+        .friend-actions .action-icon-btn.profile {
+             min-width: 90px; /* Wider for View Profile */
+        }
+
+
+        /* Add style for view profile button */
+        .view-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .view-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
     </style>
 </head>
 <body>
@@ -595,44 +1049,145 @@
         <!-- Social Navigation -->
         <div class="social-nav">
             <div class="social-nav-tabs">
+                <div class="social-nav-tab" data-tab="post">✏️ Post</div>
                 <div class="social-nav-tab active" data-tab="feed">📰 Feed</div>
-                <div class="social-nav-tab" data-tab="my-feed">👤 My Feed</div>
+                <div class="social-nav-tab" data-tab="friends">👥 Friends</div>
+                <div class="social-nav-tab" data-tab="messages">💬 Messages</div>
             </div>
         </div>
 
-        <!-- Create Post Section -->
-        <div class="create-post">
-            <h3>Bagikan sesuatu</h3>
-            <form class="post-form" id="createPostForm">
-                <div class="post-type-selector">
-                    <button type="button" class="type-button active" data-type="text">📝 Text</button>
-                    <button type="button" class="type-button" data-type="image">🖼️ Foto</button>
-                    <button type="button" class="type-button" data-type="video">🎥 Video</button>
-                </div>
-                
-                <textarea 
-                    class="post-content" 
-                    id="postContent"
-                    placeholder="Apa yang ada di pikiran Anda?"
-                    required
-                ></textarea>
-                
-                <div class="file-upload-section" id="fileUploadSection">
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <div class="upload-icon">📁</div>
-                        <div class="upload-text">Klik atau drag & drop file di sini</div>
-                        <div style="font-size: 0.875rem; color: #666;">Maksimal 10MB</div>
+        <!-- Post Tab Content -->
+        <div class="tab-content" id="postTab" style="display: none;">
+            <div class="create-post">
+                <h3>Buat Postingan Baru</h3>
+                <form class="post-form" id="createPostForm">
+                    <div class="post-type-selector">
+                        <button type="button" class="type-button active" data-type="text">📝 Text</button>
+                        <button type="button" class="type-button" data-type="image">🖼️ Foto</button>
+                        <button type="button" class="type-button" data-type="video">🎥 Video</button>
                     </div>
-                    <input type="file" class="file-input" id="fileInput" accept="image/*,video/*">
-                    <div class="file-preview" id="filePreview">
-                        <button type="button" class="remove-file" id="removeFile">Hapus File</button>
+
+                    <textarea 
+                        class="post-content" 
+                        id="postContent"
+                        placeholder="Apa yang ada di pikiran Anda?"
+                        required
+                    ></textarea>
+
+                    <div class="file-upload-section" id="fileUploadSection">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Klik atau drag & drop file di sini</div>
+                            <div style="font-size: 0.875rem; color: #666;">Maksimal 10MB</div>
+                        </div>
+                        <input type="file" class="file-input" id="fileInput" accept="image/*,video/*">
+                        <div class="file-preview" id="filePreview">
+                            <button type="button" class="remove-file" id="removeFile">Hapus File</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="post-button" id="postButton">
+                        Posting
+                    </button>
+                </form>
+            </div>
+
+            <!-- My Feed Section -->
+            <div class="my-feed-section">
+                <div class="section-header">
+                    <h3>📝 Postingan Saya</h3>
+                    <div class="posts-count" id="myPostsCount">0 postingan</div>
+                </div>
+                <div class="posts-feed" id="myPostsContainer">
+                    <!-- My posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed Tab Content -->
+        <div class="tab-content" id="feedTab">
+            <!-- Posts Feed -->
+            <div class="posts-feed" id="postsContainer">
+                <!-- Posts will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Friends Tab Content -->
+        <div class="tab-content" id="friendsTab" style="display: none;">
+            <!-- Search Section -->
+            <div class="friends-search-section">
+                <div class="search-header">
+                    <h3>🔍 Cari Teman</h3>
+                    <p>Cari teman berdasarkan nickname</p>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="friendSearchInput" placeholder="Ketik nickname teman..." class="search-input">
+                    <button type="button" id="searchFriendsBtn" class="search-button">
+                        <span class="search-icon">🔍</span>
+                    </button>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <!-- Friend Requests Section -->
+            <div class="friend-requests-section" id="friendRequestsSection">
+                <div class="section-header collapsible" id="requestsHeader">
+                    <h3>📬 Permintaan Pertemanan</h3>
+                    <div class="requests-count" id="requestsCount">0 permintaan</div>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="requests-content" id="requestsContent">
+                    <div class="friend-requests-list" id="friendRequestsList">
+                        <!-- Friend requests will be loaded here -->
                     </div>
                 </div>
-                
-                <button type="submit" class="post-button" id="postButton">
-                    Posting
-                </button>
-            </form>
+            </div>
+
+            <!-- Friends List Section -->
+            <div class="friends-list-section">
+                <div class="section-header">
+                    <h3>👥 Daftar Teman</h3>
+                    <div class="friends-count" id="friendsCount">0 teman</div>
+                </div>
+                <div class="friends-list" id="friendsList">
+                    <!-- Friends list will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Tab Content -->
+        <div class="tab-content" id="messagesTab" style="display: none;">
+            <div class="messages-container">
+                <div class="messages-header">
+                    <h3>💬 Messages</h3>
+                    <p>Fitur pesan dalam tahap pengembangan</p>
+                </div>
+                <div class="coming-soon-section">
+                    <div class="coming-soon-icon">🚧</div>
+                    <h4>Fitur Segera Hadir!</h4>
+                    <p>Sistem pesan internal sedang dalam pengembangan dan akan segera tersedia.</p>
+                    <div class="features-preview">
+                        <div class="feature-item">
+                            <span class="feature-icon">💬</span>
+                            <span>Chat real-time dengan teman</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <span>Group chat komunitas</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📷</span>
+                            <span>Kirim foto dan media</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔔</span>
+                            <span>Notifikasi pesan baru</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Posts Feed -->
@@ -648,11 +1203,16 @@
         let selectedFile = null;
         let allPosts = [];
         let myPosts = [];
+        let searchTimeout = null;
+        let friendRequests = [];
+        let friends = [];
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             loadPosts();
             initializeEventListeners();
+            // Set default tab to feed
+            switchTab('feed');
         });
 
         function initializeEventListeners() {
@@ -663,15 +1223,57 @@
                 });
             });
 
+            // Friends search functionality
+            const searchInput = document.getElementById('friendSearchInput');
+            const searchBtn = document.getElementById('searchFriendsBtn');
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (this.value.trim().length >= 2) {
+                        searchFriends(this.value.trim());
+                    } else {
+                        document.getElementById('searchResults').innerHTML = '';
+                    }
+                }, 300);
+            });
+
+            searchBtn.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query.length >= 2) {
+                    searchFriends(query);
+                }
+            });
+
+            // Enter key for search
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query.length >= 2) {
+                        searchFriends(query);
+                    }
+                }
+            });
+
+            // Friend requests collapse toggle
+            const requestsHeader = document.getElementById('requestsHeader');
+            requestsHeader.addEventListener('click', function() {
+                const content = document.getElementById('requestsContent');
+                const icon = this.querySelector('.toggle-icon');
+
+                content.classList.toggle('collapsed');
+                icon.classList.toggle('rotated');
+            });
+
             // Post type selector
             document.querySelectorAll('.type-button').forEach(button => {
                 button.addEventListener('click', function() {
                     document.querySelectorAll('.type-button').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     const type = this.dataset.type;
                     const fileSection = document.getElementById('fileUploadSection');
-                    
+
                     if (type === 'image' || type === 'video') {
                         fileSection.style.display = 'block';
                         document.getElementById('fileInput').accept = type === 'image' ? 'image/*' : 'video/*';
@@ -710,13 +1312,33 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            
+
             // Update active tab
             document.querySelectorAll('.social-nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-            
-            // Display posts based on tab
-            displayPosts();
+
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show current tab content
+            const tabContent = document.getElementById(tab + 'Tab');
+            if (tabContent) {
+                tabContent.style.display = 'block';
+            }
+
+            // Load tab-specific data
+            if (tab === 'feed') {
+                loadPosts();
+            } else if (tab === 'post') {
+                loadMyPosts();
+            } else if (tab === 'friends') {
+                loadFriendsData();
+            } else if (tab === 'messages') {
+                // Messages tab - no specific data loading needed
+                // Just show the coming soon content
+            }
         }
 
         function handleDragOver(e) {
@@ -747,9 +1369,9 @@
 
             selectedFile = file;
             const filePreview = document.getElementById('filePreview');
-            
+
             filePreview.innerHTML = '<button type="button" class="remove-file" id="removeFile">Hapus File</button>';
-            
+
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
@@ -760,9 +1382,9 @@
                 video.controls = true;
                 filePreview.insertBefore(video, filePreview.firstChild);
             }
-            
+
             filePreview.style.display = 'block';
-            
+
             // Re-attach remove file event
             document.getElementById('removeFile').addEventListener('click', removeFile);
         }
@@ -775,46 +1397,46 @@
 
         async function handlePostSubmit(e) {
             e.preventDefault();
-            
+
             const postButton = document.getElementById('postButton');
             const content = document.getElementById('postContent').value.trim();
             const type = document.querySelector('.type-button.active').dataset.type;
-            
+
             if (!content) {
                 alert('Konten tidak boleh kosong!');
                 return;
             }
-            
+
             if ((type === 'image' || type === 'video') && !selectedFile) {
                 alert('File media diperlukan untuk postingan foto/video!');
                 return;
             }
-            
+
             postButton.disabled = true;
             postButton.textContent = 'Memposting...';
-            
+
             try {
                 let mediaUrl = '';
-                
+
                 if (selectedFile) {
                     // Upload file first
                     const formData = new FormData();
                     formData.append('file', selectedFile);
-                    
+
                     const uploadResponse = await fetch('/api/upload', {
                         method: 'POST',
                         body: formData
                     });
-                    
+
                     const uploadResult = await uploadResponse.json();
-                    
+
                     if (uploadResult.success) {
                         mediaUrl = uploadResult.fileUrl;
                     } else {
                         throw new Error(uploadResult.message || 'Failed to upload file');
                     }
                 }
-                
+
                 const response = await fetch('/api/posts/create', {
                     method: 'POST',
                     headers: {
@@ -826,14 +1448,14 @@
                         mediaUrl: mediaUrl
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Reset form
                     document.getElementById('postContent').value = '';
                     removeFile();
-                    
+
                     // Reload posts
                     await loadPosts();
                 } else {
@@ -852,25 +1474,497 @@
             try {
                 const response = await fetch('/api/posts/all');
                 const result = await response.json();
-                
+
                 if (result.success) {
                     allPosts = result.posts || [];
-                    
+
                     // Filter my posts
                     const currentUserId = '<%= user ? user.userId : "" %>';
                     myPosts = allPosts.filter(post => post.userId === currentUserId);
-                    
-                    displayPosts();
+
+                    if (currentTab === 'feed') {
+                        displayPosts();
+                    }
+                } else {
+                    console.error('Failed to load posts:', result.message);
                 }
             } catch (error) {
                 console.error('Error loading posts:', error);
             }
         }
 
+        // Friends functionality
+        async function loadFriendsData() {
+            await Promise.all([
+                loadFriendRequests(),
+                loadFriends()
+            ]);
+        }
+
+        async function loadMyPosts() {
+            if (myPosts.length === 0) {
+                await loadPosts();
+            }
+            displayMyPosts();
+        }
+
+        async function searchFriends(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '<div class="loading-spinner"></div>';
+
+            try {
+                const response = await fetch(`/api/friends/search?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displaySearchResults(result.users);
+                } else {
+                    resultsContainer.innerHTML = '<div class="no-results"><div class="icon">😔</div><div>Tidak ada pengguna ditemukan</div></div>';
+                }
+            } catch (error) {
+                console.error('Error searching friends:', error);
+                resultsContainer.innerHTML = '<div class="no-results"><div class="icon">⚠️</div><div>Terjadi kesalahan saat mencari</div></div>';
+            }
+        }
+
+        function displaySearchResults(users) {
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (users.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results"><div class="icon">😔</div><div>Tidak ada pengguna ditemukan</div></div>';
+                return;
+            }
+
+            resultsContainer.innerHTML = users.map(user => {
+                let actionButton = '';
+                let statusText = '';
+
+                if (user.friendshipStatus === 'accepted') {
+                    actionButton = '<button class="friend-action-btn success disabled">✓ Teman</button>';
+                    statusText = 'Sudah berteman';
+                } else if (user.friendshipStatus === 'pending') {
+                    actionButton = '<button class="friend-action-btn disabled">⏳ Menunggu</button>';
+                    statusText = 'Permintaan terkirim';
+                } else {
+                    actionButton = `<button class="friend-action-btn" onclick="sendFriendRequest('${user.userId}', '${user.username}')">+ Tambah</button>`;
+                    statusText = 'Belum berteman';
+                }
+
+                return `
+                    <div class="user-card">
+                        <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                        <div class="user-info">
+                            <div class="user-username">${user.username}</div>
+                            <div class="user-status">${statusText}</div>
+                        </div>
+                        ${actionButton}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function sendFriendRequest(recipientUserId, recipientUsername) {
+            try {
+                const response = await fetch('/api/friends/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        recipientUserId: recipientUserId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Permintaan pertemanan terkirim ke ${recipientUsername}!`);
+                    // Refresh search results
+                    const searchQuery = document.getElementById('friendSearchInput').value.trim();
+                    if (searchQuery) {
+                        searchFriends(searchQuery);
+                    }
+                } else {
+                    alert('Gagal mengirim permintaan: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error sending friend request:', error);
+                alert('Terjadi kesalahan saat mengirim permintaan');
+            }
+        }
+
+        async function loadFriendRequests() {
+            try {
+                const response = await fetch('/api/friends/requests');
+                const result = await response.json();
+
+                if (result.success) {
+                    friendRequests = result.requests || [];
+                    displayFriendRequests();
+                    updateRequestsCount();
+                } else {
+                    console.error('Failed to load friend requests:', result.message);
+                }
+            } catch (error) {
+                console.error('Error loading friend requests:', error);
+            }
+        }
+
+        function displayFriendRequests() {
+            const requestsList = document.getElementById('friendRequestsList');
+            const requestsSection = document.getElementById('friendRequestsSection');
+
+            // Hide entire section if no requests
+            if (friendRequests.length === 0) {
+                requestsSection.classList.add('section-hidden');
+                return;
+            } else {
+                requestsSection.classList.remove('section-hidden');
+            }
+
+            requestsList.innerHTML = friendRequests.map(request => `
+                <div class="request-card">
+                    <div class="user-avatar">${request.requesterUsername.charAt(0).toUpperCase()}</div>
+                    <div class="user-info">
+                        <div class="user-username">${request.requesterUsername}</div>
+                        <div class="user-status">Ingin berteman dengan Anda</div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="friend-action-btn success" onclick="acceptFriendRequest('${request._id}', '${request.requesterUsername}')">✓ Terima</button>
+                        <button class="friend-action-btn danger" onclick="declineFriendRequest('${request._id}', '${request.requesterUsername}')">✗ Tolak</button>
+                        <button class="friend-action-btn view-btn" onclick="viewProfile('${request.requesterUsername}')">Lihat Profile</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function acceptFriendRequest(requestId, requesterUsername) {
+            try {
+                const response = await fetch('/api/friends/accept', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        requestId: requestId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Sekarang Anda berteman dengan ${requesterUsername}!`);
+                    await loadFriendsData();
+                } else {
+                    alert('Gagal menerima permintaan: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error accepting friend request:', error);
+                alert('Terjadi kesalahan saat menerima permintaan');
+            }
+        }
+
+        async function declineFriendRequest(requestId, requesterUsername) {
+            try {
+                const response = await fetch('/api/friends/decline', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        requestId: requestId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Permintaan pertemanan dari ${requesterUsername} ditolak`);
+                    await loadFriendsData();
+                } else {
+                    alert('Gagal menolak permintaan: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error declining friend request:', error);
+                alert('Terjadi kesalahan saat menolak permintaan');
+            }
+        }
+
+        async function loadFriends() {
+            try {
+                const response = await fetch('/api/friends/list');
+                const result = await response.json();
+
+                if (result.success) {
+                    friends = result.friends || [];
+                    displayFriends();
+                    updateFriendsCount();
+                } else {
+                    console.error('Failed to load friends:', result.message);
+                }
+            } catch (error) {
+                console.error('Error loading friends:', error);
+            }
+        }
+
+        function displayFriends() {
+            const friendsList = document.getElementById('friendsList');
+
+            if (friends.length === 0) {
+                friendsList.innerHTML = '<div class="empty-friends"><div class="icon">👥</div><div>Belum ada teman<br><small>Cari dan tambahkan teman di atas</small></div></div>';
+                return;
+            }
+
+            friendsList.innerHTML = friends.map(friend => `
+                <div class="user-card">
+                    <div class="user-avatar">${friend.username.charAt(0).toUpperCase()}</div>
+                    <div class="user-info">
+                        <div class="user-username">${friend.username}</div>
+                        <div class="user-status">Teman sejak ${new Date(friend.friendsSince).toLocaleDateString('id-ID')}</div>
+                    </div>
+                    <div class="friend-actions">
+                        <button class="action-icon-btn profile" onclick="viewProfile('${friend.userId}', '${friend.username}')" title="Lihat Profile">
+                            👤
+                        </button>
+                        <button class="action-icon-btn message" onclick="startConversation('${friend.userId}', '${friend.username}')" title="Kirim Pesan">
+                            💬
+                        </button>
+                        <button class="action-icon-btn delete" onclick="removeFriend('${friend.friendshipId}', '${friend.username}')" title="Hapus Teman">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function removeFriend(friendshipId, friendUsername) {
+            if (!confirm('Yakin ingin menghapus ' + friendUsername + ' dari daftar teman?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/friends/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        friendshipId: friendshipId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(friendUsername + ' telah dihapus dari daftar teman');
+                    await loadFriendsData();
+                } else {
+                    alert('Gagal menghapus teman: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error removing friend:', error);
+                alert('Terjadi kesalahan saat menghapus teman');
+            }
+        }
+
+        async function viewFriendProfile(userId, username) {
+            try {
+                // Fetch user profile data
+                const response = await fetch(`/api/user/profile?userId=${encodeURIComponent(userId)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayProfileModal(result.user);
+                } else {
+                    alert('Gagal memuat profil: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                alert('Terjadi kesalahan saat memuat profil');
+            }
+        }
+
+        function displayProfileModal(user) {
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal-overlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.className = 'profile-modal';
+            modalContent.style.cssText = `
+                background: rgba(30, 30, 30, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 16px;
+                padding: 0;
+                max-width: 400px;
+                width: 90%;
+                max-height: 80vh;
+                overflow: hidden;
+                position: relative;
+            `;
+
+            // Get user's equipped banner and border
+            const equippedBanner = user.equippedBanner || 'default';
+            const equippedBorder = user.equippedBorder || null;
+
+            modalContent.innerHTML = `
+                <div style="position: relative;">
+                    <!-- Profile Banner -->
+                    <div style="
+                        height: 200px;
+                        background: linear-gradient(45deg, #6366f1, #8b5cf6);
+                        background-image: url('/uploads/banners/${equippedBanner}.png');
+                        background-size: cover;
+                        background-position: center;
+                        position: relative;
+                    ">
+                        <!-- Close button -->
+                        <button onclick="closeProfileModal()" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0, 0, 0, 0.5);
+                            border: none;
+                            color: white;
+                            border-radius: 50%;
+                            width: 30px;
+                            height: 30px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        ">×</button>
+                    </div>
+
+                    <!-- Profile Content -->
+                    <div style="padding: 20px; text-align: center; position: relative; margin-top: -50px;">
+                        <!-- Profile Photo with Border -->
+                        <div style="
+                            width: 100px;
+                            height: 100px;
+                            margin: 0 auto 20px;
+                            position: relative;
+                            ${equippedBorder ? `border: 4px solid; border-image: url('/uploads/borders/${equippedBorder}.png') 4; border-image-slice: 4;` : ''}
+                            border-radius: 50%;
+                            background: rgba(30, 30, 30, 0.9);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            ${user.profilePhoto ? 
+                                `<img src="${user.profilePhoto}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` :
+                                `<div style="
+                                    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+                                    color: white;
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 2rem;
+                                    font-weight: 600;
+                                ">${user.username.charAt(0).toUpperCase()}</div>`
+                            }
+                        </div>
+
+                        <!-- User Info -->
+                        <h2 style="color: #ffffff; margin: 0 0 10px 0; font-size: 1.5rem;">${user.username}</h2>
+                        <p style="color: #a0a0a0; margin: 0 0 20px 0;">
+                            Level ${user.level || 1} • ${user.totalXp || 0} XP
+                        </p>
+                        <p style="color: #a0a0a0; margin: 0 0 20px 0; font-size: 0.9rem;">
+                            Bergabung ${new Date(user.createdAt).toLocaleDateString('id-ID')}
+                        </p>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="startConversation('${user.userId}', '${user.username}')" style="
+                                background: linear-gradient(45deg, #10b981, #059669);
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                padding: 10px 20px;
+                                cursor: pointer;
+                                font-weight: 500;
+                            ">💬 Kirim Pesan</button>
+                            <button onclick="closeProfileModal()" style="
+                                background: rgba(255, 255, 255, 0.1);
+                                color: #ffffff;
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                border-radius: 8px;
+                                padding: 10px 20px;
+                                cursor: pointer;
+                                font-weight: 500;
+                            ">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+
+            // Close on overlay click
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) {
+                    closeProfileModal();
+                }
+            });
+        }
+
+        function closeProfileModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function startConversation(userId, username) {
+            alert(`Fitur pesan akan segera tersedia!\n\nAnda akan dapat berkirim pesan dengan ${username} melalui sistem chat internal.`);
+            closeProfileModal();
+        }
+
+        function updateRequestsCount() {
+            const requestsCount = document.getElementById('requestsCount');
+            requestsCount.textContent = `${friendRequests.length} permintaan`;
+        }
+
+        function updateFriendsCount() {
+            const friendsCount = document.getElementById('friendsCount');
+            friendsCount.textContent = `${friends.length} teman`;
+        }
+
+        function displayMyPosts() {
+            const myPostsContainer = document.getElementById('myPostsContainer');
+            const myPostsCount = document.getElementById('myPostsCount');
+
+            myPostsCount.textContent = `${myPosts.length} postingan`;
+
+            if (myPosts.length === 0) {
+                myPostsContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">Belum ada postingan</div><div class="empty-description">Buat postingan pertama Anda di atas</div></div>';
+                return;
+            }
+
+            myPostsContainer.innerHTML = myPosts.map(post => createPostHTML(post)).join('');
+        }
+
         function displayPosts() {
             const container = document.getElementById('postsContainer');
             const posts = currentTab === 'my-feed' ? myPosts : allPosts;
-            
+
             if (posts.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -883,9 +1977,9 @@
                 `;
                 return;
             }
-            
+
             container.innerHTML = posts.map(post => createPostHTML(post)).join('');
-            
+
             // Attach event listeners to new elements
             attachPostEventListeners();
         }
@@ -893,7 +1987,7 @@
         function createPostHTML(post) {
             const currentUserId = '<%= user ? user.userId : "" %>';
             const isMyPost = post.userId === currentUserId;
-            
+
             const formatDate = (dateString) => {
                 const date = new Date(dateString);
                 if (isNaN(date.getTime())) {
@@ -910,7 +2004,7 @@
                 };
                 return date.toLocaleDateString('id-ID', options);
             };
-            
+
             return `
                 <div class="post-item" data-post-id="${post._id}">
                     <div class="post-header">
@@ -940,17 +2034,17 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="post-content-display">
                         ${post.content}
                     </div>
-                    
+
                     ${post.mediaUrl && post.type === 'image' ? `
                         <div class="post-media">
                             <img src="${post.mediaUrl}" alt="Post image" loading="lazy">
                         </div>
                     ` : ''}
-                    
+
                     ${post.mediaUrl && post.type === 'video' ? `
                         <div class="post-media">
                             <video controls>
@@ -959,7 +2053,7 @@
                             </video>
                         </div>
                     ` : ''}
-                    
+
                     <div class="post-actions">
                         <button class="action-button like-button" data-post-id="${post._id}">
                             ❤️ <span class="likes-count">${post.likes ? post.likes.length : 0}</span>
@@ -968,7 +2062,7 @@
                             💬 <span class="comments-count">${post.comments ? post.comments.length : 0}</span>
                         </button>
                     </div>
-                    
+
                     <div class="comments-section" style="display: none;">
                         <div class="comment-form">
                             <input 
@@ -981,7 +2075,7 @@
                                 Kirim
                             </button>
                         </div>
-                        
+
                         <div class="comments-list">
                             ${post.comments && post.comments.length > 0 ? post.comments.map(comment => `
                                 <div class="comment-item">
@@ -1007,7 +2101,7 @@
                 button.addEventListener('click', async function() {
                     const postId = this.dataset.postId;
                     const isLiked = this.classList.contains('liked');
-                    
+
                     try {
                         const response = await fetch(isLiked ? '/api/posts/unlike' : '/api/posts/like', {
                             method: 'POST',
@@ -1016,9 +2110,9 @@
                             },
                             body: JSON.stringify({ postId: postId })
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             this.classList.toggle('liked');
                             this.querySelector('.likes-count').textContent = result.likesCount || 0;
@@ -1038,7 +2132,7 @@
                     button.addEventListener('click', function() {
                         const postItem = this.closest('.post-item');
                         const commentsSection = postItem.querySelector('.comments-section');
-                        
+
                         if (commentsSection.style.display === 'none') {
                             commentsSection.style.display = 'block';
                         } else {
@@ -1050,12 +2144,12 @@
                         const postId = this.dataset.postId;
                         const commentInput = this.parentElement.querySelector('.comment-input');
                         const content = commentInput.value.trim();
-                        
+
                         if (!content) {
                             alert('Komentar tidak boleh kosong!');
                             return;
                         }
-                        
+
                         try {
                             const response = await fetch('/api/posts/comment', {
                                 method: 'POST',
@@ -1067,9 +2161,9 @@
                                     content: content
                                 })
                             });
-                            
+
                             const result = await response.json();
-                            
+
                             if (result.success) {
                                 commentInput.value = '';
                                 // Update comments count
@@ -1110,7 +2204,7 @@
             if (!confirm('Apakah Anda yakin ingin menghapus postingan ini?')) {
                 return;
             }
-            
+
             try {
                 const response = await fetch('/api/posts/delete', {
                     method: 'DELETE',
@@ -1119,9 +2213,9 @@
                     },
                     body: JSON.stringify({ postId: postId })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     await loadPosts();
                 } else {
@@ -1131,6 +2225,48 @@
                 console.error('Error deleting post:', error);
                 alert('Terjadi kesalahan saat menghapus postingan');
             }
+        }
+
+        // Helper function to show notifications (optional, as the original code didn't have it)
+        function showNotification(message, type) {
+            // Implement a notification system here if needed, e.g., using a toast library
+            // For now, we'll use alert as a fallback
+            alert(message);
+        }
+
+        // Modified removeFriend to use showNotification
+        async function removeFriend(friendshipId, friendUsername) {
+            if (!confirm('Yakin ingin menghapus ' + friendUsername + ' dari daftar teman?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/friends/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ friendshipId: friendshipId })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Friend removed successfully!', 'success');
+                    await loadFriendsData();
+                } else {
+                    showNotification('Failed to remove friend: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error removing friend:', error);
+                showNotification('Error removing friend', 'error');
+            }
+        }
+
+        // Function to view profile
+        function viewProfile(username) {
+            // Navigate to user profile page
+            window.location.href = `/profile/${username}`;
         }
     </script>
 </body>
