@@ -116,8 +116,8 @@
 
         .item-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
             margin-bottom: 1rem;
         }
 
@@ -339,6 +339,32 @@
             line-height: 1.4;
         }
 
+        /* Hidden item styles */
+        .hidden-item {
+            opacity: 0.7;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        .hidden-item:hover {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
+        }
+
+        .hidden-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            display: inline-block;
+        }
+
         @media (max-width: 768px) {
             .manager-layout {
                 padding: 1rem;
@@ -467,6 +493,27 @@
                     <small class="form-help">Banner yang akan diberikan kepada pembeli</small>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="itemLabel">Label Item *</label>
+                        <select id="itemLabel" name="itemLabel" class="form-select" required>
+                            <option value="normal">🛒 Normal - Item biasa</option>
+                            <option value="flash-sale">⚡ Flash Sale - Penjualan kilat</option>
+                            <option value="limited">🔥 Limited - Edisi terbatas</option>
+                            <option value="event">🎉 Event - Item spesial event</option>
+                        </select>
+                        <small class="form-help">Label menentukan tampilan dan promosi item</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="isVisible">Visibilitas Item *</label>
+                        <select id="isVisible" name="isVisible" class="form-select" required>
+                            <option value="true">👁️ Tampilkan - Terlihat di shop</option>
+                            <option value="false">🙈 Sembunyikan - Tidak terlihat di shop</option>
+                        </select>
+                        <small class="form-help">Kontrol apakah item ditampilkan atau disembunyikan</small>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" for="imageFile">Gambar/Icon</label>
                     <input type="file" id="imageFile" name="imageFile" class="form-input" accept="image/*">
@@ -496,7 +543,7 @@
         // Load shop items from database
         async function loadShopItems() {
             try {
-                const response = await fetch('/api/shop/items');
+                const response = await fetch('/api/shop/items/all');
                 const data = await response.json();
                 if (data.success) {
                     shopItems = data.items;
@@ -609,11 +656,11 @@
             }
 
             grid.innerHTML = shopItems.map(item => `
-                <div class="shop-item-card" data-id="${item._id}">
+                <div class="shop-item-card ${!item.isVisible ? 'hidden-item' : ''}" data-id="${item._id}">
                     <div class="item-header">
-                        <img src="${item.imageUrl || '/borders/default.svg'}" alt="${item.name}" class="item-icon">
+                        <img src="${item.imageUrl || '/borders/default.svg'}" alt="${item.name}" class="item-icon ${!item.isVisible ? 'grayscale' : ''}">
                         <div class="item-info">
-                            <h3>${item.name}</h3>
+                            <h3>${item.name} ${!item.isVisible ? '<span class="hidden-badge">🙈 TERSEMBUNYI</span>' : ''}</h3>
                             <span class="item-category">${item.category}</span>
                         </div>
                     </div>
@@ -632,11 +679,26 @@
                             <div class="stat-value">${item.stock}</div>
                         </div>
                         <div class="stat-item">
+                            <div class="stat-label">Label</div>
+                            <div class="stat-value">
+                                ${item.itemLabel === 'flash-sale' ? '⚡ Flash Sale' : 
+                                  item.itemLabel === 'limited' ? '🔥 Limited' : 
+                                  item.itemLabel === 'event' ? '🎉 Event' : 
+                                  '🛒 Normal'}
+                            </div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-label">Batas Beli</div>
                             <div class="stat-value">
                                 ${item.purchaseLimit === 'once' ? '🔒 Sekali' : 
                                   item.purchaseLimit === 'custom' ? `⚡ Max ${item.maxPurchases}x` : 
                                   '🔄 Unlimited'}
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Visibilitas</div>
+                            <div class="stat-value">
+                                ${item.isVisible ? '👁️ Tampil' : '🙈 Sembunyi'}
                             </div>
                         </div>
                     </div>
@@ -688,6 +750,8 @@
             document.getElementById('maxPurchases').value = item.maxPurchases || '';
             document.getElementById('linkedBorderId').value = item.linkedBorderId || '';
             document.getElementById('linkedBannerId').value = item.linkedBannerId || '';
+            document.getElementById('itemLabel').value = item.itemLabel || 'normal';
+            document.getElementById('isVisible').value = item.isVisible !== undefined ? item.isVisible.toString() : 'true';
 
             // Show/hide conditional fields based on current values
             toggleCustomLimit();

@@ -63,6 +63,15 @@ const shopItemSchema = new mongoose.Schema({
         type: String,
         default: null // For banner category items, link to specific banner
     },
+    itemLabel: {
+        type: String,
+        enum: ['normal', 'flash-sale', 'limited', 'event'],
+        default: 'normal'
+    },
+    isVisible: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -159,7 +168,7 @@ const initShopTable = async () => {
 // Get all shop items
 const getAllShopItems = async () => {
     try {
-        return await ShopItem.find({ isActive: true }).sort({ createdAt: -1 });
+        return await ShopItem.find({ isActive: true, isVisible: true }).sort({ createdAt: -1 });
     } catch (error) {
         console.error('❌ Error fetching shop items:', error.message);
         return [];

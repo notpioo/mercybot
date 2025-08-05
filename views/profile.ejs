@@ -50,8 +50,29 @@
                         </div>
 
                         <div class="profile-identity">
-                            <h1 class="username"><%= user ? user.username || 'User7572' : 'User7572' %></h1>
-                            <p class="user-id">ID: <%= user ? user.userId.split('@')[0] : '6285709557572' %></p>
+                            <div class="profile-header-top">
+                                <div class="profile-info">
+                                    <h1 class="username"><%= user ? user.username || 'User7572' : 'User7572' %></h1>
+                                    <p class="user-id">ID: <%= user ? user.userId.split('@')[0] : '6285709557572' %></p>
+                                </div>
+                                <div class="profile-actions">
+                                    <button class="action-btn edit-btn" onclick="openEditProfileModal()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22 1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <form action="/logout" method="POST" style="margin: 0;">
+                                        <button type="submit" class="action-btn logout-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
 
                             <div class="user-badges">
                                 <% if (user) { %>
@@ -70,24 +91,6 @@
                                     <span class="rank-badge luminary-badge">⭐ Luminary</span>
                                 <% } %>
                             </div>
-                        </div>
-
-                        <div class="profile-actions">
-                            <button class="action-btn edit-btn" onclick="openEditProfileModal()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22 1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <form action="/logout" method="POST" style="margin: 0;">
-                                <button type="submit" class="action-btn logout-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -373,7 +376,7 @@
             width: 100%;
             box-sizing: border-box;
             overflow: hidden;
-            min-height: 200px;
+            min-height: 350px;
         }
 
         /* Profile Banner Styles */
@@ -382,7 +385,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 120px;
+            height: 300px;
             border-radius: 16px 16px 0 0;
             overflow: hidden;
             z-index: 1;
@@ -413,7 +416,7 @@
         .profile-main-info {
             position: relative;
             z-index: 3;
-            margin-top: 50px;
+            margin-top: 120px;
         }
 
         .avatar-section {
@@ -534,57 +537,71 @@
             border-color: #fbbf24;
         }
 
+        .profile-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
         .profile-actions {
             position: absolute;
-            top: 1rem;
+            top: 0.5rem;
             right: 1rem;
             display: flex;
             gap: 0.5rem;
-            z-index: 1000;
+            z-index: 10;
+            flex-shrink: 0;
         }
 
         .action-btn {
             cursor: pointer;
             padding: 0.5rem;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            width: 36px;
-            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            width: 44px;
+            height: 44px;
             transition: all 0.3s ease;
             font-family: inherit;
-            background: none;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .edit-btn {
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border-color: rgba(99, 102, 241, 0.4);
         }
 
         .edit-btn:hover {
-            background: rgba(99, 102, 241, 0.25);
-            color: #a5b4fc;
-            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.35);
+            color: #c7d2fe;
+            border-color: rgba(99, 102, 241, 0.6);
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
 
         .logout-btn {
-            background: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.4);
         }
 
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.25);
-            color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.35);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.6);
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
         }
 
         .action-btn:active {
@@ -885,15 +902,21 @@
         }
 
         .carousel-wrapper {
-            overflow: hidden;
             border-radius: 8px;
         }
 
         .borders-track {
             display: flex;
             gap: 1rem;
-            transition: transform 0.3s ease;
-            padding: 0.5rem 0;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 0.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .borders-track::-webkit-scrollbar {
+            display: none;
         }
 
         .border-card {
@@ -974,7 +997,7 @@
         /* Banner Card Styles */
         .banner-card {
             flex: 0 0 auto;
-            width: 140px;
+            width: 180px;
             background: rgba(40, 40, 40, 0.8);
             border-radius: 12px;
             padding: 1rem;
@@ -1012,8 +1035,8 @@
         }
 
         .banner-preview-small {
-            width: 100px;
-            height: 50px;
+            width: 140px;
+            height: 80px;
             margin: 0 auto 0.75rem;
             border-radius: 8px;
             overflow: hidden;
@@ -1210,7 +1233,7 @@
         }
 
         .banner-card {
-            min-width: 140px;
+            min-width: 180px;
             background: rgba(40, 40, 40, 0.8);
             border: 1px solid transparent;
             border-radius: 12px;
@@ -1248,8 +1271,8 @@
         }
 
         .banner-preview-small {
-            width: 100px;
-            height: 60px;
+            width: 140px;
+            height: 80px;
             margin: 0 auto 0.75rem;
             border-radius: 8px;
             overflow: hidden;
@@ -1932,20 +1955,22 @@
             }
 
             .profile-actions {
-                top: 0.75rem;
+                top: 0.5rem;
                 right: 0.75rem;
                 gap: 0.375rem;
             }
 
             .action-btn {
-                width: 32px;
-                height: 32px;
-                padding: 0.375rem;
+                width: 40px;
+                height: 40px;
+                padding: 0.5rem;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(10px);
             }
 
             .action-btn svg {
-                width: 14px;
-                height: 14px;
+                width: 16px;
+                height: 16px;
             }
         }
 
@@ -2387,18 +2412,24 @@
 
                 if (data.success) {
                     availableBanners = data.banners || [];
-                    userOwnedBanners = data.userBanners || [];
-                    equippedBanner = data.equippedBanner || null;
+                    // Extract userBanners from the nested structure
+                    if (data.userBanners && data.userBanners.ownedBanners) {
+                        userOwnedBanners = data.userBanners.ownedBanners;
+                        equippedBanner = data.userBanners.equippedBanner;
+                    } else {
+                        userOwnedBanners = [];
+                        equippedBanner = null;
+                    }
 
                     console.log('✅ Banners loaded:', {
                         available: availableBanners.length,
                         owned: userOwnedBanners.length,
-                        equipped: equippedBanner
+                        equipped: equippedBanner,
+                        rawResponse: data
                     });
 
-                    setTimeout(() => {
-                        renderBannersCarousel();
-                    }, 500);
+                    // Render immediately without delay
+                    renderBannersCarousel();
                 } else {
                     console.error('❌ Failed to load banners:', data.message);
                     track.innerHTML = `
@@ -2409,12 +2440,29 @@
                 }
             } catch (error) {
                 console.error('❌ Error loading banners:', error);
+                console.error('❌ Full error details:', error.message, error.stack);
+                
                 const track = document.getElementById('bannersTrack');
-                track.innerHTML = `
-                    <div class="loading-banners">
-                        <span style="color: #f87171;">Error loading banners. Please refresh the page.</span>
-                    </div>
-                `;
+                
+                // Check if it's an authentication error
+                if (error.message.includes('401') || error.message.includes('Authentication required')) {
+                    track.innerHTML = `
+                        <div class="loading-banners">
+                            <span style="color: #f87171;">Please refresh the page and try again</span>
+                        </div>
+                    `;
+                    // Try to reload the page after a short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    track.innerHTML = `
+                        <div class="loading-banners">
+                            <span style="color: #f87171;">Error loading banners: ${error.message}</span>
+                            <button onclick="loadAvailableBanners()" style="margin-left: 10px; padding: 5px 10px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -2426,7 +2474,7 @@
             currentBannerSlide = Math.max(0, Math.min(currentBannerSlide, maxSlide));
 
             const track = document.getElementById('bannersTrack');
-            const translateX = currentBannerSlide * (140 + 16); // card width + gap
+            const translateX = currentBannerSlide * (180 + 16); // card width + gap
             track.style.transform = `translateX(-${translateX}px)`;
 
             document.getElementById('prevBannerBtn').disabled = currentBannerSlide === 0;
@@ -2436,7 +2484,14 @@
         function renderBannersCarousel() {
             const track = document.getElementById('bannersTrack');
 
+            console.log('🎨 Rendering banners carousel...', {
+                availableBannersCount: availableBanners ? availableBanners.length : 0,
+                userOwnedBannersCount: userOwnedBanners ? userOwnedBanners.length : 0,
+                equippedBanner: equippedBanner
+            });
+
             if (!availableBanners || availableBanners.length === 0) {
+                console.log('⚠️ No banners available to render');
                 track.innerHTML = `
                     <div class="loading-banners">
                         <span style="color: #9ca3af;">No banners available</span>
@@ -2446,10 +2501,24 @@
             }
 
             const bannersHTML = availableBanners.map(banner => {
-                const isOwned = banner.bannerId === 'default' || userOwnedBanners.some(ub => ub.bannerId === banner.bannerId);
-                const isEquipped = equippedBanner === banner.bannerId;
+                // Check ownership: either default banner or user owns it or server says it's owned
+                const isOwned = banner.bannerId === 'default' || 
+                               banner.isOwned === true || 
+                               userOwnedBanners.some(ub => ub.bannerId === banner.bannerId);
+                               
+                const isEquipped = banner.isEquipped === true || 
+                                 (equippedBanner && equippedBanner === banner.bannerId);
 
                 let statusClass = isEquipped ? 'equipped' : (isOwned ? 'owned' : 'locked');
+
+                console.log(`🏷️ Banner ${banner.name}:`, {
+                    bannerId: banner.bannerId,
+                    isOwned: isOwned,
+                    isEquipped: isEquipped,
+                    statusClass: statusClass,
+                    serverOwned: banner.isOwned,
+                    serverEquipped: banner.isEquipped
+                });
 
                 return `
                     <div class="banner-card ${statusClass}" onclick="${isOwned ? `equipBanner('${banner.bannerId}')` : ''}">
@@ -2466,6 +2535,7 @@
             }).join('');
 
             track.innerHTML = bannersHTML;
+            console.log('✅ Banners carousel rendered successfully');
 
             const slidesPerView = calculateSlidesPerView();
             const maxSlide = Math.max(0, availableBanners.length - slidesPerView);
@@ -2558,7 +2628,7 @@
                 bordersBtn.classList.remove('active');
                 bannersBtn.classList.add('active');
                 bordersCollection.style.display = 'none';
-                bordersCollection.style.display = 'block';
+                bannersCollection.style.display = 'block';
             }
         }
 

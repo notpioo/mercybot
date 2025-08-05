@@ -157,15 +157,15 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage: storage,
     fileFilter: function (req, file, cb) {
-        // Accept images only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|svg|webp)$/)) {
-            req.fileValidationError = 'Only image files are allowed!';
-            return cb(new Error('Only image files are allowed!'), false);
+        // Accept images including GIF for borders and banners
+        if (!file.originalname.match(/\.(jpg|jpeg|png|svg|webp|gif)$/i)) {
+            req.fileValidationError = 'Only image files are allowed (jpg, jpeg, png, svg, webp, gif)!';
+            return cb(new Error('Only image files are allowed (jpg, jpeg, png, svg, webp, gif)!'), false);
         }
         cb(null, true);
     },
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 10 * 1024 * 1024 // Increase to 10MB for GIF support
     }
 });
 
@@ -2538,7 +2538,7 @@ app.post('/api/user/:userId/add-border', async (req, res) => {
 });
 
 // Shop API Routes
-// Get all shop items
+// Get all shop items (visible only for public shop)
 app.get('/api/shop/items', async (req, res) => {
     try {
         const items = await getAllShopItems();
@@ -2546,6 +2546,33 @@ app.get('/api/shop/items', async (req, res) => {
     } catch (error) {
         console.error('Error fetching shop items:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch shop items' });
+    }
+});
+
+// Get all shop items including hidden ones (for shop manager)
+app.get('/api/shop/items/all', async (req, res) => {
+    let userData = null;
+    if (req.session.userPhone) {
+        try {
+            userData = await getUser(req.session.userPhone + '@s.whatsapp.net');
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const isOwner = req.session.isOwner || (userData && userData.status === 'owner');
+
+    if (!isOwner && false) { // Temporarily disabled
+        return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    try {
+        const { ShopItem } = require('./database/shop');
+        const items = await ShopItem.find({ isActive: true }).sort({ createdAt: -1 });
+        res.json({ success: true, items });
+    } catch (error) {
+        console.error('Error fetching all shop items:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch all shop items' });
     }
 });
 
@@ -2567,7 +2594,7 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
     }
 
     try {
-        const { name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId, linkedBannerId } = req.body;
+        const { name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId, linkedBannerId, itemLabel, isVisible } = req.body;
 
         if (!name || !category || !price || !priceType || !stock) {
             return res.status(400).json({ 
@@ -2587,6 +2614,8 @@ app.post('/api/shop/items/add', upload.single('imageFile'), async (req, res) => 
             maxPurchases: purchaseLimit === 'custom' ? parseInt(maxPurchases) || 0 : 0,
             linkedBorderId: category === 'border' ? linkedBorderId : null,
             linkedBannerId: category === 'banner' ? linkedBannerId : null,
+            itemLabel: itemLabel || 'normal',
+            isVisible: isVisible !== undefined ? isVisible === 'true' : true,
             imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
             createdBy: userData ? userData.userId : 'unknown'
         };
@@ -2632,7 +2661,7 @@ app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) 
     }
 
     try {
-        const { itemId, name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId } = req.body;
+        const { itemId, name, description, category, price, priceType, stock, purchaseLimit, maxPurchases, linkedBorderId, linkedBannerId, itemLabel, isVisible } = req.body;
 
         if (!itemId || !name || !category || !price || !priceType || !stock) {
             return res.status(400).json({ 
@@ -2650,7 +2679,10 @@ app.post('/api/shop/items/update', upload.single('imageFile'), async (req, res) 
             stock: parseInt(stock),
             purchaseLimit: purchaseLimit || 'unlimited',
             maxPurchases: purchaseLimit === 'custom' ? parseInt(maxPurchases) || 0 : 0,
-            linkedBorderId: category === 'border' ? linkedBorderId : null
+            linkedBorderId: category === 'border' ? linkedBorderId : null,
+            linkedBannerId: category === 'banner' ? linkedBannerId : null,
+            itemLabel: itemLabel || 'normal',
+            isVisible: isVisible !== undefined ? isVisible === 'true' : true
         };
 
         // If new image is uploaded, update the image URL

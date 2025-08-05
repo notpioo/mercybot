@@ -289,7 +289,8 @@
         .banner-image {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: rgba(0,0,0,0.1);
         }
 
         .banner-overlay {
@@ -571,14 +572,20 @@
             border: 2px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
-            height: 80px;
+            min-height: 80px;
+            max-height: 200px;
             background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .preview-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            height: auto;
+            width: auto;
         }
 
         .modal-actions {
@@ -822,9 +829,9 @@
 
                 <div class="form-group">
                     <label for="bannerFile">Banner Image</label>
-                    <input type="file" id="bannerFile" accept="image/*" onchange="previewBanner(event)">
+                    <input type="file" id="bannerFile" accept="image/*,.gif" onchange="previewBanner(event)">
                     <div class="file-info">
-                        <small>Recommended size: 400x160px (Banner format)</small>
+                        <small>Supports PNG, JPG, SVG, and GIF (for animated banners). Original ratio will be preserved.</small>
                     </div>
                 </div>
 
@@ -876,9 +883,9 @@
 
                 <div class="form-group">
                     <label for="editBannerFile">Update Banner Image (Optional)</label>
-                    <input type="file" id="editBannerFile" accept="image/*" onchange="previewEditBanner(event)">
+                    <input type="file" id="editBannerFile" accept="image/*,.gif" onchange="previewEditBanner(event)">
                     <div class="file-info">
-                        <small>Leave empty to keep current image</small>
+                        <small>Leave empty to keep current image. GIF supported for animated banners.</small>
                     </div>
                 </div>
 

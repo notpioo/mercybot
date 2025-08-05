@@ -79,14 +79,36 @@
 
             <!-- Main Content Area -->
             <main class="shop-main">
-                <!-- Featured Items Section -->
-                <section class="featured-section">
+                <!-- Flash Sale Section -->
+                <section class="flash-sale-section" id="flashSaleSection" style="display: none;">
                     <div class="section-header">
-                        <h2>🌟 Item Unggulan</h2>
-                        <p>Item terpopuler dan terlaris</p>
+                        <h2>⚡ Flash Sale</h2>
+                        <p>Penawaran terbatas waktu!</p>
                     </div>
-                    <div class="featured-items" id="featuredItems">
-                        <!-- Featured items will be loaded here -->
+                    <div class="items-grid" id="flashSaleItems">
+                        <!-- Flash sale items will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Limited Items Section -->
+                <section class="limited-section" id="limitedSection" style="display: none;">
+                    <div class="section-header">
+                        <h2>🔥 Limited Edition</h2>
+                        <p>Item terbatas yang sangat eksklusif</p>
+                    </div>
+                    <div class="items-grid" id="limitedItems">
+                        <!-- Limited items will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Event Items Section -->
+                <section class="event-section" id="eventSection" style="display: none;">
+                    <div class="section-header">
+                        <h2>🎉 Event Special</h2>
+                        <p>Item khusus untuk event terbaru</p>
+                    </div>
+                    <div class="items-grid" id="eventItems">
+                        <!-- Event items will be loaded here -->
                     </div>
                 </section>
 
@@ -339,15 +361,49 @@
             font-size: 0.95rem;
         }
 
-        /* Featured Items */
-        .featured-section {
+        /* Special Sections */
+        .flash-sale-section,
+        .limited-section,
+        .event-section {
             margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .featured-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .flash-sale-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            animation: pulse 2s infinite;
+        }
+
+        .limited-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .event-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         /* Items Grid */
@@ -392,13 +448,33 @@
             opacity: 1;
         }
 
-        .shop-item.featured {
-            border-color: rgba(236, 72, 153, 0.3);
-            background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(60, 40, 60, 0.95));
+        .shop-item.flash-sale {
+            border-color: rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(80, 60, 20, 0.95));
         }
 
-        .shop-item.featured::before {
-            background: linear-gradient(90deg, #ec4899, #f59e0b);
+        .shop-item.flash-sale::before {
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            opacity: 1;
+        }
+
+        .shop-item.limited {
+            border-color: rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(80, 20, 20, 0.95));
+        }
+
+        .shop-item.limited::before {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            opacity: 1;
+        }
+
+        .shop-item.event {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(60, 40, 80, 0.95));
+        }
+
+        .shop-item.event::before {
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
             opacity: 1;
         }
 
@@ -491,6 +567,50 @@
             background: rgba(255, 255, 255, 0.1);
             color: #666;
             cursor: not-allowed;
+        }
+
+        /* Item Label Badges */
+        .item-badge {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 5;
+            animation: labelGlow 2s infinite;
+        }
+
+        .flash-sale-badge {
+            background: linear-gradient(45deg, #f59e0b, #ef4444);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .limited-badge {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .event-badge {
+            background: linear-gradient(45deg, #8b5cf6, #ec4899);
+            color: white;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+        }
+
+        @keyframes labelGlow {
+            0%, 100% { 
+                box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6);
+                transform: scale(1.05);
+            }
         }
 
         /* Loading and Empty States */
@@ -981,7 +1101,9 @@
 
     <script>
         let allItems = [];
-        let featuredItems = [];
+        let flashSaleItems = [];
+        let limitedItems = [];
+        let eventItems = [];
         let currentCategory = 'all';
 
         // Load items when page loads
@@ -994,16 +1116,19 @@
         // Show/hide loading state
         function showLoading(show) {
             const loadingState = document.getElementById('loadingState');
-            const featuredSection = document.querySelector('.featured-section');
+            const flashSaleSection = document.getElementById('flashSaleSection');
+            const limitedSection = document.getElementById('limitedSection');
+            const eventSection = document.getElementById('eventSection');
             const allItemsSection = document.querySelector('.all-items-section');
             
             if (show) {
                 loadingState.style.display = 'block';
-                featuredSection.style.display = 'none';
+                flashSaleSection.style.display = 'none';
+                limitedSection.style.display = 'none';
+                eventSection.style.display = 'none';
                 allItemsSection.style.display = 'none';
             } else {
                 loadingState.style.display = 'none';
-                featuredSection.style.display = 'block';
                 allItemsSection.style.display = 'block';
             }
         }
@@ -1015,7 +1140,9 @@
                 const data = await response.json();
                 if (data.success) {
                     allItems = data.items;
-                    featuredItems = allItems.filter(item => item.category === 'border').slice(0, 3);
+                    flashSaleItems = allItems.filter(item => item.itemLabel === 'flash-sale');
+                    limitedItems = allItems.filter(item => item.itemLabel === 'limited');
+                    eventItems = allItems.filter(item => item.itemLabel === 'event');
                     renderItems();
                 }
             } catch (error) {
@@ -1026,20 +1153,44 @@
 
         // Render all items
         function renderItems() {
-            renderFeaturedItems();
+            renderSpecialItems();
             renderAllItems();
         }
 
-        // Render featured items
-        function renderFeaturedItems() {
-            const container = document.getElementById('featuredItems');
+        // Render special items sections
+        function renderSpecialItems() {
+            // Flash Sale Items
+            const flashSaleContainer = document.getElementById('flashSaleItems');
+            const flashSaleSection = document.getElementById('flashSaleSection');
             
-            if (featuredItems.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #a0a0a0;">Belum ada item unggulan</p>';
-                return;
+            if (flashSaleItems.length > 0) {
+                flashSaleSection.style.display = 'block';
+                flashSaleContainer.innerHTML = flashSaleItems.map(item => createItemHTML(item, 'flash-sale')).join('');
+            } else {
+                flashSaleSection.style.display = 'none';
             }
 
-            container.innerHTML = featuredItems.map(item => createItemHTML(item, true)).join('');
+            // Limited Items
+            const limitedContainer = document.getElementById('limitedItems');
+            const limitedSection = document.getElementById('limitedSection');
+            
+            if (limitedItems.length > 0) {
+                limitedSection.style.display = 'block';
+                limitedContainer.innerHTML = limitedItems.map(item => createItemHTML(item, 'limited')).join('');
+            } else {
+                limitedSection.style.display = 'none';
+            }
+
+            // Event Items
+            const eventContainer = document.getElementById('eventItems');
+            const eventSection = document.getElementById('eventSection');
+            
+            if (eventItems.length > 0) {
+                eventSection.style.display = 'block';
+                eventContainer.innerHTML = eventItems.map(item => createItemHTML(item, 'event')).join('');
+            } else {
+                eventSection.style.display = 'none';
+            }
         }
 
         // Render all items based on category filter
@@ -1062,13 +1213,25 @@
         }
 
         // Create item HTML
-        function createItemHTML(item, isFeatured = false) {
+        function createItemHTML(item, labelClass = '') {
             const currencyIcon = item.priceType === 'balance' ? '💰' : '💎';
             const stockClass = item.stock <= 0 ? 'out-of-stock' : item.stock <= 5 ? 'low-stock' : '';
             const stockText = item.stock <= 0 ? 'Habis' : `Stock: ${item.stock}`;
             
+            // Determine item class based on label
+            let itemClass = '';
+            if (labelClass) {
+                itemClass = labelClass;
+            } else if (item.itemLabel && item.itemLabel !== 'normal') {
+                itemClass = item.itemLabel;
+            }
+            
+            // Get label badge
+            const labelBadge = getLabelBadge(item.itemLabel);
+            
             return `
-                <div class="shop-item ${isFeatured ? 'featured' : ''}" data-category="${item.category}" data-item-id="${item._id}">
+                <div class="shop-item ${itemClass}" data-category="${item.category}" data-item-id="${item._id}">
+                    ${labelBadge}
                     <div class="item-image">
                         ${item.imageUrl ? 
                             `<img src="${item.imageUrl}" alt="${item.name}">` : 
@@ -1087,6 +1250,19 @@
                     </button>
                 </div>
             `;
+        }
+
+        // Get label badge
+        function getLabelBadge(label) {
+            if (!label || label === 'normal') return '';
+            
+            const badges = {
+                'flash-sale': '<div class="item-badge flash-sale-badge">⚡ FLASH SALE</div>',
+                'limited': '<div class="item-badge limited-badge">🔥 LIMITED</div>',
+                'event': '<div class="item-badge event-badge">🎉 EVENT</div>'
+            };
+            
+            return badges[label] || '';
         }
 
         // Get default icon for category
