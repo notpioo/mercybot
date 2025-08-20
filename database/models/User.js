@@ -57,13 +57,6 @@ const userSchema = new mongoose.Schema({
         min: 0
     },
     
-    // Fishing Currency
-    reelCoin: {
-        type: Number,
-        default: 100, // Starting ReelCoin for fishing
-        min: 0
-    },
-    
     // Activity Tracking
     lastActive: {
         type: Date,
