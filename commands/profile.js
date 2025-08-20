@@ -73,6 +73,7 @@ const profileCommand = async (sock, from, sender, args, message) => {
             .replace('{status}', user.status.toUpperCase())
             .replace('{limitDisplay}', limitDisplay)
             .replace('{balance}', user.balance)
+            .replace('{reelCoin}', user.reelCoin || 0)
             .replace('{chips}', user.chips)
             .replace('{memberSince}', user.getFormattedMemberSince());
         

@@ -7,13 +7,32 @@ const pingCommand = require('../commands/ping');
 const profileCommand = require('../commands/profile');
 const stickerCommand = require('../commands/sticker');
 
+// Import fishing commands
+const fishCommand = require('../commands/fish');
+const fishingCommand = require('../commands/fishing');
+const fbagCommand = require('../commands/fbag');
+const fshopCommand = require('../commands/fshop');
+const fbuyCommand = require('../commands/fbuy');
+const userodCommand = require('../commands/userod');
+const usebaitCommand = require('../commands/usebait');
+const sellfishCommand = require('../commands/sellfish');
+
 // Command registry
 const commands = {
     'menu': menuCommand,
     'ping': pingCommand,
     'profile': profileCommand,
     'sticker': stickerCommand,
-    's': stickerCommand
+    's': stickerCommand,
+    // Fishing commands
+    'fish': fishCommand,
+    'fishing': fishingCommand,
+    'fbag': fbagCommand,
+    'fshop': fshopCommand,
+    'fbuy': fbuyCommand,
+    'userod': userodCommand,
+    'usebait': usebaitCommand,
+    'sellfish': sellfishCommand
 };
 
 const commandHandler = async (sock, from, sender, commandName, args, message) => {

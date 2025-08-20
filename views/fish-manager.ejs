@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Management - NoMercy</title>
+    <link rel="stylesheet" href="/navigation.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .tab:hover {
+            color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .add-button {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .data-card {
+            background: rgba(60, 60, 60, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            background: rgba(80, 80, 80, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #fbbf24;
+            color: #1f2937;
+        }
+
+        .btn-edit:hover {
+            background: #f59e0b;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .card-info {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .rarity {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+
+        .rarity.common { background: #6b7280; color: white; }
+        .rarity.uncommon { background: #10b981; color: white; }
+        .rarity.rare { background: #3b82f6; color: white; }
+        .rarity.epic { background: #8b5cf6; color: white; }
+        .rarity.legendary { background: #f59e0b; color: white; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .close {
+            color: #a0a0a0;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(60, 60, 60, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #5b6472;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                padding-bottom: 120px;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+
+        /* Loading and Error States */
+        .loading-state, .error-state {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: #a0a0a0;
+        }
+        .error-state {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navigation', { currentPage: 'fish-manager', user: user }) %>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Fish Management</h1>
+            <p>Kelola semua konfigurasi fishing game: rod, bait, dan ikan</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('rods')">🎣 Fishing Rods</button>
+            <button class="tab" onclick="showTab('baits')">🪱 Baits</button>
+            <button class="tab" onclick="showTab('fish')">🐟 Fish</button>
+            <button class="tab" onclick="showTab('users')">👤 Users</button>
+        </div>
+
+        <!-- Rods Tab -->
+        <div id="rods" class="tab-content active">
+            <div class="section">
+                <div class="section-title">Fishing Rods</div>
+                <button class="add-button" onclick="openAddModal('rod')">+ Tambah Rod Baru</button>
+                <div class="data-grid" id="rods-grid">
+                    <!-- Rods will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Baits Tab -->
+        <div id="baits" class="tab-content">
+            <div class="section">
+                <div class="section-title">Baits</div>
+                <button class="add-button" onclick="openAddModal('bait')">+ Tambah Bait Baru</button>
+                <div class="data-grid" id="baits-grid">
+                    <!-- Baits will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Fish Tab -->
+        <div id="fish" class="tab-content">
+            <div class="section">
+                <div class="section-title">Fish</div>
+                <button class="add-button" onclick="openAddModal('fish')">+ Tambah Ikan Baru</button>
+                <div class="data-grid" id="fish-grid">
+                    <!-- Fish will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users" class="tab-content">
+            <div class="section">
+                <div class="section-title">Fishing Users</div>
+                <div class="data-grid" id="users-grid">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Tambah Item</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="item-form">
+                <div id="form-fields">
+                    <!-- Form fields will be generated here -->
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Edit User (This seems to be a duplicate or alternative to the main modal, keeping it for now based on changes) -->
+    <!-- NOTE: The provided changes seem to target a different modal structure (editModal, editForm) than the main 'modal' and 'item-form' -->
+    <!-- To reconcile, I'll assume 'editModal' and 'editForm' are intended to be the primary user edit interface and adjust the logic accordingly -->
+    <!-- If this is incorrect, the original structure should be maintained and the 'edit' functions adapted to the 'modal' -->
+
+    <!-- NEW MODAL STRUCTURE BASED ON CHANGES PROVIDED -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="editModalTitle">Edit User</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editUserId" name="userId">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="editUsername" name="username" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" id="editPhoneNumber" name="phoneNumber" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ReelCoins</label>
+                    <input type="number" id="editReelCoins" name="reelCoins" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Level</label>
+                    <input type="number" id="editLevel" name="level" class="form-input" required min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Income</label>
+                    <input type="number" id="editTotalIncome" name="totalIncome" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Current Rod</label>
+                    <select id="editCurrentRod" name="currentRod" class="form-select" required>
+                        <option value="wood">Wood Rod</option>
+                        <option value="bamboo">Bamboo Rod</option>
+                        <option value="steel">Steel Rod</option>
+                        <option value="carbon">Carbon Fiber Rod</option>
+                        <option value="legendary">Legendary Rod</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Current Bait</label>
+                    <select id="editCurrentBait" name="currentBait" class="form-select" required>
+                        <option value="worm">Worm</option>
+                        <option value="cricket">Cricket</option>
+                        <option value="shrimp">Shrimp</option>
+                        <option value="squid">Squid</option>
+                        <option value="golden">Golden Lure</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Mobile bottom padding -->
+    <div class="mobile-bottom-padding" style="height: 80px;"></div>
+
+    <script>
+        let currentType = 'rod';
+        let editingId = null; // For items (rods, baits, fish)
+        let currentEditUserId = null; // For users
+
+        // --- UI State Functions ---
+        function showLoadingState() {
+            document.getElementById('users-grid').innerHTML = '<div class="loading-state">Memuat data pengguna...</div>';
+        }
+
+        function hideLoadingState() {
+            // No explicit hide function needed if content is replaced
+        }
+
+        function showErrorState(message) {
+            document.getElementById('users-grid').innerHTML = `<div class="error-state">${message}</div>`;
+        }
+
+        // --- Tab Switching ---
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            let apiType = tabName;
+            if (tabName === 'rods') apiType = 'rod';
+            if (tabName === 'baits') apiType = 'bait';
+            if (tabName === 'fish') apiType = 'fish';
+            if (tabName === 'users') apiType = 'user';
+
+            loadTabData(apiType);
+        }
+
+        // --- Data Loading ---
+        async function loadTabData(type) {
+            const gridId = `${type}s-grid`; // Default grid ID
+            let actualGridId = gridId;
+            if (type === 'fish') actualGridId = 'fish-grid'; // Specific case for 'fish'
+            if (type === 'user') actualGridId = 'users-grid'; // Specific case for 'user'
+
+            try {
+                console.log(`Loading ${type} data from API...`);
+                const response = await fetch(`/api/fishing/${type}`);
+                const data = await response.json();
+
+                console.log(`API response for ${type}:`, data);
+
+                if (data.success) {
+                    renderGrid(type, data.data || data.users || []); // Handle different response structures
+                } else {
+                    console.error('Failed to load data:', data.message);
+                    if (type === 'user') {
+                        showErrorState(`Gagal memuat data user: ${data.message}`);
+                    } else {
+                        alert(`Gagal memuat data ${type}: ${data.message}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                if (type === 'user') {
+                    showErrorState(`Terjadi kesalahan saat memuat data user: ${error.message}`);
+                } else {
+                    alert(`Terjadi kesalahan saat memuat data ${type}`);
+                }
+            }
+        }
+
+        
+
+
+        // --- Grid Rendering ---
+        function renderGrid(type, items) {
+            console.log(`Rendering ${type} data:`, items);
+            let gridId = `${type}s-grid`;
+            if (type === 'fish') gridId = 'fish-grid';
+            if (type === 'user') gridId = 'users-grid';
+
+            const grid = document.getElementById(gridId);
+            if (!grid) {
+                console.error(`Grid element not found: ${gridId}`);
+                return;
+            }
+
+            grid.innerHTML = ''; // Clear existing content
+
+            if (items.length === 0) {
+                grid.innerHTML = '<div class="loading-state">Tidak ada data untuk ditampilkan.</div>';
+                return;
+            }
+
+            items.forEach(item => {
+                const card = createItemCard(type, item);
+                grid.appendChild(card);
+            });
+
+            console.log(`Successfully rendered ${items.length} ${type} items`);
+        }
+
+        
+
+
+        // --- Card Creation ---
+        function createItemCard(type, item) {
+            const card = document.createElement('div');
+            card.className = 'data-card';
+
+            let content = '';
+            if (type === 'rod') {
+                content = `
+                    <div class="card-header">
+                        <div class="card-title">${item.name}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="editItem('${type}', '${item.id}')">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteItem('${type}', '${item.id}')">Hapus</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div>Harga: ${item.price.toLocaleString()} RC</div>
+                        <div>Rarity Bonus: ${item.rarityBonus}%</div>
+                        <div>Durability: ${item.durability}</div>
+                        <div class="rarity ${item.rarity.toLowerCase()}">${item.rarity}</div>
+                    </div>
+                `;
+            } else if (type === 'bait') {
+                content = `
+                    <div class="card-header">
+                        <div class="card-title">${item.name}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="editItem('${type}', '${item.id}')">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteItem('${type}', '${item.id}')">Hapus</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div>Harga: ${item.price.toLocaleString()} RC</div>
+                        <div>Quantity: x${item.quantity}</div>
+                        <div>Catch Rate: ${item.catchRate}%</div>
+                        <div>Uses: ${item.uses}</div>
+                        <div class="rarity ${item.rarity.toLowerCase()}">${item.rarity}</div>
+                    </div>
+                `;
+            } else if (type === 'fish') {
+                content = `
+                    <div class="card-header">
+                        <div class="card-title">${item.name}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="editItem('${type}', '${item.id}')">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteItem('${type}', '${item.id}')">Hapus</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div>Harga: ${item.basePrice.toLocaleString()} RC</div>
+                        <div>Min Weight: ${item.minWeight}g</div>
+                        <div>Max Weight: ${item.maxWeight}g</div>
+                        <div class="rarity ${item.rarity.toLowerCase()}">${item.rarity}</div>
+                    </div>
+                `;
+            } else if (type === 'user') {
+                const displayName = item.username && item.username !== item.phoneNumber ?
+                    `${item.username}` : `User${item.phoneNumber.slice(-4)}`;
+                const equipment = item.equipment || {};
+                const rod = item.currentRod || equipment.rod || 'wood';
+                const bait = item.currentBait || equipment.bait || 'worm';
+                
+                content = `
+                    <div class="card-header">
+                        <div class="card-title">${displayName}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="editUser('${item._id}')">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteUser('${item._id}')">Hapus</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div>Phone: ${item.phoneNumber}</div>
+                        <div>Level: ${item.level || 1}</div>
+                        <div>ReelCoins: ${(item.reelCoins || 0).toLocaleString()}</div>
+                        <div>Total Income: ${(item.totalIncome || 0).toLocaleString()}</div>
+                        <div>Rod: ${rod.charAt(0).toUpperCase() + rod.slice(1)}</div>
+                        <div>Bait: ${bait.charAt(0).toUpperCase() + bait.slice(1)}</div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = content;
+            return card;
+        }
+
+        // --- Modal Control ---
+        function openAddModal(type) {
+            currentType = type;
+            editingId = null;
+            document.getElementById('modal-title').textContent = `Tambah ${type.charAt(0).toUpperCase() + type.slice(1)} Baru`;
+            generateFormFields(type);
+            document.getElementById('modal').style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            editingId = null;
+            // Clear form fields
+            document.getElementById('item-form').reset();
+            document.getElementById('form-fields').innerHTML = '';
+        }
+
+        // Open edit modal for items (rods, baits, fish)
+        async function editItem(type, id) {
+            try {
+                const response = await fetch(`/api/fishing/${type}/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentType = type;
+                    editingId = id;
+                    document.getElementById('modal-title').textContent = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                    generateFormFields(type, data.data);
+                    document.getElementById('modal').style.display = 'block';
+                    document.body.classList.add('modal-open');
+                } else {
+                    alert('Gagal mengambil data item');
+                }
+            } catch (error) {
+                console.error('Error editing item:', error);
+                alert('Terjadi kesalahan saat mengambil data');
+            }
+        }
+
+        // Open edit modal for users
+        function editUser(userId) {
+            openEditModal(userId);
+        }
+
+        function openEditModal(userId) {
+            console.log('🔍 Opening edit modal for user ID:', userId);
+            
+            // Fetch user data from API
+            fetch(`/api/fishing/user/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success || !data.user) {
+                        alert('User data not found. Please refresh the page.');
+                        return;
+                    }
+                    
+                    const user = data.user;
+                    console.log('✅ Found user for edit:', user);
+                    currentEditUserId = userId;
+
+            // Populate form fields
+                    document.getElementById('editUserId').value = user._id;
+                    document.getElementById('editUsername').value = user.username || '';
+                    document.getElementById('editPhoneNumber').value = user.phoneNumber || '';
+                    document.getElementById('editReelCoins').value = user.reelCoins || 0;
+                    document.getElementById('editLevel').value = user.level || 1;
+                    document.getElementById('editTotalIncome').value = user.totalIncome || 0;
+                    document.getElementById('editCurrentRod').value = user.currentRod || user.equipment?.rod || 'wood';
+                    document.getElementById('editCurrentBait').value = user.currentBait || user.equipment?.bait || 'worm';
+
+                    document.getElementById('editModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    alert('Error loading user data');
+                });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            currentEditUserId = null;
+            // Clear form fields
+            document.getElementById('editForm').reset();
+        }
+
+
+        // --- Form Generation ---
+        function generateFormFields(type, data = {}) {
+            const formFields = document.getElementById('form-fields');
+            let fieldsHTML = '';
+
+            if (type === 'rod') {
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Nama Rod</label>
+                        <input type="text" class="form-input" name="name" value="${data.name || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Harga</label>
+                        <input type="number" class="form-input" name="price" value="${data.price || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rarity</label>
+                        <select class="form-select" name="rarity" required>
+                            <option value="Common" ${data.rarity === 'Common' ? 'selected' : ''}>Common</option>
+                            <option value="Uncommon" ${data.rarity === 'Uncommon' ? 'selected' : ''}>Uncommon</option>
+                            <option value="Rare" ${data.rarity === 'Rare' ? 'selected' : ''}>Rare</option>
+                            <option value="Epic" ${data.rarity === 'Epic' ? 'selected' : ''}>Epic</option>
+                            <option value="Legendary" ${data.rarity === 'Legendary' ? 'selected' : ''}>Legendary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rarity Bonus (%)</label>
+                        <input type="number" class="form-input" name="rarityBonus" value="${data.rarityBonus || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Durability</label>
+                        <input type="number" class="form-input" name="durability" value="${data.durability || ''}" required>
+                    </div>
+                `;
+            } else if (type === 'bait') {
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Nama Bait</label>
+                        <input type="text" class="form-input" name="name" value="${data.name || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Harga</label>
+                        <input type="number" class="form-input" name="price" value="${data.price || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rarity</label>
+                        <select class="form-select" name="rarity" required>
+                            <option value="Common" ${data.rarity === 'Common' ? 'selected' : ''}>Common</option>
+                            <option value="Uncommon" ${data.rarity === 'Uncommon' ? 'selected' : ''}>Uncommon</option>
+                            <option value="Rare" ${data.rarity === 'Rare' ? 'selected' : ''}>Rare</option>
+                            <option value="Epic" ${data.rarity === 'Epic' ? 'selected' : ''}>Epic</option>
+                            <option value="Legendary" ${data.rarity === 'Legendary' ? 'selected' : ''}>Legendary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantity per Purchase</label>
+                        <input type="number" class="form-input" name="quantity" value="${data.quantity || 1}" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Catch Rate (%)</label>
+                        <input type="number" class="form-input" name="catchRate" value="${data.catchRate || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Uses</label>
+                        <input type="number" class="form-input" name="uses" value="${data.uses || ''}" required>
+                    </div>
+                `;
+            } else if (type === 'fish') {
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Nama Ikan</label>
+                        <input type="text" class="form-input" name="name" value="${data.name || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Harga Base</label>
+                        <input type="number" class="form-input" name="basePrice" value="${data.basePrice || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rarity</label>
+                        <select class="form-select" name="rarity" required>
+                            <option value="Common" ${data.rarity === 'Common' ? 'selected' : ''}>Common</option>
+                            <option value="Uncommon" ${data.rarity === 'Uncommon' ? 'selected' : ''}>Uncommon</option>
+                            <option value="Rare" ${data.rarity === 'Rare' ? 'selected' : ''}>Rare</option>
+                            <option value="Epic" ${data.rarity === 'Epic' ? 'selected' : ''}>Epic</option>
+                            <option value="Legendary" ${data.rarity === 'Legendary' ? 'selected' : ''}>Legendary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Min Weight (gram)</label>
+                        <input type="number" class="form-input" name="minWeight" value="${data.minWeight || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Weight (gram)</label>
+                        <input type="number" class="form-input" name="maxWeight" value="${data.maxWeight || ''}" required>
+                    </div>
+                `;
+            }
+            // Note: User form fields are now handled directly in the editModal structure, not generated dynamically here.
+
+            formFields.innerHTML = fieldsHTML;
+        }
+
+        // --- Data Submission ---
+        document.getElementById('item-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert numeric fields
+            if (data.price) data.price = parseInt(data.price);
+            if (data.rarityBonus) data.rarityBonus = parseInt(data.rarityBonus);
+            if (data.durability) data.durability = parseInt(data.durability);
+            if (data.quantity) data.quantity = parseInt(data.quantity);
+            if (data.catchRate) data.catchRate = parseInt(data.catchRate);
+            if (data.uses) data.uses = parseInt(data.uses);
+            if (data.basePrice) data.basePrice = parseInt(data.basePrice);
+            if (data.minWeight) data.minWeight = parseInt(data.minWeight);
+            if (data.maxWeight) data.maxWeight = parseInt(data.maxWeight);
+
+            try {
+                let url, method;
+
+                // Handle user data differently for submission
+                if (currentType === 'user') {
+                    // User creation is not supported from this interface, only editing
+                    if (!editingId) {
+                        alert('Cannot create new users from this interface. Use the User tab editing functionality.');
+                        return;
+                    }
+                    url = `/api/fishing/user/${editingId}`;
+                    method = 'PUT';
+                    // Restructure user data for API
+                    const userData = {
+                        reelCoins: data.reelCoins,
+                        level: data.level,
+                        totalIncome: data.totalIncome,
+                        equipment: {
+                            rod: data.rod, // This seems to be from the dynamic form, if user edit uses this modal
+                            bait: data.bait  // This seems to be from the dynamic form
+                        }
+                    };
+                    // IMPORTANT: If editing users directly via the main modal, ensure these fields exist.
+                    // However, the changes point to a separate editModal for users.
+                    // For now, assuming this block might be redundant if editModal is the primary user edit path.
+                    // Revisit if issues arise.
+                    console.warn('Submitting user data via general item form, which might be incorrect. Using editModal is preferred.');
+                    // If this block is hit, it means the user tab's "Add User" button (if it existed) or an old edit flow is triggering.
+                    // The primary user edit is now handled by editUser -> editModal.
+                    alert('User updates should be handled via the specific user edit modal.');
+                    return; // Prevent submission if it's not the intended user edit flow
+                } else {
+                    // Rods, Baits, Fish
+                    url = editingId ? `/api/fishing/${currentType}/${editingId}` : `/api/fishing/${currentType}`;
+                    method = editingId ? 'PUT' : 'POST';
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const itemType = currentType === 'user' ? 'data user' : 'item';
+                    alert(editingId ? `${itemType} berhasil diperbarui` : `${itemType} berhasil ditambahkan`);
+                    closeModal();
+                    loadTabData(currentType); // Reload the data for the current tab
+                } else {
+                    alert('Gagal menyimpan: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error saving data:', error);
+                alert('Terjadi kesalahan saat menyimpan data');
+            }
+        });
+
+        // Handle edit form submission for Users
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            console.log('📝 Submitting form for user:', currentEditUserId);
+
+            const userId = document.getElementById('editUserId').value;
+            const updateData = {
+                username: document.getElementById('editUsername').value,
+                phoneNumber: document.getElementById('editPhoneNumber').value,
+                reelCoins: parseInt(document.getElementById('editReelCoins').value) || 0,
+                level: parseInt(document.getElementById('editLevel').value) || 1,
+                totalIncome: parseInt(document.getElementById('editTotalIncome').value) || 0,
+                currentRod: document.getElementById('editCurrentRod').value || 'wood',
+                currentBait: document.getElementById('editCurrentBait').value || 'worm',
+                equipment: {
+                    rod: document.getElementById('editCurrentRod').value || 'wood',
+                    bait: document.getElementById('editCurrentBait').value || 'worm'
+                }
+            };
+
+            console.log('📤 Sending update data:', updateData);
+
+            try {
+                const response = await fetch('/api/fishing/user/' + userId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const data = await response.json();
+                console.log('📥 Server response:', data);
+
+                if (data.success) {
+                    alert('User updated successfully!');
+                    closeEditModal();
+                    loadTabData('user'); // Reload user data
+                } else {
+                    console.error('❌ Update failed:', data.message);
+                    alert('Failed to update user: ' + data.message);
+                }
+            } catch (error) {
+                console.error('❌ Error updating user:', error);
+                alert('Error updating user: ' + error.message);
+            }
+        });
+
+        // --- Deletion ---
+        async function deleteItem(type, id) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus ${type} ini?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/fishing/${type}/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`${type} berhasil dihapus`);
+                    loadTabData(type); // Reload the data for the current tab
+                } else {
+                    alert(`Gagal menghapus ${type}: ` + data.message);
+                }
+            } catch (error) {
+                console.error(`Error deleting ${type}:`, error);
+                alert(`Terjadi kesalahan saat menghapus ${type}`);
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data fishing user ini?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/fishing/user/${userId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Data user berhasil dihapus');
+                    loadTabData('user'); // Reload user data
+                } else {
+                    alert('Gagal menghapus data user: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Terjadi kesalahan saat menghapus data user');
+            }
+        }
+
+        
+
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Default load: show rods first
+            console.log('DOM loaded, loading initial rod data');
+            loadTabData('rod');
+
+            // Add listener for clicking outside the modals to close them
+            window.onclick = function(event) {
+                const modal = document.getElementById('modal');
+                if (modal && event.target === modal) {
+                    closeModal();
+                }
+                const editModal = document.getElementById('editModal');
+                if (editModal && event.target === editModal) {
+                    closeEditModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

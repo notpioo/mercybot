@@ -17,7 +17,7 @@ module.exports = {
     // Command Configuration
     commands: {
         prefix: '.',
-        limitCommands: ['profile', 'sticker', 's'] // Commands that require limits
+        limitCommands: ['profile', 'sticker', 's', 'fish'] // Commands that require limits
     },
     
     // Sticker Configuration
@@ -85,6 +85,16 @@ module.exports = {
 ├─「 🎨 Media Commands 」
 │ • .s/.sticker - Convert image to sticker (1 limit)
 │
+├─「 🎣 Fishing Game 」
+│ • .fish - Go fishing (1 limit)
+│ • .fishing - View fishing dashboard
+│ • .fbag - View fishing inventory
+│ • .fshop - View fishing shop
+│ • .fbuy <item> - Buy fishing items
+│ • .userod <rod> - Equip fishing rod
+│ • .usebait <bait> - Equip fishing bait
+│ • .sellfish - Sell all caught fish
+│
 ├─「 ℹ️ Bot Information 」
 │ • Bot Name: {botName}
 │ • Owner: @6285709557572
@@ -102,6 +112,7 @@ module.exports = {
 │ • Limit: {limitDisplay}
 │ • Balance: {balance}
 │ • Chips: {chips}
+│ • ReelCoin: {reelCoin} RC
 │ • Member since: {memberSince}
 └──────────────────────`,
         
